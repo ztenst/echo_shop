@@ -1,0 +1,9 @@
+.svn
+.DS_Store
+temp/query_caches/*
+temp/compiled/*
+temp/caches/*
+temp/static_caches/*
+temp/backup/*
+.idea
+!.gitkeep
