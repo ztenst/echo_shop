@@ -1,0 +1,17 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div class="blank"></div>
+<!--{if $helps}-->
+    <!-- {foreach from=$helps item=help_cat name=foo} --> 
+    {if $smarty.foreach.foo.iteration < 6}
+    <dl class="col-links">
+      <dt>{$help_cat.cat_name}</dt>
+      <!-- {foreach from=$help_cat.article item=item} -->
+      <dd> 
+        <a href="{$item.url}" target="_blank" title="{$item.title|escape:html}" rel="nofollow">{$item.short_title}</a>
+      </dd>
+      <!-- {/foreach} --> 
+    </dl>
+    {/if} 
+    <!-- {/foreach} --> 
+<!--{/if}--> 
+

@@ -1,0 +1,67 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $hot_goods} -->
+<!--{if $script_name eq 'index'}-->
+<div class="xm-plain-box">
+	<div class="box-hd">
+    	<h2 class="title">
+			为你推荐
+        </h2>
+        <div class="more">
+        	<div class="xm-controls xm-controls-line-small xm-carousel-controls">
+            	<a class="control control-prev iconfont" href="javascript: void(0);"></a>
+				<a class="control control-next iconfont" href="javascript: void(0);"></a>
+            </div>
+        </div>
+    </div>
+    <div class="box-bd">
+    	<div class="xm-carousel-wrapper J_carouselWrap">
+        	<ul class="xm-carousel-list xm-carousel-col-5-list goods-list rainbow-list clearfix J_carouselList">
+            	<!--{foreach from=$hot_goods item=goods name=hot_goods}-->
+                	<li>
+                    	<a class="thumb" href="{$goods.url}" target="_blank">
+                        	<img src="{$goods.thumb}" />
+                        </a>
+                        <h3 class="title">
+                        	<a href="{$goods.url}" target="_blank">{$goods.short_style_name}</a>
+                        </h3>
+                        <p class="price"><!-- {if $goods.promote_price neq ""} -->{$goods.promote_price}<!-- {else}-->{$goods.shop_price}<!--{/if}--></p>
+                    </li>
+                <!--{/foreach}-->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--{else}-->
+
+    <div id="J_renovateWrap" class="xm-recommend-container container xm-carousel-container">
+        <h2 class="xm-recommend-title"><span>为你推荐</span></h2>
+        <div class="xm-recommend">
+            <div class="xm-carousel-wrapper">
+                <ul class="xm-carousel-col-5-list xm-carousel-list clearfix">
+                	<!--{foreach from=$hot_goods item=goods name=hot_goods}-->
+                    <li class="J_xm-recommend-list">
+                        <dl>
+                            <dt><a href="{$goods.url}" target="_blank"><img src="{$goods.thumb}" /></a></dt>
+                            <dd class="xm-recommend-name"><a href="{$goods.url}" target="_blank" title="{$goods.short_style_name}">{$goods.short_style_name}</a></dd>
+                            <dd class="xm-recommend-price"><!-- {if $goods.promote_price neq ""} -->{$goods.promote_price}<!-- {else}-->{$goods.shop_price}<!--{/if}--></dd>
+                            <dd class="xm-recommend-tips"> </dd>
+                        </dl>
+                    </li>
+                    
+                    <!--{/foreach}-->
+                </ul>
+            </div>
+            <div class="xm-pagers-wrapper">
+                <ul class="xm-pagers">
+                	<!--{foreach from=$hot_goods item=goods name=hot_goods}-->
+                    <!--{if $smarty.foreach.hot_goods.index mod 5 eq 0}-->
+                	<li class="pager"><span class="dot">{ $smarty.foreach.hot_goods.iteration}</span></li>
+                    <!-- {/if} --> 
+                    <!--{/foreach}-->
+                </ul>
+            </div>
+        </div>
+    </div>
+<!-- {/if} --> 
+<!-- {/if} --> 

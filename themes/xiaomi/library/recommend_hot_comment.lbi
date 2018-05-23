@@ -1,0 +1,22 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div class="box-hd">
+	<h2 class="title">热评产品</h2>
+</div>
+<div class="box-bd J_brickBd">
+	<ul class="review-list clearfix">
+    	<!--{foreach from=$index_comments item=comments name=no}-->
+        <!--{if $smarty.foreach.no.iteration < 5}-->
+    	<li class="review-item{if $smarty.foreach.no.first} review-item-first{/if}">
+        	<div class="figure figure-img"><a href="{$comments.url}"><img src="{$comments.goods_thumb}" width="296" height="220" alt="{$comments.goods_name}"></a></div>
+            <p class="review"><a href="{$comments.url}">{$comments.content|truncate:30}</a></p>
+            <p class="author">来自于 {$comments.user_name|default:匿名用户} 的评价</p>
+            <div class="info">
+            	<h3 class="title"><a href="{$comments.url}">{$comments.goods_name}</a></h3>
+                <span class="sep">|</span>
+                <p class="price"><!--{if $comments.promote_price neq 0}-->{$comments.promote_price}<!--{else}-->{$comments.shop_price}<!--{/if}--></p>
+            </div>
+        </li>
+        <!-- {/if} -->
+        <!-- {/foreach} -->
+    </ul>
+</div>

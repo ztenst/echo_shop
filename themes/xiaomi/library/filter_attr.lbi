@@ -1,0 +1,53 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--{if $brands.1 || $price_grade.1 || $filter_attr_list}-->
+<div class="container">
+	<div class="filter-box">
+    	<!--{foreach from=$filter_attr_list item=filter_attr}-->
+    	<div class="filter-list-wrap">
+        	<dl class="filter-list clearfix filter-list-row-2">
+            	<dt>{$filter_attr.filter_attr_name|escape:html}：</dt>
+                <!--{foreach from=$filter_attr.attr_list item=attr}-->
+                <!-- {if $attr.selected} -->
+                <dd class="active">{$attr.attr_value}</dd>
+                <!-- {else} -->
+                <dd><a href="{$attr.url}">{$attr.attr_value}</a></dd>
+                <!-- {/if} -->
+                <!--{/foreach}-->
+            </dl>
+            <a  href="javascript:;" class="more J_filterToggle">更多<i class="iconfont"></i></a>
+        </div>
+        <!--{/foreach}-->
+        <!--{if $brands.1}-->
+    	<div class="filter-list-wrap">
+        	<dl class="filter-list clearfix filter-list-row-2">
+            	<dt>{$lang.brand}：</dt>
+                <!--{foreach from=$brands item=brand}-->
+                <!-- {if $brand.selected} -->
+                <dd class="active">{$brand.brand_name}</dd>
+                <!-- {else} -->
+                <dd><a href="{$brand.url}">{$brand.brand_name}</a></dd>
+                <!-- {/if} -->
+                <!-- {/foreach} -->
+            </dl>
+            <a  href="javascript:;" class="more J_filterToggle">更多<i class="iconfont"></i></a>
+        </div>
+        <!-- {/if} -->
+        <!--{if $price_grade.1}-->
+        <div class="filter-list-wrap">
+        	<dl class="filter-list clearfix filter-list-row-2">
+            	<dt>{$lang.price}：</dt>
+                <!--{foreach from=$price_grade item=grade}-->
+                    <!-- {if $grade.selected} -->
+                    <dd class="active">{$grade.price_range}</dd>
+                    <!-- {else} -->
+                    <dd><a href="{$grade.url}">{$grade.price_range}</a></dd>
+                    <!-- {/if} -->
+                <!--{/foreach}-->
+        	 </dl>
+             <a  href="javascript:;" class="more J_filterToggle">更多<i class="iconfont"></i></a>
+        </div>
+        <!-- {/if} -->
+    </div>
+</div>
+<!-- {/if} -->
+ 

@@ -1,0 +1,117 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<!--排序规则-->
+    <div class="order-list-box clearfix">
+      <form method="GET" class="sort" name="listform">
+      	<ul class="type-list">
+        	<li>{$lang.btn_display}：</li>
+        	<li><a href="javascript:;" onClick="javascript:display_mode('list')"><img src="images/display_mode_list<!-- {if $pager.display == 'list'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.list}"></a></li>
+        	<li><a href="javascript:;" onClick="javascript:display_mode('grid')"><img src="images/display_mode_grid<!-- {if $pager.display == 'grid'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.grid}"></a></li>
+        	<li><a href="javascript:;" onClick="javascript:display_mode('text')"><img src="images/display_mode_text<!-- {if $pager.display == 'text'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.text}"></a></li>
+        </ul>
+        
+        <div class="order-list">
+        <select name="sort" style="border:1px solid #ccc;">
+        {html_options options=$lang.exchange_sort selected=$pager.sort}
+        </select>&nbsp;&nbsp;
+        <select name="order" style="border:1px solid #ccc;">
+        {html_options options=$lang.order selected=$pager.order}
+        </select>&nbsp;&nbsp;
+        <input type="image" style="vertical-align: -6px;" name="imageField" src="../images/bnt_go.gif" alt="go"/>
+        <input type="hidden" name="category" value="{$category}" />
+        <input type="hidden" name="display" value="{$pager.display}" id="display" />
+        <input type="hidden" name="integral_min" value="{$integral_min}" />
+        <input type="hidden" name="integral_max" value="{$integral_max}" />
+        <input type="hidden" name="page" value="{$pager.page}" />
+        </div>
+      </form>
+    </div>
+    
+    <!-- 商品列表-->
+	<!--{if not $goods_list}--><p class="empty">对不起，对应商品分类或筛选组合下没有商品</p><!-- {/if} -->
+    <form name="compareForm" method="post">
+    <!-- {if $pager.display == 'list'} -->
+      <div class="goods-list-list">
+      <!--{foreach name=goods_list from=$goods_list item=goods}-->
+        <ul class="goods-item clearfix"<!--{if $smarty.foreach.goods_list.index mod 2 eq 0}-->id=""<!--{else}-->id="bgcolor"<!--{/if}-->>
+          <li class="thumb"><a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name}" /></a></li>
+          <li class="goodsName">
+            <a href="{$goods.url}">
+            <!-- {if $goods.goods_style_name} -->
+              {$goods.goods_style_name}<br />
+            <!-- {else} -->
+              {$goods.goods_name}<br />
+            <!-- {/if} -->
+            </a>
+            <!-- {if $goods.goods_brief} -->
+              {$lang.goods_brief}{$goods.goods_brief}
+            <!-- {/if} -->
+          </li>
+          <li class="goodsPrice">
+            <span class="shop">{$lang.exchange_integral}<b>{$goods.exchange_integral}</b></span>
+          </li>
+   		  <li class="action">
+          	<a href="{$goods.url}" class="btn  btn-primary goods-add-cart-btn"><i class="iconfont"></i>{$lang.exchange_goods}</a>
+          </li>
+        </ul>
+      <!--{/foreach}-->
+      </div>
+
+    <!-- {elseif $pager.display == 'grid'} -->
+      <div class="goods-list-box">
+        <div class="goods-list clearfix">
+        <!--{foreach from=$goods_list item=goods}-->
+          <!-- {if $goods.goods_id} -->
+            <div class="goods-item">
+              <div class="figure figure-img"><a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name}" class="goodsimg" /></a></div>
+              <p class="desc">{$goods.goods_brief}</p>
+              <h2 class="title"><a href="{$goods.url}" title="{$goods.name|escape:html}">{$goods.goods_name}</a></h2>
+              <p class="price">{$lang.exchange_integral}<font class="shop_s">{$goods.exchange_integral}</font></p>
+              <div class="thumbs">
+                <ul class="thumb-list clearfix">
+                    <li class="active" data-config='{figure:"{$goods.goods_thumb}"}'>
+                        <a><img src="{$goods.goods_thumb}" width="34" height="34"></a>
+                    </li>
+                </ul>
+              </div>
+            </div>
+          <!--{/if}-->
+        <!--{/foreach}-->
+        </div>
+      </div>
+
+    <!-- {elseif $pager.display == 'text'} -->
+      <div class="goods-list-list goods-list-text">
+      <!--{foreach from=$goods_list item=goods}-->
+        <ul class="goods-item clearfix" <!--{if $smarty.foreach.goods_list.index mod 2 eq 0}-->id=""<!--{else}-->id="bgcolor"<!--{/if}-->>
+          <li class="goodsName">
+            <a href="{$goods.url}">
+            <!-- {if $goods.goods_style_name} -->
+              {$goods.goods_style_name}<br />
+            <!-- {else} -->
+              {$goods.goods_name}<br />
+            <!-- {/if} -->
+            </a>
+            <!-- {if $goods.goods_brief} -->
+              {$lang.goods_brief}{$goods.goods_brief}
+            <!-- {/if} -->
+          </li>
+          <li class="goodsPrice">
+            <span class="shop">{$lang.exchange_integral}<b>{$goods.exchange_integral}</b></span>
+          </li>
+   		  <li class="action">
+          	<a href="{$goods.url}" class="btn  btn-primary goods-add-cart-btn"><i class="iconfont"></i>{$lang.exchange_goods}</a>
+          </li>
+        </ul>
+      <!--{/foreach}-->
+      </div>
+    <!-- {/if} -->
+    </form>
+<script type="text/javascript">
+  window.onload = function()
+  {
+    Compare.init();
+    fixpng();
+  }
+  var button_compare = '';
+</script>

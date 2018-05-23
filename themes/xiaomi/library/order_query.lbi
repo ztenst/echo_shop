@@ -1,0 +1,27 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--{if empty($order_query)}-->
+<script>var invalid_order_sn = "{$lang.invalid_order_sn}"</script>
+<h3>前台订单查询</h3>
+<form name="ecsOrderQuery" class="xm-recharge-form">
+	<fieldset class="xm-recharge-tel">
+    	<input type="text" name="order_sn" />
+    </fieldset>
+    <fieldset class="xm-recharge-submit">
+    	<input type="button" value="{$lang.query_order}" class="btn btn-primary btn-recharge-submit  btn-block" onclick="orderQuery()" />
+    </fieldset>
+</form>
+<div id="ECS_ORDER_QUERY" style="margin-top:8px;"> 
+	<!--{else}-->    
+    <!--{if $order_query.user_id}-->
+	<b>{$lang.order_number}：</b><a href="user.php?act=order_detail&order_id={$order_query.order_id}">{$order_query.order_sn}</a><br>
+ 	<!--{else}-->
+	<b>{$lang.order_number}：</b>{$order_query.order_sn}<br>
+  	<!--{/if}-->
+	<b>{$lang.order_status}：</b><font style="font-weight:bold; color:#D00;">{$order_query.order_status}</font><br>
+  	<!--{if $order_query.invoice_no }-->
+	<b>{$lang.consignment}：</b>{$order_query.invoice_no}<br>
+  	<!--{/if}-->
+    {if $order_query.shipping_date}：{$lang.shipping_date} {$order_query.shipping_date}<br>
+  	<!--{/if}--> 
+    <!--{/if}--> 
+</div>

@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Keywords" content="{$keywords}" />
+<meta name="Description" content="{$description}" />
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>{$page_title}</title>
+<!-- TemplateEndEditable -->
+<!-- TemplateBeginEditable name="head" -->
+<!-- TemplateEndEditable -->
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" href="animated_favicon.gif" type="image/gif" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
+<link href="category.css" rel="stylesheet" type="text/css" />
+{* 包含脚本文件 *}
+{insert_scripts files='jquery-1.9.1.min.js,jquery.json.js'}
+{insert_scripts files='common.js,global.js,easydialog.min.js,compare.js'}
+</head>
+<body>
+<!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem --> 
+{insert_scripts files='xiaomi_category.js'}
+<!-- #BeginLibraryItem "/library/ur_here.lbi" --><!-- #EndLibraryItem -->
+<!-- #BeginLibraryItem "/library/filter_attr.lbi" --><!-- #EndLibraryItem -->
+<div class="content">
+	<div class="container">
+	<!-- #BeginLibraryItem "/library/goods_list.lbi" --><!-- #EndLibraryItem -->
+    <!-- #BeginLibraryItem "/library/pages.lbi" --><!-- #EndLibraryItem -->
+    </div>
+    <!-- TemplateBeginEditable name="为您推荐（调用热卖）" -->
+<!-- #BeginLibraryItem "/library/recommend_hot.lbi" -->
+
+<!-- {if $hot_goods} -->
+<!--{if $script_name eq 'index'}-->
+<div class="xm-plain-box">
+	<div class="box-hd">
+    	<h2 class="title">
+			为你推荐
+        </h2>
+        <div class="more">
+        	<div class="xm-controls xm-controls-line-small xm-carousel-controls">
+            	<a class="control control-prev iconfont" href="javascript: void(0);"></a>
+				<a class="control control-next iconfont" href="javascript: void(0);"></a>
+            </div>
+        </div>
+    </div>
+    <div class="box-bd">
+    	<div class="xm-carousel-wrapper J_carouselWrap">
+        	<ul class="xm-carousel-list xm-carousel-col-5-list goods-list rainbow-list clearfix J_carouselList">
+            	<!--{foreach from=$hot_goods item=goods name=hot_goods}-->
+                	<li>
+                    	<a class="thumb" href="{$goods.url}" target="_blank">
+                        	<img src="{$goods.thumb}" />
+                        </a>
+                        <h3 class="title">
+                        	<a href="{$goods.url}" target="_blank">{$goods.short_style_name}</a>
+                        </h3>
+                        <p class="price"><!-- {if $goods.promote_price neq ""} -->{$goods.promote_price}<!-- {else}-->{$goods.shop_price}<!--{/if}-->元</p>
+                    </li>
+                <!--{/foreach}-->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--{else}-->
+
+    <div id="J_renovateWrap" class="xm-recommend-container container xm-carousel-container">
+        <h2 class="xm-recommend-title"><span>为你推荐</span></h2>
+        <div class="xm-recommend">
+            <div class="xm-carousel-wrapper">
+                <ul class="xm-carousel-col-5-list xm-carousel-list clearfix">
+                	<!--{foreach from=$hot_goods item=goods name=hot_goods}-->
+                    <li class="J_xm-recommend-list">
+                        <dl>
+                            <dt><a href="{$goods.url}" target="_blank"><img src="{$goods.thumb}" /></a></dt>
+                            <dd class="xm-recommend-name"><a href="{$goods.url}" target="_blank" title="{$goods.short_style_name}">{$goods.short_style_name}</a></dd>
+                            <dd class="xm-recommend-price"><!-- {if $goods.promote_price neq ""} -->{$goods.promote_price}<!-- {else}-->{$goods.shop_price}<!--{/if}-->元</dd>
+                            <dd class="xm-recommend-tips"> </dd>
+                        </dl>
+                    </li>
+                    
+                    <!--{/foreach}-->
+                </ul>
+            </div>
+            <div class="xm-pagers-wrapper">
+                <ul class="xm-pagers">
+                	<!--{foreach from=$hot_goods item=goods name=hot_goods}-->
+                    <!--{if $smarty.foreach.hot_goods.index mod 5 eq 0}-->
+                	<li class="pager"><span class="dot">{ $smarty.foreach.hot_goods.iteration}</span></li>
+                    <!-- {/if} --> 
+                    <!--{/foreach}-->
+                </ul>
+            </div>
+        </div>
+    </div>
+<!-- {/if} --> 
+<!-- {/if} --> 
+
+ <!-- #EndLibraryItem -->
+<!-- TemplateEndEditable -->
+</div>
+<div class="add_ok" id="cart_show">
+    <div class="tip">
+        <i class="iconfont"> </i>商品已成功加入购物车
+    </div>
+    <div class="go">
+        <a href="javascript:easyDialog.close();" class="back">&lt;&lt;继续购物</a>
+        <a href="flow.php" class="btn">去结算</a>
+    </div>
+</div>
+<!-- #BeginLibraryItem "/library/page_footer.lbi" --><!-- #EndLibraryItem -->
+</body>
+</html>

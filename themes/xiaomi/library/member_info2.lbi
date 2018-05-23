@@ -1,0 +1,20 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+{if $user_info} 
+<span class="user">
+ <a href="user.php" class="user-name">
+ 	<span class="name">{$user_info.username}</span><i class="iconfont"></i>
+ </a>
+ <ul class="user-menu">
+    <li><a target="_blank" href="user.php">个人中心</a></li>
+    <li><a target="_blank" href="user.php?act=collection_list">我的收藏</a></li>
+    <li><a target="_blank" href="user.php?act=comment_list">我的评价</a></li>
+    <li><a target="_blank" href="user.php?act=track_packages">跟踪包裹</a></li>
+    <li><a href="user.php?act=logout">退出登录</a></li>
+ </ul>
+</span> 
+ <span class="sep">|</span>
+ <a href="user.php?act=logout" class="link">退出</a> 
+{else} 
+ <a href="user.php?act=login" class="link">登录</a><span class="sep">|</span><a href="user.php?act=register" class="link">注册</a>
+{/if}

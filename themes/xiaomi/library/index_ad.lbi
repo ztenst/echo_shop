@@ -1,0 +1,23 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div id="J_homeSlider" class="xm-slider" style="overflow:hidden;">
+	<div class="xm-slider-container">
+    	<div class="xm-slider-control">
+            <!--{foreach from=$index_ad_w item=index_ad}-->
+            <div class="slide xm-slider-slide">
+                <a target="_blank" href="{$index_ad.url}" >
+                    <img src="{$index_ad.src}" />
+                </a>
+            </div>
+            <!--{/foreach}-->
+        </div>
+    </div>
+    <a class="xm-slider-previous xm-slider-navigation icon-slides icon-slides-prev prev" href="#" style="display:none;">上一张</a>
+	<a class="xm-slider-next xm-slider-navigation icon-slides icon-slides-next next" href="#" style="display: none;">下一张</a>
+    <ul class="xm-slider-pagination">
+    	<!--{foreach from=$index_ad_w item=index_ad name=foo}-->
+        <li class="xm-slider-pagination-item">
+            <a href="javascript:;" {if $smarty.foreach.foo.first}class="active"{/if}>{$smarty.foreach.foo.iteration}</a>
+        </li>
+        <!--{/foreach}-->
+    </ul>
+</div>

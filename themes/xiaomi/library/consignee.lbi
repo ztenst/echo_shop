@@ -1,0 +1,123 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{insert_scripts files='utils.js,transport_jquery.js'}
+<div class="checkout-box">
+
+      <h2 class="aui_title" style="cursor: move;">{$lang.consignee_info}</h2>
+      
+      <ul class="box-main clearfix" id="addr-form">
+            <!-- {if $real_goods_count gt 0} -->
+             <!-- 购物车中存在实体商品显示国家和地区 -->
+            <li class="section-options clearfix"> 
+              <label class="section-header">{$lang.country_province}:</label>
+              <div class="section-body section-address">
+              	  <div class="dropdown">
+                  	  <label class="iconfont"></label>
+                      <select name="country" id="selCountries_{$sn}" onchange="region.changed(this, 1, 'selProvinces_{$sn}')" class="input-select">
+                        <option value="0">{$lang.please_select}{$name_of_region[0]}</option>
+                        <!-- {foreach from=$country_list item=country} -->
+                        <option value="{$country.region_id}" {if $consignee.country eq $country.region_id}selected{/if}>{$country.region_name}</option>
+                        <!-- {/foreach} -->
+                      </select>
+                  </div>
+              	  <div class="dropdown">
+                  	  <label class="iconfont"></label>
+                      <select name="province" id="selProvinces_{$sn}" onchange="region.changed(this, 2, 'selCities_{$sn}')" class="input-select">
+                        <option value="0">{$lang.please_select}{$name_of_region[1]}</option>
+                        <!-- {foreach from=$province_list.$sn item=province} -->
+                        <option value="{$province.region_id}" {if $consignee.province eq $province.region_id}selected{/if}>{$province.region_name}</option>
+                        <!-- {/foreach} -->
+                      </select>
+                  </div>
+              	  <div class="dropdown">
+                  	  <label class="iconfont"></label>
+                      <select name="city" id="selCities_{$sn}" onchange="region.changed(this, 3, 'selDistricts_{$sn}')" class="input-select">
+                        <option value="0">{$lang.please_select}{$name_of_region[2]}</option>
+                        <!-- {foreach from=$city_list.$sn item=city} -->
+                        <option value="{$city.region_id}" {if $consignee.city eq $city.region_id}selected{/if}>{$city.region_name}</option>
+                        <!-- {/foreach} -->
+                      </select>
+                  </div>
+              	  <div class="dropdown">
+                  	  <label class="iconfont"></label>
+                      <select name="district" id="selDistricts_{$sn}" {if !$district_list.$sn}style="display:none"{/if} class="input-select">
+                        <option value="0">{$lang.please_select}{$name_of_region[3]}</option>
+                        <!-- {foreach from=$district_list.$sn item=district} -->
+                        <option value="{$district.region_id}" {if $consignee.district eq $district.region_id}selected{/if}>{$district.region_name}</option>
+                        <!-- {/foreach} -->
+                      </select>
+                  </div>
+              </div>
+             </li>
+            <!-- {/if} -->
+            <li class="section-options clearfix">
+              <label class="section-header"><em>*</em>{$lang.consignee_name}</label>
+              <div class="section-body">
+                  <input name="consignee" type="text" class="input-text" id="consignee_{$sn}" value="{$consignee.consignee|escape}" />
+              </div>
+            </li>
+            <li class="section-options clearfix">
+              <label class="section-header"><em>*</em>{$lang.email_address}</label>
+              <div class="section-body">
+                  <input name="email" type="text" class="input-text" id="email_{$sn}" value="{$consignee.email|escape}" />
+              </div>
+             </li>
+            
+            <!-- {if $real_goods_count gt 0} --> 
+            <!-- 购物车中存在实体商品显示详细地址以及邮政编码 -->
+            <li class="section-options clearfix">
+              <label class="section-header"><em>*</em>{$lang.detailed_address}</label>
+              <div class="section-body">
+                  <input name="address" type="text" class="input-text"  id="address_{$sn}" value="{$consignee.address|escape}" />
+              </div>
+              </li>
+            <li class="section-options clearfix">
+              <label class="section-header">{$lang.postalcode}</label>
+              <div class="section-body">
+                  <input name="zipcode" type="text" class="input-text" id="zipcode_{$sn}" value="{$consignee.zipcode|escape}" />
+              </div>
+              </li>
+            <!-- {/if} -->
+            <li class="section-options clearfix">
+              <label class="section-header"><em>*</em>{$lang.phone}</label>
+              <div class="section-body">
+                  <input name="tel" type="text" class="input-text" id="tel_{$sn}" value="{$consignee.tel|escape}" />
+              </div>
+              </li>
+            <li class="section-options clearfix">
+              <label class="section-header">{$lang.backup_phone}</label>
+              <div class="section-body">
+                  <input name="mobile" type="text" class="input-text" id="mobile_{$sn}" value="{$consignee.mobile|escape}" />
+              </div>
+            </li>
+            
+            <!-- {if $real_goods_count gt 0} --> 
+            <!-- 购物车中存在实体商品显示最佳送货时间及标志行建筑 -->
+            
+            <li class="section-options clearfix">
+              <label class="section-header">{$lang.sign_building}</label>
+              <div class="section-body">
+                  <input name="sign_building" type="text" class="input-text" id="sign_building_{$sn}" value="{$consignee.sign_building|escape}" />
+              </div>
+            </li>
+            <li class="section-options clearfix">
+              <label class="section-header">{$lang.deliver_goods_time}</label>
+              <div class="section-body">
+                  <input name="best_time" type="text" class="input-text" id="best_time_{$sn}" value="{$consignee.best_time|escape}" />
+              </div>
+            </li>
+            <!-- {/if} -->
+        </ul>
+        
+            
+    <div class="form-confirm clearfix">
+        <input type="submit" name="Submit" class="btn btn-primary" value="{$lang.shipping_address}" />
+        <input type="hidden" name="step" value="consignee" />
+        <input type="hidden" name="act" value="checkout" />
+        <input name="address_id" type="hidden" value="{$consignee.address_id}" />
+        
+        <!-- {if $smarty.session.user_id gt 0 and $consignee.address_id gt 0} --> 
+        <!-- 如果登录了，显示删除按钮 -->
+        <a href="javascript:;" onclick="if (confirm('{$lang.drop_consignee_confirm}')) location.href='flow.php?step=drop_consignee&amp;id={$consignee.address_id}'"   hidefocus="true" class="btn btn-gray">删 除</a> <!-- {/if} --> 
+    
+    </div>
+</div>

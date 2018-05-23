@@ -1,0 +1,56 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<a class="cart-mini <!-- {if $number} -->cart-mini-filled<!-- {/if} -->" href="flow.php">
+	<i class="iconfont">&#xe60c;</i>
+    购物车
+    <span class="mini-cart-num J_cartNum" id="hd_cartnum">({$number})</span>
+</a>
+<div id="J_miniCartList" class="cart-menu">
+	<!--{if $cart_list}-->
+    <ul>
+    	<!--{foreach from=$cart_list item=goods name=ioo}-->
+    	<li class="clearfix <!-- {if $smarty.foreach.ioo.first} -->first<!-- {/if} -->">
+        	<div class="cart-item">
+              <a class="thumb" target="_blank" href="{$goods.url}">
+                  <img src="{$goods.thumb}">
+              </a>
+              <a class="name" target="_blank" href="{$goods.url}">{$goods.short_name}</a>
+              <span class="price">{$goods.shop_price}元 x {$goods.goods_number}</span>
+              <a class="btn-del delItem" href="javascript:deleteCartGoods({$goods.rec_id});">
+                  <i class="iconfont"></i>
+              </a>
+            </div>
+        </li>
+        <!--{/foreach}-->
+    </ul>
+    <div class="count clearfix">
+    	<span class="total">
+        	共计<em id="hd_cart_count">{$number}</em>件商品
+            <strong>合计：<em id="hd_cart_total">{$amount}元</em></strong>
+        </span>
+        <a class="btn btn-primary" href="flow.php">去购物车结算</a>
+    </div>
+    <!--{else}-->
+    <p class="loading">购物车中还没有商品，赶紧选购吧！</p>
+    <!--{/if}--> 
+</div>
+<script type="text/javascript">
+function deleteCartGoods(rec_id)
+{
+	Ajax.call('delete_cart_goods.php', 'id='+rec_id, deleteCartGoodsResponse, 'POST', 'JSON');
+}
+
+/**
+ * 接收返回的信息
+ */
+function deleteCartGoodsResponse(res)
+{
+  if (res.error)
+  {
+    alert(res.err_msg);
+  }
+  else
+  {
+	  $("#ECS_CARTINFO").html(res.content);
+  }
+}
+</script> 

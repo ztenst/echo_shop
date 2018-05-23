@@ -1,0 +1,1 @@
+        <a target="_blank" href="<?php echo $this->_var['ad']['ad_link']; ?>"> <img src="<?php echo $this->_var['src']; ?>" width="<?php echo $this->_var['ad']['ad_width']; ?>" height="<?php echo $this->_var['ad']['ad_height']; ?>"/> </a> 

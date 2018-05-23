@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Keywords" content="{$keywords}" />
+<meta name="Description" content="{$description}" />
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>{$page_title}</title>
+<!-- TemplateEndEditable -->
+<!-- TemplateBeginEditable name="head" -->
+<!-- TemplateEndEditable -->
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" href="animated_favicon.gif" type="image/gif" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
+<link href="category.css" rel="stylesheet" type="text/css" />
+{* 包含脚本文件 *}
+{insert_scripts files='jquery-1.9.1.min.js,jquery.json.js'}
+{insert_scripts files='utils.js,common.js,global.js,compare.js'}
+</head>
+<body>
+<!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem --> {insert_scripts files='xiaomi_category.js'}
+<div class="content"> 
+  <!-- 页面主体部分开始 --> 
+  <!-- #BeginLibraryItem "/library/ur_here.lbi" --><!-- #EndLibraryItem -->
+  <div class="container">   
+       <!-- {if $goods_list} -->
+       
+        <!--标题及显示方式-->
+        <h2 class="hide">
+        <!-- {if $intromode eq 'best'} -->
+        <span>{$lang.best_goods}</span>
+        <!-- {elseif $intromode eq 'new'} -->
+        <span>{$lang.new_goods}</span>
+        <!-- {elseif $intromode eq 'hot'} -->
+        <span>{$lang.hot_goods}</span>
+        <!-- {elseif $intromode eq 'promotion'} -->
+        <span>{$lang.promotion_goods}</span>
+        <!-- {else} -->
+        <span>{$lang.search_result}</span>
+        <!-- {/if} -->
+        </h2>
+        
+        <div class="order-list-box clearfix">
+        
+        <!--{if $goods_list}-->
+        <form action="search.php" method="post" class="sort" name="listform" id="form">
+        <ul class="type-list">
+            <li>{$lang.btn_display}：</li>
+            <li><a href="javascript:;" onClick="javascript:display_mode('list')"><img src="images/display_mode_list<!-- {if $pager.display == 'list'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.list}"></a></li>
+            <li><a href="javascript:;" onClick="javascript:display_mode('grid')"><img src="images/display_mode_grid<!-- {if $pager.display == 'grid'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.grid}"></a></li>
+            <li><a href="javascript:;" onClick="javascript:display_mode('text')"><img src="images/display_mode_text<!-- {if $pager.display == 'text'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.text}"></a></li>
+        </ul>
+        <div class="order-list">
+            <select name="sort">
+            {html_options options=$lang.sort selected=$pager.search.sort}
+            </select>&nbsp;&nbsp;
+            <select name="order">
+            {html_options options=$lang.order selected=$pager.search.order}
+            </select>&nbsp;&nbsp;
+            <input type="image" name="imageField" style="vertical-align: -6px;" src="../images/bnt_go.gif" alt="go"/>
+            <input type="hidden" name="page" value="{$pager.page}" />
+            <input type="hidden" name="display" value="{$pager.display}" id="display" />
+        </div>
+        <!--{foreach from=$pager.search key=key item=item}-->
+        {if $key neq "sort" and $key neq "order"}
+        {if $key eq 'keywords'}
+        <input type="hidden" name="{$key}" value="{$item|escape:decode_url}" />
+        {else}
+        <input type="hidden" name="{$key}" value="{$item}" />
+        {/if}
+        {/if}
+        <!--{/foreach}-->
+        </form>
+        <!--{/if}-->
+        </div>
+         
+           <!--{if $goods_list}-->
+
+          <form action="compare.php" method="post" name="compareForm" id="compareForm" onsubmit="return compareGoods(this);">
+          <!-- {if $pager.display == 'list'} -->
+              <div class="goods-list-list">
+                <!--{foreach name=goods_list from=$goods_list item=goods}-->
+                <ul class="goods-item clearfix">
+                <li class="thumb"><a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name}" /></a></li>
+                <li class="goodsName">
+                <a href="{$goods.url}" class="f6">
+                    <!-- {if $goods.goods_style_name} -->
+                    {$goods.goods_style_name}<br />
+                    <!-- {else} -->
+                    {$goods.goods_name}<br />
+                    <!-- {/if} -->
+                  </a>
+                 <!-- {if $goods.goods_brief} -->
+                {$lang.goods_brief}{$goods.goods_brief}<br />
+                <!-- {/if} -->
+                </li>
+                <li class="goodsPrice">
+                <!--{if $goods.promote_price neq "" } -->
+                <span class="shop">{$lang.promote_price}<b>{$goods.promote_price}</b></span><br />
+                <!--{else}-->
+                <span class="shop">{$lang.shop_price}<b>{$goods.shop_price}</b></span><br />
+                <!--{/if}-->
+                <!-- {if $show_marketprice} -->
+                <del>{$lang.market_price}{$goods.market_price}</del><br />
+                <!-- {/if} -->
+                </li>
+                <li class="action">
+                <a href="javascript:addToCart({$goods.goods_id})" class="btn  btn-primary goods-add-cart-btn" id="buy_btn"><i class="iconfont"></i> 加入购物车</a>
+                <a href="javascript:collect({$goods.goods_id});" class="collect"><i class="iconfont"></i> {$lang.btn_collect}</a>
+                </li>
+                </ul>
+                <!--{/foreach}-->
+                </div>
+             <!-- {elseif $pager.display == 'grid'} -->
+              <div class="goods-list-box">
+                        <div class="goods-list clearfix">
+                <!--{foreach from=$goods_list item=goods}-->
+                <!-- {if $goods.goods_id} -->
+                <div class="goods-item">
+                      <div class="figure figure-img">
+                       <a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name}" class="goodsimg" /></a>
+                       </div>
+                       <p class="desc">{$goods.goods_brief}</p>
+                      <h2 class="title"><a href="{$goods.url}" title="{$goods.name|escape:html}">{$goods.goods_name}</a></h2>
+                       <p class="price">
+                        <!--{if $goods.promote_price neq "" } -->
+                        {$lang.promote_price}<font class="shop_s">{$goods.promote_price}</font>
+                        <!--{else}-->
+                        {$lang.shop_prices}<font class="shop_s">{$goods.shop_price}</font>
+                        <!--{/if}-->
+                        <!-- {if $show_marketprice} -->
+                        <del>{$lang.market_prices}<font class="market_s">{$goods.market_price}</font></del>
+                        <!-- {/if} -->
+                        </p>
+                        <div class="thumbs">
+                            <ul class="thumb-list clearfix">
+                                <li class="active" data-config='{figure:"{$goods.goods_thumb}"}'>
+                                    <a><img src="{$goods.goods_thumb}" width="34" height="34"></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="actions clearfix">
+                            <a href="javascript:collect({$goods.goods_id});" class="btn-like J_likeGoods"><i class="iconfont"></i> <span>{$lang.btn_collect}</span></a> 
+                            <a href="javascript:addToCart({$goods.goods_id})" class="btn-buy J_buyGoods"><span>{$lang.btn_buy}</span> <i class="iconfont"></i></a>
+                       </div>
+                       <div class="flags">
+                                
+                        <!--{if $goods.zhekou } -->
+                          <div class="flag flag-saleoff">{$goods.zhekou}折促销</div>
+                      <!--{/if}-->
+                        
+                      </div>
+                    </div>
+                <!--{/if}-->
+                <!--{/foreach}-->
+                </div>
+                </div>
+             <!-- {elseif $pager.display == 'text'} -->
+              <div class="goods-list-list goods-list-text">
+                <!--{foreach name=goods_list from=$goods_list item=goods}-->
+                <ul class="goods-item clearfix">
+                <li class="goodsName">
+                <a href="{$goods.url}" class="f6">
+                    <!-- {if $goods.goods_style_name} -->
+                    {$goods.goods_style_name}<br />
+                    <!-- {else} -->
+                    {$goods.goods_name}<br />
+                    <!-- {/if} -->
+                  </a>
+                 <!-- {if $goods.goods_brief} -->
+                {$lang.goods_brief}{$goods.goods_brief}<br />
+                <!-- {/if} -->
+                </li>
+                <li class="goodsPrice">
+                <!--{if $goods.promote_price neq "" } -->
+                <span class="shop">{$lang.promote_price}<b>{$goods.promote_price}</b></span><br />
+                <!--{else}-->
+                <span class="shop">{$lang.shop_price}<b>{$goods.shop_price}</b></span><br />
+                <!--{/if}-->
+                <!-- {if $show_marketprice} -->
+                <del>{$lang.market_price}{$goods.market_price}</del><br />
+                <!-- {/if} -->
+                </li>
+                <li class="action">
+                <a href="javascript:addToCart({$goods.goods_id})" class="btn  btn-primary goods-add-cart-btn" id="buy_btn"><i class="iconfont"></i> 加入购物车</a>
+                <a href="javascript:collect({$goods.goods_id});" class="collect"><i class="iconfont"></i> {$lang.btn_collect}</a>
+                </li>
+                </ul>
+                <!--{/foreach}-->
+                </div>
+             <!-- {/if} -->
+          </form>
+          <script type="text/javascript">
+        {foreach from=$lang.compare_js item=item key=key}
+        var {$key} = "{$item}";
+        {/foreach}
+
+                                {foreach from=$lang.compare_js item=item key=key}
+        {if $key neq 'button_compare'}
+        var {$key} = "{$item}";
+        {else}
+        var button_compare = '';
+        {/if}
+        {/foreach}
+
+
+        var compare_no_goods = "{$lang.compare_no_goods}";
+        window.onload = function()
+        {
+          Compare.init();
+          fixpng();
+        }
+        var btn_buy = "{$lang.btn_buy}";
+        var is_cancel = "{$lang.is_cancel}";
+        var select_spe = "{$lang.select_spe}";
+        </script>
+        <!--{else}-->
+        <div style="padding:20px 0px; text-align:center" class="f5" >{$lang.no_search_result}</div>
+        <!--{/if}-->
+        <!-- #BeginLibraryItem "/library/pages.lbi" --><!-- #EndLibraryItem --> 
+  </div>
+
+      
+        <script type="text/javascript">
+        {foreach from=$lang.compare_js item=item key=key}
+        var {$key} = "{$item}";
+        {/foreach}
+
+        {foreach from=$lang.compare_js item=item key=key}
+        {if $key neq 'button_compare'}
+        var {$key} = "{$item}";
+        {else}
+        var button_compare = '';
+        {/if}
+        {/foreach}
+
+
+        var compare_no_goods = "{$lang.compare_no_goods}";
+        window.onload = function()
+        {
+          Compare.init();
+          fixpng();
+        }
+        var btn_buy = "{$lang.btn_buy}";
+        var is_cancel = "{$lang.is_cancel}";
+        var select_spe = "{$lang.select_spe}";
+        </script>
+        <!--{else}-->
+        <p class="empty">{$lang.no_search_result}</div>
+        <!--{/if}-->
+       </div>
+  </div>
+  <!-- 页面主体部分结束 --> 
+  
+</div>
+<!-- #BeginLibraryItem "/library/page_footer.lbi" --><!-- #EndLibraryItem -->
+</body>
+</html>

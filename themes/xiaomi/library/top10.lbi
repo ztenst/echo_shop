@@ -1,0 +1,24 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div class="board-section">
+	<div class="board-section">
+    	<h3><span>HOT</span>热销商品排行</h3>
+        <ul class="board-list">
+        	<!-- {foreach name=top_goods from=$top_goods item=goods}-->
+            <!-- {if $smarty.foreach.top_goods.iteration<6}-->
+        	<li <!-- {if $smarty.foreach.top_goods.iteration<4}-->class="top"<!-- {/if} -->>
+            	<span class="item-info">
+                	<span class="item-title">
+                    	<a target="_blank" href="{$goods.url}">{$goods.short_name}</a>
+                    </span>
+                    <span class="item-price">{$goods.price}元 </span>
+                </span>
+                <span class="item-thumb">
+                	<a target="_blank" href="{$goods.url}"><img alt="{$goods.name|escape:html}" src="{$goods.thumb}" /></a>
+                </span>
+                <span class="item-num">{$smarty.foreach.top_goods.iteration}</span>
+            </li>
+            <!-- {/if} -->
+            <!-- {/foreach} -->
+        </ul>
+    </div>
+</div>

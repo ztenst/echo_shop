@@ -1,0 +1,46 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<h3><div class="border-line"></div><div class="title">{$lang.message_board}</div></h3>
+<ul class="comment-box-list">
+    <!--{foreach name=message_lists from=$msg_lists key=key item=msg name=comment}-->
+    <li class="item-rainbow-{$smarty.foreach.comment.iteration|mod,10}">
+        <div class="user-image"> <img class="face_img" src="images/default_45.png"></div>
+        <div class="user-emoj">
+          {if $msg.comment_rank eq 5 }超爱<i class="iconfont"></i>
+          {elseif $msg.comment_rank eq 4}满意<i class="iconfont"></i>
+          {elseif $msg.comment_rank eq 3}一般<i class="iconfont"></i>
+          {elseif $msg.comment_rank eq 2}不满意<i class="iconfont"></i>
+          {elseif $msg.comment_rank eq 1}很失望<i class="iconfont"></i>
+          {/if}
+        </div>
+        <div class="user-name-info">
+          <span class="user-name"><!-- {if $msg.user_name} -->{$msg.user_name|escape:html}<!-- {else} -->{$lang.anonymous}<!-- {/if} --></span> 
+          <span class="pro-info">[<b <!-- {if $msg.tablename eq 'comment'} -->class="comment"<!-- {/if}-->>{$msg.msg_type}</b>]</span>
+          <!-- {if $msg.id_value gt 0} -->
+          {$lang.feed_user_comment}
+          <b><a class="f3" href="{$msg.goods_url}" target="_blank" title="{$msg.goods_name}">{$msg.goods_name}</a></b>
+          <!-- {/if} -->
+          <span class="user-time">{$msg.msg_time}</span>
+        </div>
+        <dl class="user-comment">
+          <dt class="user-comment-content"><p class="content-detail">{$msg.msg_content}</p></dt>
+          <dd class="user-comment-self-input hide">
+              <div class="input-block"><input type="text" placeholder="回复楼主" class="J_commentAnswerInput"><a href="javascript:void(0);" class="btn  answer-btn J_commentAnswerBtn">回复</a></div>
+          </dd>
+          <!-- {if $msg.re_content} -->
+          <dd class="user-comment-answer">
+              <img class="self-image" src="images/default_45.png">
+              <div class="answer-user-name">{$lang.shopman_reply}</div>
+              <p>{$msg.re_content}</p>
+          </dd>
+          <!-- {/if} -->
+        </dl>
+        <div class="f_l" style="width:100%; position:relative;">
+        <font class="f4">{$msg.msg_title}</font> 
+        </div>
+    </li>
+    <!--{/foreach}-->  
+</ul>
+
+
+
+
