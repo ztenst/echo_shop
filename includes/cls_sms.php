@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP 短信模块 之 模型（类库）
+ * 鸿宇多用户商城 短信模块 之 模型（类库）
  * ============================================================================
- * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2005-2010 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * $Author: douqinghua $
  * $Id: cls_sms.php 17155 2010-05-06 06:29:05Z douqinghua $
@@ -17,8 +17,8 @@ if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
-define('SOURCE_TOKEN', 'b11983d30cb6821158744d5d065d0f70');
-define('SOURCE_ID', '620386');
+define('SOURCE_TOKEN', '814d4852d74f5914b41695ee7fa8508c');
+define('SOURCE_ID', '863180');
 require_once(ROOT_PATH . 'includes/cls_transport.php');
 require_once(ROOT_PATH . 'includes/shopex_json.php');
 
@@ -142,64 +142,24 @@ class sms
 
             return false;
         }
-
-        $t_contents=array();
-        if(count($contents)>1)
-        {
-            foreach ($contents as $key=>$val)
-            {
-                $t_contents['0']['phones']=$val['phones'];
-                $t_contents['0']['content']=$val['content'];
-                $send_str['contents']= $this->json->encode($t_contents);
-                $send_str['certi_app']='sms.send';
-                $send_str['entId']=$GLOBALS['_CFG']['ent_id'];
-                $send_str['entPwd']=$GLOBALS['_CFG']['ent_ac'];
-                $send_str['license']=$GLOBALS['_CFG']['certificate_id'];
-                $send_str['source']=SOURCE_ID;
-
-                $send_str['sendType'] = 'fan-out';
-                $send_str['use_backlist'] = '1';
-                $send_str['version'] = $version;
-                $send_str['format']='json'; 
-                $send_str['timestamp'] = $this->getTime(); 
-                $send_str['certi_ac']=$this->make_shopex_ac($send_str,SOURCE_TOKEN);
-                $sms_url= $this->get_url('send');
-                $arr = json_decode($send_str['contents'],true);
-                /* 发送HTTP请求 */
-                $response = $this->t->request($sms_url, $send_str,'POST');
-                $result = $this->json->decode($response['body'], true);
-                sleep(1);
-            }
-        }
-        else
-        {
-            if(strlen($contents['0']['phones'])>20)
-            {
-                $send_str['sendType'] = 'fan-out';
-            }
-            else
-            {
-                 $send_str['sendType'] = 'notice';
-            }
-            $send_str['contents']= $this->json->encode($contents);
-            $send_str['certi_app']='sms.send';
-            $send_str['entId']=$GLOBALS['_CFG']['ent_id'];
-            $send_str['entPwd']=$GLOBALS['_CFG']['ent_ac'];
-            $send_str['license']=$GLOBALS['_CFG']['certificate_id'];
-            $send_str['source']=SOURCE_ID;
-
-            $send_str['use_backlist'] = '1';
-            $send_str['version'] = $version;
-            $send_str['format']='json'; 
-            $send_str['timestamp'] = $this->getTime(); 
-            $send_str['certi_ac']=$this->make_shopex_ac($send_str,SOURCE_TOKEN);
-            $sms_url= $this->get_url('send');
-            $arr = json_decode($send_str['contents'],true);
-            /* 发送HTTP请求 */
-            $response = $this->t->request($sms_url, $send_str,'POST');
-            $result = $this->json->decode($response['body'], true);
-        }
-
+        
+        $send_str['contents']= $this->json->encode($contents);
+        $send_str['certi_app']='sms.send';
+        $send_str['entId']=$GLOBALS['_CFG']['ent_id'];
+        $send_str['entPwd']=$GLOBALS['_CFG']['ent_ac'];
+        $send_str['license']=$GLOBALS['_CFG']['certificate_id'];
+        $send_str['source']=SOURCE_ID;   
+        $send_str['sendType'] = 'notice';
+        $send_str['use_backlist'] = '1';
+        $send_str['version'] = $version;
+        $send_str['format']='json'; 
+        $send_str['timestamp'] = $this->getTime(); 
+        $send_str['certi_ac']=$this->make_shopex_ac($send_str,SOURCE_TOKEN);
+        $sms_url= $this->get_url('send');
+        /* 发送HTTP请求 */
+        $response = $this->t->request($sms_url, $send_str,'POST');
+        $result = $this->json->decode($response['body'], true);
+        
         if($result['res'] == 'succ')
         {
             return true;
@@ -316,10 +276,11 @@ class sms
         {
             return false;
         }
-        $msg.='【'. $GLOBALS['_CFG']['shop_name'].'】';
         $phone_key=0;
-        $i=0;
-        $phones=explode(',',$phones);
+        if(!is_array($phones))
+        {
+            $phones=array($phones);
+        }
         foreach($phones as $key => $value)
         {
              if($i<200)
@@ -412,7 +373,7 @@ class sms
        $str = '';
        foreach($temp_arr as $key=>$value)
        {
-            if($key!='certi_ac') 
+            if($key!=' certi_ac') 
             {
                $str.= $value;
             }

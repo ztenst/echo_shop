@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 前台语言文件
+ * 鸿宇多用户商城 前台语言文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: common.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: common.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 /* 用户登录语言项 */
@@ -42,30 +42,30 @@ $_LANG['promotion_goods'] = '促销商品';
 $_LANG['best_goods'] = '精品推荐';
 $_LANG['new_goods'] = '新品上市';
 $_LANG['hot_goods'] = '热销商品';
-$_LANG['view_cart'] = '查看购物车';
+$_LANG['view_cart'] = "查看购物车";
 $_LANG['catalog'] = '所有分类';
 $_LANG['regist_login'] = '注册/登录';
 $_LANG['profile'] = '个人资料';
 $_LANG['query_info'] = "共执行 %d 个查询，用时 %f 秒，在线 %d 人";
-$_LANG['gzip_enabled'] = '，Gzip 已启用';
-$_LANG['gzip_disabled'] = '，Gzip 已禁用';
+$_LANG['gzip_enabled'] = "，Gzip 已启用";
+$_LANG['gzip_disabled'] = "，Gzip 已禁用";
 $_LANG['memory_info'] = '，占用内存 %0.3f MB';
-$_LANG['cart_info'] = '您的购物车中有 %d 件商品，总计金额 %s。';
+$_LANG['cart_info'] = "%d";
 $_LANG['shopping_and_other'] = '购买过此商品的人还购买过';
 $_LANG['bought_notes'] = '购买记录';
 $_LANG['later_bought_amounts'] = '近期成交数量';
 $_LANG['bought_time'] = '购买时间';
 $_LANG['turnover'] = '成交';
 $_LANG['no_notes'] = '还没有人购买过此商品';
-$_LANG['shop_price'] = "本店价";
-$_LANG['market_price'] = "专柜价";
+$_LANG['shop_price'] = '本店售价：';
+$_LANG['market_price'] = "市场价：";
 $_LANG['goods_brief'] = '商品描述：';
 $_LANG['goods_album'] = '商品相册';
-$_LANG['promote_price'] = "促销价";
-$_LANG['fittings_price'] = "配件价格：";
+$_LANG['promote_price'] = "促销价：";
+$_LANG['fittings_price'] = '配件价格：';
 $_LANG['collect'] = '加入收藏夹';
-$_LANG['add_to_cart'] = '加入购物车';
-$_LANG['return_to_cart'] = '放回购物车';
+$_LANG['add_to_cart'] = "加入购物车";
+$_LANG['return_to_cart'] = "放回购物车";
 $_LANG['search_goods'] = '商品搜索';
 $_LANG['search'] = '搜索';
 $_LANG['wholesale_search'] = '搜索批发商品';
@@ -75,16 +75,17 @@ $_LANG['article_add_time'] = '添加日期';
 $_LANG['relative_file'] = '[ 相关下载 ]';
 $_LANG['category'] = '分类';
 $_LANG['brand'] = '品牌';
-$_LANG['price_min'] = "最小价格";
-$_LANG['price_max'] = "最大价格";
+$_LANG['price_min'] = '最小价格';
+$_LANG['price_max'] = '最大价格';
+$_LANG['goods_seller'] = '商品卖家';
 $_LANG['goods_name'] = '商品名称';
 $_LANG['goods_attr'] = '商品属性';
-$_LANG['goods_price_ladder'] = "价格阶梯";
-$_LANG['ladder_price'] = "批发价格";
-$_LANG['shop_prices'] = "本店价";
-$_LANG['market_prices'] = "专柜价";
+$_LANG['goods_price_ladder'] = '价格阶梯';
+$_LANG['ladder_price'] = '批发价格';
+$_LANG['shop_prices'] = '本店价';
+$_LANG['market_prices'] = "市场价";
 $_LANG['deposit'] = '团购保证金';
-$_LANG['amount'] = "商品总价";
+$_LANG['amount'] = '商品总价';
 $_LANG['number'] = '购买数量';
 $_LANG['handle'] = '操作';
 $_LANG['add'] = '添加';
@@ -101,8 +102,8 @@ $_LANG['order_number'] = '订单号';
 $_LANG['consignment'] = '发货单';
 $_LANG['activities'] = '商品正在进行的活动';
 $_LANG['remark_package'] = '超值礼包';
-$_LANG['old_price'] = "原  价：";
-$_LANG['package_price'] = "礼包价：";
+$_LANG['old_price'] = '原  价：';
+$_LANG['package_price'] = '礼包价：';
 $_LANG['then_old_price'] = '节  省：';
 $_LANG['free_goods'] = '免运费商品';
 
@@ -118,15 +119,15 @@ $_LANG['all_option'] = '请选择';
 $_LANG['extension'] = '扩展选项';
 $_LANG['gram'] = '克';
 $_LANG['kilogram'] = '千克';
-$_LANG['goods_sn'] = "商品货号";
-$_LANG['goods_brand'] = "商品品牌";
-$_LANG['goods_weight'] = "商品重量";
-$_LANG['goods_number'] = "商品库存";
-$_LANG['goods_give_integral'] = "此商品赠送：";
-$_LANG['goods_integral'] = "此商品可使用：";
-$_LANG['goods_bonus'] = "此商品可获得红包：";
+$_LANG['goods_sn'] = '商品货号：';
+$_LANG['goods_brand'] = '商品品牌：';
+$_LANG['goods_weight'] = '商品重量：';
+$_LANG['goods_number'] = '商品库存：';
+$_LANG['goods_give_integral'] = '购买此商品赠送：';
+$_LANG['goods_integral'] = '购买此商品可使用：';
+$_LANG['goods_bonus'] = '购买此商品可获得红包';
 $_LANG['goods_free_shipping'] = '此商品为免运费商品，计算配送金额时将不计入配送费用';
-$_LANG['goods_rank'] = "用户评价：";
+$_LANG['goods_rank'] = '用户评价：';
 $_LANG['goods_compare'] = '商品比较';
 $_LANG['properties'] = '商品属性：';
 $_LANG['brief'] = '简要介绍：';
@@ -136,7 +137,7 @@ $_LANG['day'] = '天';
 $_LANG['hour'] = '小时';
 $_LANG['minute'] = '分钟';
 $_LANG['compare'] = '比较';
-$_LANG['volume_price'] = "购买商品达到以下数量区间时可享受的优惠价格";
+$_LANG['volume_price'] = '购买商品达到以下数量区间时可享受的优惠价格';
 $_LANG['number_to'] = '数量';
 $_LANG['article_list'] = '文章列表';
 
@@ -150,15 +151,18 @@ $_LANG['compare_js']['goods_type_different'] = '\"%s\"和已选择商品类型�
 $_LANG['bonus'] = '优惠券：';
 $_LANG['no_comments'] = '暂时还没有任何用户评论';
 $_LANG['give_comments_rank'] = '给出';
-$_LANG['comments_rank'] = "评价";
+$_LANG['comments_rank'] = '评价';
 $_LANG['comment_num'] = "用户评论 %d 条记录";
 $_LANG['login_please'] = '由于您还没有登录，因此您还不能使用该功能。';
 $_LANG['collect_existed'] = '该商品已经存在于您的收藏夹中。';
 $_LANG['collect_success'] = '该商品已经成功地加入了您的收藏夹。';
-$_LANG['copyright'] = "&copy; 2005-%s %s 版权所有，并保留所有权利。";
+$_LANG['copyright'] = "&copy; 2015-%s %s 版权所有，并保留所有权利。";
 $_LANG['no_ads_id'] = '没有指定广告的ID以及跳转的URL地址!';
 $_LANG['remove_collection_confirm'] = '您确定要从收藏夹中删除选定的商品吗？';
 $_LANG['err_change_attr'] = '没有找到指定的商品或者没有找到指定的商品属性。';
+
+$_LANG['u_bonus_existed'] = '您已经领取过该红包了。';
+$_LANG['u_bonus_success'] = '成功领取红包。';
 
 $_LANG['collect_goods'] = '收藏商品';
 $_LANG['plus'] = '加';
@@ -177,14 +181,15 @@ $_LANG['tag_cloud_desc'] = '标签云（Tag cloud）是用以表示一个网站�
 
 /* AJAX 相关 */
 $_LANG['invalid_captcha'] = '对不起，您输入的验证码不正确。';
-$_LANG['goods_exists'] = '对不起，您的购物车中已经存在相同的商品。';
-$_LANG['fitting_goods_exists'] = '对不起，您的购物车中已经添加了该配件。';
+$_LANG['goods_exists'] = "对不起，您的购物车中已经存在相同的商品。";
+$_LANG['fitting_goods_exists'] = "对不起，您的购物车中已经添加了该配件。";
 $_LANG['invalid_number'] = '对不起，您输入了一个非法的商品数量。';
 $_LANG['not_on_sale'] = '对不起，该商品已经下架。';
-$_LANG['no_basic_goods'] = '对不起，您希望将该商品做为配件购买，可是购物车中还没有该商品的基本件。';
+$_LANG['no_basic_goods'] = "对不起，您希望将该商品做为配件购买，可是购物车中还没有该商品的基本件。";
 $_LANG['cannt_alone_sale'] = '对不起，该商品不能单独销售。';
 $_LANG['shortage'] = "对不起，该商品已经库存不足暂停销售。\n你现在要进行缺货登记来预订该商品吗？";
 $_LANG['shortage_little'] = "该商品已经库存不足。已将您的购货数量修改为 %d。\n您现在要去购物车吗？";
+$_LANG['err_shortage_little'] = "该商品已经库存不足。已将您的购货数量修改为 %d。";
 $_LANG['oos_tips'] = '该商品已经库存不足。您现在要进行缺货登记吗？';
 
 $_LANG['addto_cart_success_1'] = "该商品已添加到购物车，您现在还需要继续购物吗？\n如果您希望马上结算，请点击“确定”按钮。\n如果您希望继续购物，请点击“取消”按钮。";
@@ -196,7 +201,7 @@ $_LANG['exchange_sort']['goods_id'] = '按上架时间排序';
 $_LANG['exchange_sort']['exchange_integral'] = '按积分排序';
 $_LANG['exchange_sort']['last_update'] = '按更新时间排序';
 $_LANG['sort']['goods_id'] = '按上架时间排序';
-$_LANG['sort']['shop_price'] = "按价格排序";
+$_LANG['sort']['shop_price'] = '按价格排序';
 $_LANG['sort']['last_update'] = '按更新时间排序';
 $_LANG['order']['DESC'] = '倒序';
 $_LANG['order']['ASC'] = '正序';
@@ -253,33 +258,33 @@ $_LANG['save_success'] = '修改成功';
 $_LANG['drop_consignee_confirm'] = '您确定要删除该收货人信息吗？';
 
 /* 夺宝奇兵 */
-$_LANG['snatch_js']['price_not_null'] = "价格不能为空";
-$_LANG['snatch_js']['price_not_number'] = "价格只能是数字";
+$_LANG['snatch_js']['price_not_null'] = '价格不能为空';
+$_LANG['snatch_js']['price_not_number'] = '价格只能是数字';
 $_LANG['snatch_list'] = '夺宝奇兵列表';
-$_LANG['not_in_range'] = "你只能在%d到%d之间出价";
-$_LANG['also_bid'] = "你已经出过价格 %s 了";
-$_LANG['lack_pay_points'] = "你积分不够，不能出价";
+$_LANG['not_in_range'] = '你只能在%d到%d之间出价';
+$_LANG['also_bid'] = '你已经出过价格 %s 了';
+$_LANG['lack_pay_points'] = '你积分不够，不能出价';
 $_LANG['snatch'] = '夺宝奇兵';
 $_LANG['snatch_is_end'] = '活动已经结束';
 $_LANG['snatch_start_time'] = '本次活动从 %s 到 %s 截止';
-$_LANG['price_extent'] = "出价范围为";
-$_LANG['user_to_use_up'] = "用户可多次出价，每次消耗";
-$_LANG['snatch_victory_desc'] = "当本期活动截止时，系统将从所有竞价奖品的用户中，选出在所有竞价中出价最低、且没有其他出价与该价格重复的用户（即最低且唯一竞价），成为该款奖品的获胜者.";
-$_LANG['price_less_victory'] = "如果用户获胜的价格低于";
-$_LANG['price_than_victory'] = "将能按当期竞拍价购得该款奖品；如果用户获胜的价格高于";
+$_LANG['price_extent'] = '出价范围为';
+$_LANG['user_to_use_up'] = '用户可多次出价，每次消耗';
+$_LANG['snatch_victory_desc'] = '当本期活动截止时，系统将从所有竞价奖品的用户中，选出在所有竞价中出价最低、且没有其他出价与该价格重复的用户（即最低且唯一竞价），成为该款奖品的获胜者.';
+$_LANG['price_less_victory'] = '如果用户获胜的价格低于';
+$_LANG['price_than_victory'] = '将能按当期竞拍价购得该款奖品；如果用户获胜的价格高于';
 $_LANG['or_can'] = '则能以';
 $_LANG['shopping_product'] = '购买该款奖品';
-$_LANG['victory_price_product'] = "获胜用户将能按当期竞拍价购得该款奖品.";
+$_LANG['victory_price_product'] = '获胜用户将能按当期竞拍价购得该款奖品.';
 $_LANG['now_not_snatch'] = '当前没有活动';
 $_LANG['my_integral'] = '我的积分';
-$_LANG['bid'] = "出价";
-$_LANG['me_bid'] = "我要出价";
-$_LANG['me_now_bid'] = "我的出价";
-$_LANG['only_price'] = "唯一价格";
+$_LANG['bid'] = '出价';
+$_LANG['me_bid'] = '我要出价';
+$_LANG['me_now_bid'] = '我的出价';
+$_LANG['only_price'] = '唯一价格';
 $_LANG['view_snatch_result'] = '活动结果';
 $_LANG['victory_user'] = '获奖用户';
-$_LANG['price_bid'] = "所出价格";
-$_LANG['bid_time'] = "出价时间";
+$_LANG['price_bid'] = '所出价格';
+$_LANG['bid_time'] = '出价时间';
 $_LANG['not_victory_user'] = '没有获奖用户';
 $_LANG['snatch_log'] = '参加夺宝奇兵%s ';
 $_LANG['not_for_you'] = '你不是获胜者，不能购买';
@@ -289,7 +294,7 @@ $_LANG['order_placed'] = '您已经下过订单了，如果您想重新购买，
 $_LANG['select_spe'] = '请选择商品属性';
 
 /* 购物流程中的订单部分 */
-$_LANG['price'] = "价格";
+$_LANG['price'] = '价格';
 $_LANG['name'] = '名称';
 $_LANG['describe'] = '描述';
 $_LANG['fee'] = '费用';
@@ -304,10 +309,58 @@ $_LANG['noworder_can_integral'] = '本订单最多可以使用';
 $_LANG['use_surplus'] = '使用余额';
 $_LANG['your_surplus'] = '您当前的可用余额为';
 $_LANG['pay_fee'] = '支付手续费';
-$_LANG['insure_fee'] = "保价费用";
-$_LANG['need_insure'] = "配送是否需要保价";
+$_LANG['insure_fee'] = '保价费用';
+$_LANG['need_insure'] = '配送是否需要保价';
 $_LANG['cod'] = '配送决定';
 
+/*增值税发票_添加_START_bbs.hongyuvip.com*/
+/*发票列表新增*/
+$_LANG['unprovided'] = '未开票';
+$_LANG['provided'] = '已开票';
+$_LANG['provide_invoice'] = '开票';
+$_LANG['export'] = '导出';
+$_LANG['export_to_excel'] = '导出到Excel';
+$_LANG['export_all_to_excel'] = '全部导出到Excel';
+$_LANG['normal_invoice'] = '普通发票';
+$_LANG['vat_invoice'] = '增值税发票';
+$_LANG['please_select'] = '请选择';
+$_LANG['inv_type'] = '发票类型';
+$_LANG['inv_info'] = '发票信息';
+$_LANG['inv_payee'] = '发票抬头';
+$_LANG['inv_content'] = '发票内容';
+$_LANG['company_name1'] = '单位名称';
+$_LANG['taxpayer_id'] = '纳税人识别号';
+$_LANG['registration_address'] = '注册地址';
+$_LANG['registration_phone'] = '注册电话';
+$_LANG['deposit_bank'] = '开户银行';
+$_LANG['bank_account'] = '银行账户';
+$_LANG['inv_consignee_info'] = '收票人信息';
+$_LANG['inv_consignee_name'] = '收票人姓名';
+$_LANG['inv_consignee_phone'] = '收票人手机';
+$_LANG['inv_consignee_address'] = '收票人地址';
+$_LANG['inv_status'] = '发票状态';
+$_LANG['inv_money'] = '发票金额';
+$_LANG['edit_invoice'] = '编辑发票';
+$_LANG['check_invoice'] = '查看发票';
+$_LANG['individual'] = '个人';
+$_LANG['unit'] = '单位';
+
+$_LANG['label_inv_info'] = '发票信息：';
+$_LANG['label_company_name1'] = '单位名称：';
+$_LANG['label_taxpayer_id'] = '纳税人识别号：';
+$_LANG['label_registration_address'] = '注册地址：';
+$_LANG['label_registration_phone'] = '注册电话：';
+$_LANG['label_deposit_bank'] = '开户银行：';
+$_LANG['label_bank_account'] = '银行账户：';
+$_LANG['label_inv_consignee_info'] = '收票人信息：';
+$_LANG['label_inv_consignee_name'] = '收票人姓名：';
+$_LANG['label_inv_consignee_phone'] = '收票人手机：';
+$_LANG['label_inv_consignee_address'] = '收票人地址：';
+$_LANG['label_inv_status'] = '发票状态：';
+$_LANG['label_inv_money'] = '发票金额：';
+$_LANG['label_action_note2'] = '备注：';
+$_LANG['js_languages']['remove_invoice_confirm'] = '您确定删除该订单的发票信息吗？';
+/*增值税发票_添加_END_bbs.hongyuvip.com*/
 $_LANG['curr_stauts'] = '当前状态';
 $_LANG['use_bonus'] = '使用红包';
 $_LANG['use_bonus_kill'] = '使用线下红包';
@@ -317,13 +370,14 @@ $_LANG['invoice_title'] = '发票抬头';
 $_LANG['invoice_content'] = '发票内容';
 $_LANG['order_postscript'] = '订单附言';
 $_LANG['booking_process'] = '缺货处理';
-$_LANG['complete_acquisition'] = "订购即送";
-$_LANG['with_price'] = "以及价值";
+$_LANG['complete_acquisition'] = '该订单完成后，您将获得';
+$_LANG['with_price'] = '以及价值';
 $_LANG['de'] = '的';
 $_LANG['bonus'] = '红包';
-$_LANG['goods_all_price'] = "商品总价";
+$_LANG['goods_all_price'] = '商品总价';
 $_LANG['discount'] = '折扣';
 $_LANG['tax'] = '发票税额';
+$_LANG['common_express'] = '普通快递';
 $_LANG['shipping_fee'] = '配送费用';
 $_LANG['pack_fee'] = '包装费用';
 $_LANG['card_fee'] = '贺卡费用';
@@ -341,7 +395,7 @@ $_LANG['oos'][OOS_CONSULT] = '与店主协商';
 /* 评论部分 */
 $_LANG['username'] = '用户名';
 $_LANG['email'] = '电子邮件地址';
-$_LANG['comment_rank'] = "评价等级";
+$_LANG['comment_rank'] = '评价等级';
 $_LANG['comment_content'] = '评论内容';
 $_LANG['submit_comment'] = '提交评论';
 $_LANG['button_reset'] = '重置表单';
@@ -375,7 +429,7 @@ $_LANG['fit_count'] = "共有 %s 件商品符合条件";
 $_LANG['goods_type'] = "商品类型";
 $_LANG['remove_all'] = '移除所有';
 $_LANG['advanced_search'] = '高级搜索';
-$_LANG['activity'] = "促销信息";
+$_LANG['activity'] = '本商品正在进行';
 $_LANG['order_not_exists'] = "非常抱歉，没有找到指定的订单。请和网站管理员联系。";
 
 $_LANG['promotion_time'] = '的时间为%s到%s，赶快来抢吧！';
@@ -400,62 +454,95 @@ $_LANG['gbs_under_way'] = '该团购活动正在火热进行中，距离结束�
 $_LANG['gbs_finished'] = '该团购活动已结束，正在等待处理...';
 $_LANG['gbs_succeed'] = '该团购活动已成功结束！';
 $_LANG['gbs_fail'] = '该团购活动已结束，没有成功。';
-$_LANG['gb_price_ladder'] = "价格阶梯：";
+$_LANG['gb_price_ladder'] = '价格阶梯：';
 $_LANG['gb_ladder_amount'] = '数量';
-$_LANG['gb_ladder_price'] = "价格";
+$_LANG['gb_ladder_price'] = '价格';
 $_LANG['gb_deposit'] = '保证金：';
 $_LANG['gb_restrict_amount'] = '限购数量：';
 $_LANG['gb_gift_integral'] = '赠送积分：';
-$_LANG['gb_cur_price'] = "当前价格：";
-$_LANG['gb_valid_goods'] = "已购数量：";
-$_LANG['gb_final_price'] = "成交价格：";
+$_LANG['gb_cur_price'] = '当前价格：';
+$_LANG['gb_valid_goods'] = '当前定购数量：';
+$_LANG['gb_final_price'] = '成交价格：';
 $_LANG['gb_final_amount'] = '成交数量：';
 $_LANG['gb_notice_login'] = '提示：您需要先注册成为本站会员并且登录后，才能参加商品团购!';
-$_LANG['gb_error_goods_lacking'] = "对不起，商品库存不足，请您修改数量！";
+$_LANG['gb_error_goods_lacking'] = '对不起，商品库存不足，请您修改数量！';
 $_LANG['gb_error_status'] = '对不起，该团购活动已经结束或尚未开始，现在不能参加！';
 $_LANG['gb_error_login'] = '对不起，您没有登录，不能参加团购，请您先登录！';
 $_LANG['group_goods_empty'] = '当前没有团购活动';
 
+/* 预售部分语言项 */
+$_LANG['label_pre_sale'] = '预售';
+$_LANG['pre_sale'] = '预售活动';
+$_LANG['pre_sale_goods'] = '预售商品';
+$_LANG['ps_goods_name'] = '预售商品：';
+$_LANG['ps_start_date'] = '开始时间：';
+$_LANG['ps_end_date'] = '结束时间：';
+$_LANG['pss'][PSS_PRE_START] = '预热中';
+$_LANG['pss'][PSS_UNDER_WAY] = '预售中';
+$_LANG['pss'][PSS_FINISHED] = '结束未处理';
+$_LANG['pss'][PSS_SUCCEED] = '成功结束';
+$_LANG['pss'][PSS_FAIL] = '失败结束';
+$_LANG['gbs_pre_start'] = '该预售活动尚未开始，请继续关注。';
+$_LANG['gbs_under_way'] = '该预售活动正在火热进行中，距离结束时间还有：';
+$_LANG['gbs_finished'] = '该预售活动已结束，正在等待处理...';
+$_LANG['gbs_succeed'] = '该预售活动已成功结束！';
+$_LANG['gbs_fail'] = '该预售活动已结束，没有成功。';
+$_LANG['ps_price_ladder'] = '价格阶梯：';
+$_LANG['ps_ladder_amount'] = '数量';
+$_LANG['ps_ladder_price'] = '价格';
+$_LANG['ps_deposit'] = '保证金：';
+$_LANG['ps_restrict_amount'] = '限购数量：';
+$_LANG['ps_gift_integral'] = '赠送积分：';
+$_LANG['ps_cur_price'] = '当前价格：';
+$_LANG['ps_valid_goods'] = '当前定购数量：';
+$_LANG['ps_final_price'] = '成交价格：';
+$_LANG['ps_final_amount'] = '成交数量：';
+$_LANG['ps_notice_login'] = '提示：您需要先注册成为本站会员并且登录后，才能参加商品预售!';
+$_LANG['ps_error_goods_lacking'] = '对不起，商品库存不足，请您修改数量！';
+$_LANG['ps_error_status'] = '对不起，该预售活动已经结束或尚未开始，现在不能参加！';
+$_LANG['ps_error_login'] = '对不起，您没有登录，不能参加预售，请您先登录！';
+$_LANG['ps_goods_empty'] = '当前没有预售活动';
+
 /* 拍卖部分语言项 */
 $_LANG['auction'] = '拍卖活动';
 $_LANG['act_status'] = '活动状态';
-$_LANG['au_current_price'] = "当前价格";
+$_LANG['au_current_price'] = '当前价格';
 $_LANG['act_start_time'] = '开始时间';
 $_LANG['act_end_time'] = '结束时间';
-$_LANG['au_start_price'] = "起拍价";
-$_LANG['au_end_price'] = "一口价";
-$_LANG['au_amplitude'] = "加价幅度";
+$_LANG['au_start_price'] = '起拍价';
+$_LANG['au_end_price'] = '一口价';
+$_LANG['au_amplitude'] = '加价幅度';
 $_LANG['au_deposit'] = '保证金';
 $_LANG['no_auction'] = '当前没有拍卖活动';
 $_LANG['au_pre_start'] = '该拍卖活动尚未开始';
 $_LANG['au_under_way'] = '该拍卖活动正在进行中，距离结束时间还有：';
 $_LANG['au_under_way_1'] = '该拍卖活动正在进行中';
-$_LANG['au_bid_user_count'] = "已出价人数";
-$_LANG['au_last_bid_price'] = "最后出价";
-$_LANG['au_last_bid_user'] = "最后出价的买家";
-$_LANG['au_last_bid_time'] = "最后出价时间";
+$_LANG['au_bid_user_count'] = '已出价人数';
+$_LANG['au_last_bid_price'] = '最后出价';
+$_LANG['au_last_bid_user'] = '最后出价的买家';
+$_LANG['au_last_bid_time'] = '最后出价时间';
 $_LANG['au_finished'] = '该拍卖活动已结束';
 $_LANG['au_bid_user'] = '买家';
-$_LANG['au_bid_price'] = "出价";
+$_LANG['au_bid_price'] = '出价';
 $_LANG['au_bid_time'] = '时间';
 $_LANG['au_bid_status'] = '状态';
-$_LANG['no_bid_log'] = "暂时没有买家出价";
+$_LANG['no_bid_log'] = '暂时没有买家出价';
 $_LANG['au_bid_ok'] = '领先';
-$_LANG['au_i_want_bid'] = "我要出价";
-$_LANG['button_bid'] = "出价";
+$_LANG['au_i_want_bid'] = '我要出价';
+$_LANG['button_bid'] = '出价';
 $_LANG['button_buy'] = '立即购买';
-$_LANG['au_not_under_way'] = "拍卖活动已结束，不能再出价了";
-$_LANG['au_bid_price_error'] = "请输入正确的价格";
-$_LANG['au_bid_after_login'] = "您只有注册成为会员并且登录之后才能出价";
-$_LANG['au_bid_repeat_user'] = "您已经是这个商品的最高出价人了";
-$_LANG['au_your_lowest_price'] = "您的出价不能低于 %s";
+$_LANG['au_not_under_way'] = '拍卖活动已结束，不能再出价了';
+$_LANG['au_bid_price_error'] = '请输入正确的价格';
+$_LANG['au_bid_after_login'] = '您只有注册成为会员并且登录之后才能出价';
+$_LANG['au_bid_repeat_user'] = '您已经是这个商品的最高出价人了';
+$_LANG['au_your_lowest_price'] = '您的出价不能低于 %s';
 $_LANG['au_user_money_short'] = '您的可用资金不足，请先到用户中心充值';
-$_LANG['au_unfreeze_deposit'] = '解冻拍卖活动的保证金：%s';
-$_LANG['au_freeze_deposit'] = '冻结拍卖活动的保证金：%s';
+$_LANG['au_unfreeze_deposit'] = "解冻拍卖活动的保证金：%s";
+$_LANG['au_freeze_deposit'] = "冻结拍卖活动的保证金：%s";
 $_LANG['au_not_finished'] = '该拍卖活动尚未结束，不能购买';
 $_LANG['au_order_placed'] = '您已经下过订单了，如果您想重新购买，请先取消原来的订单';
-$_LANG['au_no_bid'] = "该拍卖活动没有人出价，不能购买";
-$_LANG['au_final_bid_not_you'] = "您不是最高出价者，不能购买";
+$_LANG['au_no_bid'] = '该拍卖活动没有人出价，不能购买';
+$_LANG['au_final_bid_not_you'] = '您不是最高出价者，不能购买';
 $_LANG['au_buy_after_login'] = '请您先登录';
 $_LANG['au_is_winner'] = '恭喜您，您已经赢得了该商品的购买权。请点击下面的购买按钮将您的宝贝买回家吧。';
 
@@ -465,25 +552,25 @@ $_LANG['ws_login_please'] = '请您先登录';
 $_LANG['ws_return_home'] = '返回首页';
 $_LANG['wholesale'] = '批发';
 $_LANG['no_wholesale'] = '没有批发商品';
-$_LANG['ws_price'] = "批发价";
+$_LANG['ws_price'] = '批发价';
 $_LANG['ws_subtotal'] = '小计';
 $_LANG['ws_invalid_goods_number'] = '请输入正确的数量';
-$_LANG['ws_attr_not_matching'] = "您选择的商品属性不存在，请参照批发价格单选择";
-$_LANG['ws_goods_number_not_enough'] = "您购买的数量没有达到批发的最小数量，请参照批发价格单";
-$_LANG['ws_goods_attr_exists'] = '该商品已经在购物车中，不能再次加入';
+$_LANG['ws_attr_not_matching'] = '您选择的商品属性不存在，请参照批发价格单选择';
+$_LANG['ws_goods_number_not_enough'] = '您购买的数量没有达到批发的最小数量，请参照批发价格单';
+$_LANG['ws_goods_attr_exists'] = "该商品已经在购物车中，不能再次加入";
 $_LANG['ws_remark'] = '请输入您的联系方式、付款方式和配送方式等信息';
 $_LANG['ws_order_submitted'] = '您的订单已提交成功，请记住您的订单号: %s。';
-$_LANG['ws_price_list'] = "价格单";
+$_LANG['ws_price_list'] = '价格单';
 
 /* 积分兑换部分语言项 */
 $_LANG['exchange'] = '积分商城';
-$_LANG['exchange_integral'] = "消耗积分";
+$_LANG['exchange_integral'] = '消耗积分：';
 $_LANG['exchange_goods'] = '立刻兑换';
 $_LANG['eg_error_login'] = '对不起，您没有登录，不能参加兑换，请您先登录！';
 $_LANG['eg_error_status'] = '对不起，该商品已经取消，现在不能兑换！';
 $_LANG['eg_error_integral'] = '对不起，您现有的积分值不够兑换本商品！';
-$_LANG['notice_eg_integral'] = "积分商城商品需要消耗积分";
-$_LANG['eg_error_number'] = "对不起，该商品库存不足，现在不能兑换！";
+$_LANG['notice_eg_integral'] = '积分商城商品需要消耗积分：';
+$_LANG['eg_error_number'] = '对不起，该商品库存不足，现在不能兑换！';
 
 /* 会员登录注册 */
 $_LANG['member_name'] = '会员';
@@ -552,17 +639,6 @@ $_LANG['email_checked'] = '邮件已经被确认！';
 $_LANG['hash_wrong'] = '验证串错误！请核对验证串或输入email地址重新发送验证串！';
 $_LANG['email_canceled'] = '邮件已经被退定！';
 $_LANG['goods_click_count'] = '商品点击数';
-$_LANG['p_y']['link_start'] = '<a href="http://www.ecshop.com" target="_blank" style=" font-family:Verdana; font-size:11px;">';
-$_LANG['p_y']['link_p'] = 'Powe';
-$_LANG['p_y']['link_r'] = 'red&nbsp;';
-$_LANG['p_y']['link_b'] = 'by&nbsp;';
-$_LANG['p_y']['main_start'] = '<strong><span style="color: #3366FF">';
-$_LANG['p_y']['main_e'] = 'E';
-$_LANG['p_y']['main_c'] = 'CSho';
-$_LANG['p_y']['main_p'] = 'p</span>&nbsp;';
-$_LANG['p_y']['v_s'] = '<span style="color: #FF9966">';
-$_LANG['p_y']['v'] = VERSION;
-$_LANG['p_y']['link_end'] = '</span></strong></a>&nbsp;';
 
 /* 虚拟卡 */
 $_LANG['card_sn'] = '卡片序号';
@@ -583,15 +659,15 @@ $_LANG['online_info'] = '当前共有 %s 人在线';
 $_LANG['btn_direct_buy'] = '直接购买';
 $_LANG['btn_buy'] = '购买';
 $_LANG['btn_collect'] = '收藏';
-$_LANG['btn_add_to_cart'] = '加入购物车';
+$_LANG['btn_add_to_cart'] = "加入购物车";
 $_LANG['btn_add_to_collect'] = '添加收藏';
 
 $_LANG['stock_up'] = '缺货';
 
 
-$_LANG['hot_search'] = "热搜榜";
+$_LANG['hot_search'] = '热门搜索';
 
-$_LANG['please_select_attr'] = '你加入购物车的商品有不同型号可选，你是否要立即跳转到商品详情选择型号？';
+$_LANG['please_select_attr'] = "你加入购物车的商品有不同型号可选，你是否要立即跳转到商品详情选择型号？";
 
 /* 促销信息栏 */
 $_LANG['snatch_promotion'] = '[夺宝]';
@@ -670,24 +746,24 @@ $_LANG['auction_goods'] = '拍卖商品';
 $_LANG['auction_goods_info'] = '拍卖商品详情';
 $_LANG['article_cat'] = '文章分类';
 $_LANG['online_vote'] = '在线调查';
-$_LANG['new_price'] = "最新出价";
+$_LANG['new_price'] = '最新出价';
 $_LANG['promotion_info'] = '促销信息';
-$_LANG['price_grade'] = "价格范围";
+$_LANG['price_grade'] = '价格范围';
 $_LANG['your_choice'] = '您的选择';
 $_LANG['system_info'] = '系统信息';
 $_LANG['all_tags'] = '所有标签';
-$_LANG['activity_list'] = "活动列表";
+$_LANG['activity_list'] = '活动列表';
 $_LANG['package_list'] = '礼包列表';
 $_LANG['treasure_info'] = '宝贝详情';
-$_LANG['activity_desc'] = "活动描述";
-$_LANG['activity_intro'] = "活动介绍";
+$_LANG['activity_desc'] = '活动描述';
+$_LANG['activity_intro'] = '活动介绍';
 $_LANG['get_password'] = '找回密码';
 $_LANG['fee_total'] = '费用总计';
 $_LANG['other_info'] = '其它信息';
 $_LANG['user_balance'] = '会员余额';
-$_LANG['wholesale_goods_cart'] = '批发商品购物车';
+$_LANG['wholesale_goods_cart'] = "批发商品购物车";
 $_LANG['wholesale_goods_list'] = '批发商品列表';
-$_LANG['bid_record'] = "出价记录";
+$_LANG['bid_record'] = '出价记录';
 $_LANG['shipping_method'] = '配送方式';
 $_LANG['payment_method'] = '支付方式';
 $_LANG['goods_package'] = '商品包装';
@@ -714,8 +790,8 @@ $_LANG['notice_max_amount'] = '0表示没有上限';
 $_LANG['label_act_type'] = '优惠方式：';
 $_LANG['fat_goods'] = '享受赠品（特惠品）';
 $_LANG['fat_price'] = '享受现金减免';
-$_LANG['fat_discount'] = "享受价格折扣";
-$_LANG['orgtotal'] = "原始价格";
+$_LANG['fat_discount'] = '享受价格折扣';
+$_LANG['orgtotal'] = '原始价格';
 $_LANG['heart_buy'] = '心动不如行动';
 
 /* 其他模板涉及常用语言项 */
@@ -724,13 +800,21 @@ $_LANG['label_login'] = '用户登录';
 $_LANG['label_profile'] = '用户信息';
 $_LANG['label_collection'] = '我的收藏';
 $_LANG['article_list'] = '文章列表';
-$_LANG['preferences_price'] = "优惠价格";
+$_LANG['preferences_price'] = '优惠价格';
 $_LANG['divided_into'] = '分成规则';
+/* 代码增加_start  By  bbs.hongyuvip.com */
+$_LANG['takegoods'] = '提货券入口';
+$_LANG['takegoods_order'] = '我的提货';
+$_LANG['takegoods_order_list'] = '提货列表';
+/* 代码增加_end  By  bbs.hongyuvip.com */
 
-/*修改 start by zhouH*/
-$_LANG['err_no_goodsId'] = '缺少参数：商品ID，无法获取商品信息数据';
-$_LANG['quick_shop_pirce'] = "本店价：%s";
-$_LANG['quick_market_pirce'] = "专柜价:<del>%s</del>";
-$_LANG['quick_goods_sn'] = "产品编号:%s";
-/*修改 end by zhouH*/
+//虚拟团购
+/* 代码增加_start  By  bbs.hongyuvip.com */
+$_LANG['virtual_group'] = '虚拟团购';
+/* 代码增加_end  By  bbs.hongyuvip.com */
+
+//店铺街
+$_LANG['stores'] = '店铺街';
+$_LANG['apply_index'] = '入驻商申请首页';
+
 ?>

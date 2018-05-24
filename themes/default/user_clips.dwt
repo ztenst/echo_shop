@@ -11,7 +11,7 @@
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
 <link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
-{insert_scripts files='transport_jquery.js,common.js,user.js'}
+{insert_scripts files='transport.js,common.js,user.js'}
 </head>
 <body>
 <!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem -->
@@ -208,7 +208,7 @@
     <!--#我的标签 end-->
     <!--*收藏商品列表页面 start-->
     <!--{if $action eq 'collection_list'} -->
-  {insert_scripts files='transport_jquery.js,utils.js'}
+  {insert_scripts files='transport.js,utils.js'}
     <h5><span>{$lang.label_collection}</span></h5>
     <div class="blank"></div>
      <table width="100%" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">

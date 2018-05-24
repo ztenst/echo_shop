@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 专题管理
+ * 鸿宇多用户商城 专题管理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: topic.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: topic.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -72,7 +72,10 @@ if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     $smarty->assign('isadd', $isadd);
     $topic_id  = empty($_REQUEST['topic_id']) ? 0 : intval($_REQUEST['topic_id']);
 
-    include_once(ROOT_PATH.'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
+     /* 修改 by bbs.hongyuvip.com 百度编辑器 begin */
+    //include_once(ROOT_PATH.'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
+    /* 修改 by bbs.hongyuvip.com 百度编辑器 end */
+
 
     $smarty->assign('ur_here',     $_LANG['09_topic']);
     $smarty->assign('action_link', list_link($isadd));
@@ -99,7 +102,7 @@ if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
         $topic['start_time'] = local_date('Y-m-d', $topic['start_time']);
         $topic['end_time']   = local_date('Y-m-d', $topic['end_time']);
 
-        create_html_editor('topic_intro', $topic['intro']);
+        create_html_editor('topic_intro', htmlspecialchars($topic['intro'])); /* 修改 by bbs.hongyuvip.com 百度编辑器 */
 
         require(ROOT_PATH . 'includes/cls_json.php');
 
@@ -268,6 +271,13 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $db->query($sql);
 
     clear_cache_files();
+
+	/* 代码增加_start  By  bbs.hongyuvip.com */
+	if (!$is_insert)
+	{
+		clearhtml_file('topic', 0, $topic_id);
+	}
+	/* 代码增加_end  By  bbs.hongyuvip.com */
 
     $links[] = array('href' => 'topic.php', 'text' =>  $_LANG['back_list']);
     sys_msg($_LANG['succed'], 0, $links);

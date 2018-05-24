@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 提交用户评论
+ * 鸿宇多用户商城 提交用户评论
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: comment.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: comment.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
-require(ROOT_PATH . 'include/cls_json.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/cls_json.php');
 if (!isset($_REQUEST['cmt']) && !isset($_REQUEST['act']))
 {
     /* 只有在没有提交评论内容以及没有act的情况下才跳转 */
@@ -51,10 +51,10 @@ if (empty($_REQUEST['act']))
     }
     else
     {
-        if (false)
+        if ((intval($_CFG['captcha']) & CAPTCHA_COMMENT) && gd_version() > 0)
         {
             /* 检查验证码 */
-            include_once('include/cls_captcha.php');
+            include_once('includes/cls_captcha.php');
 
             $validator = new captcha();
             if (!$validator->check_word($cmt->captcha))
@@ -284,7 +284,7 @@ function add_comment($cmt)
 
     $user_id = empty($_SESSION['user_id']) ? 0 : $_SESSION['user_id'];
     $email = empty($cmt->email) ? $_SESSION['email'] : trim($cmt->email);
-    $user_name = empty($cmt->username) ? $_SESSION['user_name'] : '';
+    $user_name = empty($cmt->username) ? $_SESSION['user_name'] : trim($cmt->username);
     $email = htmlspecialchars($email);
     $user_name = htmlspecialchars($user_name);
 

@@ -1,5 +1,7 @@
 <!-- $Id: goods_batch_add.htm 16544 2009-08-13 07:55:57Z liuhui $ -->
 {include file="pageheader.htm"}
+<link href="styles/zTree/zTreeStyle.css" rel="stylesheet" type="text/css" />
+{insert_scripts files='jquery-1.6.2.min.js,jquery.ztree.all-3.5.min.js,category_selecter.js'}
 <div class="main-div">
 <form action="goods_batch.php?act=upload" method="post" enctype="multipart/form-data" name="theForm" onsubmit="return formValidate()">
 <table cellspacing="1" cellpadding="3" width="100%">
@@ -12,10 +14,10 @@
   </tr>
   <tr>
     <td class="label">{$lang.goods_cat}</td>
-    <td><select name="cat" id="cat">
-      <option value="0">{$lang.select_please}</option>
-      {$cat_list}
-    </select></td>
+    <td>
+    <input type="text" id="cat_name" name="cat_name" nowvalue="{$goods_cat_name}" value="{$goods_cat_name}" ><!--代码增加--商品分类--68ecshop-->
+	<input type="hidden" id="cat_id" name="cat_id" value="{$goods_cat_id}"><!--代码增加--商品分类--68ecshop-->
+    </td>
   </tr>
   <tr>
     <td class="label">{$lang.file_charset}</td>
@@ -41,6 +43,16 @@
     <td colspan="2"><input name="submit" type="submit" id="submit" value="{$lang.button_submit}" class="button" /></td>
   </tr>
 </table>
+<script type="text/javascript">
+	$().ready(function(){
+		// $("#cat_name")为获取分类名称的jQuery对象，可根据实际情况修改
+		// $("#cat_id")为获取分类ID的jQuery对象，可根据实际情况修改
+		// "{$goods_cat_id}"为被选中的商品分类编号，无则设置为null或者不写此参数或者为空字符串
+		$.ajaxCategorySelecter($("#cat_name"), $("#cat_id"), "{$goods_cat_id}");
+	});
+</script>
+
+
 </form>
 <table width="100%">
   <tr>
@@ -80,18 +92,26 @@
      */
     function formValidate()
     {
-        if (elements['cat'].value <= 0)
+    	
+        if ($("#cat_id").val().length <= 0)
         {
-            alert(please_select_cat);
+        	alert(please_select_cat);
+        	$("#cat_name").focus();
             return false;
         }
-        if (elements['file'].value == '')
-        {
-            alert(please_upload_file);
-            return false;
-        }
+        if ($("[name='file']").val() == '')
+    	{
+        	alert(please_upload_file);
+        	return false;
+    	}
+       
         return true;
     }
+	
 </script>
+
+
+
 {/literal}
+
 {include file="pagefooter.htm"}

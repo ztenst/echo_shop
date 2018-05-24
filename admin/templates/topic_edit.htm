@@ -1,9 +1,10 @@
 <!-- $Id: topic_edit.htm 16992 2010-01-19 08:45:49Z wangleisvn $ -->
-
-{include file="pageheader.htm"}
+{include file="pageheader_bd.htm"}
 {insert_scripts files="../js/utils.js,selectzone.js,colorselector_topic.js"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
 <link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
+<link href="styles/zTree/zTreeStyle.css" rel="stylesheet" type="text/css" />
+{insert_scripts files='jquery.ztree.all-3.5.min.js,category_selecter.js'}
 {if $warning}
 <ul style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
   <li style="border: 1px solid #CC0000; background: #FFFFCC; padding: 10px; margin-bottom: 5px;" >{$warning}</li>
@@ -111,16 +112,18 @@
         </tr>
         <tr>
           <td colspan="3"><img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
-            <select name="cat_id2">
+          <!--      <select name="cat_id2">
               <option value="0">{$lang.all_category}</option>
               {$cat_list}
-            </select>
-            <select name="brand_id2">
-              <option value="0">{$lang.all_brand}</option>
+            </select>-->
+            <input type="text" id="cat_name" name="cat_name" nowvalue="{$goods_cat_id}" value="{$goods_cat_name}" ><!--代码增加--商品分类--68ecshop-->
+			<input type="hidden" id="cat_id" name="cat_id" value="{$goods_cat_id}"><!--代码增加--商品分类--68ecshop-->
+    		 <select name="brand_id2">
+             <option value="0">{$lang.all_brand}</option>
               {html_options options=$brand_list}
             </select>
             <input type="text" name="keyword2"/>
-            <input name="button" type="button" class="button" onclick="searchGoods('cat_id2', 'brand_id2', 'keyword2')" value="{$lang.button_search}" />          </td>
+            <input name="button" type="button" class="button" onclick="searchGoods('cat_id', 'brand_id2', 'keyword2')" value="{$lang.button_search}" />          </td>
         </tr>
         <!-- 商品列表 -->
         <tr height="37">
@@ -205,7 +208,8 @@ onload = function()
     classList.options.add(newOpt);
     return;
   }
-  var temp    = data.parseJSON();
+  //var temp    = data.parseJSON();
+  var temp = $.parseJSON(data);
 
   var counter = 0;
   for (var k in temp)
@@ -283,7 +287,8 @@ function checkForm()
   validator.required('end_time', end_time_empty);
   validator.islt('start_time', 'end_time', start_lt_end);
 
-  document.getElementById("topic_data").value = myTopic.toJSONString();
+  //document.getElementById("topic_data").value = myTopic.toJSONString();
+  document.getElementById("topic_data").value = $.toJSON(myTopic);
 
   return validator.passed();
 }
@@ -300,13 +305,14 @@ function chanageSize(num, id)
   }
 }
 
-function searchGoods(catId, brandId, keyword)
+function searchGoods(catId, brandId, keyword,is_on_sale)
 {
   var elements = document.forms['theForm'].elements;
   var filters = new Object;
   filters.cat_id = elements[catId].value;
   filters.brand_id = elements[brandId].value;
   filters.keyword = Utils.trim(elements[keyword].value);
+  filters.is_on_sale = 1;
   Ajax.call("topic.php?act=get_goods_list", filters, function(result)
   {
     clearOptions("source_select");
@@ -538,5 +544,14 @@ function navigator_type()
 }
 {/literal}
 //-->
+</script>
+
+<script type="text/javascript">
+	$().ready(function(){
+		// $("#cat_name")为获取分类名称的jQuery对象，可根据实际情况修改
+		// $("#cat_id")为获取分类ID的jQuery对象，可根据实际情况修改
+		// "{$goods_cat_id}"为被选中的商品分类编号，无则设置为null或者不写此参数或者为空字符串
+		$.ajaxCategorySelecter($("#cat_name"), $("#cat_id"), "{$goods_cat_id}");
+	});
 </script>
 {include file="pagefooter.htm"}

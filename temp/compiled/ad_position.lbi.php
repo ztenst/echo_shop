@@ -1,4 +1,4 @@
-	<?php 
+<?php 
 $k = array (
   'name' => 'ads',
   'id' => $this->_var['ads_id'],

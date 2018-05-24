@@ -3,8 +3,8 @@
 /**
  * PHPwind6.3.2整合插件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
@@ -36,7 +36,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['author']  = 'ECSHOP R&D TEAM';
 
     /* 插件作者的官方网站 */
-    $modules[$i]['website'] = 'http://www.ecshop.com';
+    $modules[$i]['website'] = 'http://bbs.hongyuvip.com';
 
     /* 插件的初始的默认值 */
     $modules[$i]['default']['db_host'] = 'localhost';

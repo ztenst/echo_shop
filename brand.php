@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 品牌列表
+ * 鸿宇多用户商城 品牌列表
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: brand.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: brand.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -27,14 +27,19 @@ if ((DEBUG_MODE & 2) != 2)
 /*------------------------------------------------------ */
 
 /* 获得请求的分类 ID */
-if (!empty($_REQUEST['id']))
+
+// safety_20150629 change_start
+
+if (!empty($_REQUEST['id']) && preg_match('/^-?[1-9]\d*$/', $_REQUEST['id']))
 {
     $brand_id = intval($_REQUEST['id']);
 }
-if (!empty($_REQUEST['brand']))
+if (!empty($_REQUEST['brand']) && preg_match('/^-?[1-9]\d*$/', $_REQUEST['brand']))
 {
     $brand_id = intval($_REQUEST['brand']);
 }
+
+// safety_20150629 change_end
 if (empty($brand_id))
 {
     /* 缓存编号 */
@@ -60,13 +65,14 @@ if (empty($brand_id))
 $page = !empty($_REQUEST['page'])  && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
 $size = !empty($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
 $cate = !empty($_REQUEST['cat'])   && intval($_REQUEST['cat'])   > 0 ? intval($_REQUEST['cat'])   : 0;
+$suppId = !empty($_REQUEST['suppId'])   && intval($_REQUEST['suppId'])   > 0 ? intval($_REQUEST['suppId'])   : 0;
 
 /* 排序、显示方式以及类型 */
 $default_display_type = $_CFG['show_order_type'] == '0' ? 'list' : ($_CFG['show_order_type'] == '1' ? 'grid' : 'text');
 $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
 $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'shop_price' : 'last_update');
 
-$sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update','sales_volume','comments_number'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
+$sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update','click_count', 'salenum'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
 $order = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
 $display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
 $display  = in_array($display, array('list', 'grid', 'text')) ? $display : 'text';
@@ -77,10 +83,10 @@ setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
 /*------------------------------------------------------ */
 
 /* 页面的缓存ID */
-$cache_id = sprintf('%X', crc32($brand_id . '-' . $display . '-' . $sort . '-' . $order . '-' . $page . '-' . $size . '-' . $_SESSION['user_rank'] . '-' . $_CFG['lang'] . '-' . $cate));
+$cache_id = sprintf('%X', crc32($brand_id . '-' . $display . '-' . $sort . '-' . $order . '-' . $page . '-' . $size . '-' . $_SESSION['user_rank'] . '-' . $_CFG['lang'] . '-' . $cate . '-' . $suppId));
 
 if (!$smarty->is_cached('brand.dwt', $cache_id))
-{
+{	
     $brand_info = get_brand_info($brand_id);
 
     if (empty($brand_info))
@@ -132,12 +138,18 @@ if (!$smarty->is_cached('brand.dwt', $cache_id))
             $goodslist[] = array();
         }
     }
+	
     $smarty->assign('goods_list',      $goodslist);
     $smarty->assign('script_name', 'brand');
+
+	if($suppId>0){
+		$brand_id = $brand_id.'&suppId='.$suppId;
+	}
 
     assign_pager('brand',              $cate, $count, $size, $sort, $order, $page, '', $brand_id, 0, 0, $display); // 分页
     assign_dynamic('brand'); // 动态内容
 }
+$smarty->assign('actname','brand.php');
 
 $smarty->display('brand.dwt', $cache_id);
 
@@ -238,7 +250,19 @@ function brand_recommend_goods($type, $brand, $cat = 0)
             $goods[$idx]['thumb']        = get_image_path($row['goods_id'], $row['goods_thumb'], true);
             $goods[$idx]['goods_img']    = get_image_path($row['goods_id'], $row['goods_img']);
             $goods[$idx]['url']          = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
-
+			
+		/* 检查是否已经存在于用户的收藏夹 */
+		$sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('collect_goods') .
+		" WHERE user_id='$_SESSION[user_id]' AND goods_id = " . $goods[$idx]['id'];
+		if ($GLOBALS['db']->GetOne($sql) > 0)
+		{
+			$goods[$idx]['is_collet'] = 1;
+		}
+		else
+		{
+			$goods[$idx]['is_collet'] = 0;
+		}
+			
             $idx++;
         }
     }
@@ -256,8 +280,9 @@ function brand_recommend_goods($type, $brand, $cat = 0)
  */
 function goods_count_by_brand($brand_id, $cate = 0)
 {
+	global $suppId;
     $sql = 'SELECT COUNT(*) FROM ' .$GLOBALS['ecs']->table('goods'). ' AS g '.
-            "WHERE brand_id = '$brand_id' AND g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0";
+            "WHERE brand_id = '$brand_id' AND supplier_id = '$suppId' AND g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0";
 
     if ($cate > 0)
     {
@@ -276,10 +301,19 @@ function goods_count_by_brand($brand_id, $cate = 0)
  */
 function brand_get_goods($brand_id, $cate, $size, $page, $sort, $order)
 {
+	global $suppId;
     $cate_where = ($cate > 0) ? 'AND ' . get_children($cate) : '';
 
     /* 获得商品列表 */
-    $sql = 'SELECT g.goods_id, g.goods_name, g.sales_volume, g.comments_number,g.market_price, g.shop_price AS org_price, ' .
+    /*$sql = 'SELECT g.goods_id, g.goods_name, g.click_count, g.market_price, g.shop_price AS org_price, ' .
+                "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, g.promote_price, " .
+                'g.promote_start_date, g.promote_end_date, g.goods_brief, g.goods_thumb , g.goods_img ' .
+            'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
+            'LEFT JOIN ' . $GLOBALS['ecs']->table('member_price') . ' AS mp ' .
+                "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' " .
+            "WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND g.supplier_id = '$suppId' AND g.brand_id = '$brand_id' $cate_where".
+            "ORDER BY $sort $order";*/
+    $sql = 'SELECT g.goods_id, g.goods_name, g.click_count, g.goods_number, g.market_price, g.shop_price AS org_price, ' .
                 "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, g.promote_price, " .
                 'g.promote_start_date, g.promote_end_date, g.goods_brief, g.goods_thumb , g.goods_img ' .
             'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
@@ -287,7 +321,19 @@ function brand_get_goods($brand_id, $cate, $size, $page, $sort, $order)
                 "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' " .
             "WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND g.brand_id = '$brand_id' $cate_where".
             "ORDER BY $sort $order";
-      
+	/* 代码增加_start  By  bbs.hongyuvip.com */
+	if ($sort=='salenum')
+	{
+		$sql = 'SELECT SUM(o.goods_number) as salenum, g.goods_id, g.goods_name, g.click_count, g.goods_number, g.goods_name_style, g.market_price, g.is_new, g.is_best, g.is_hot, g.shop_price AS org_price, ' .
+                "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, g.promote_price, g.goods_type, " .
+                'g.promote_start_date, g.promote_end_date, g.goods_brief, g.goods_thumb , g.goods_img ' .
+            'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
+            'LEFT JOIN ' . $GLOBALS['ecs']->table('member_price') . ' AS mp ' .
+                "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' " . "LEFT JOIN " . $GLOBALS['ecs']->table('order_goods') .  " as o ON o.goods_id = g.goods_id " . " where g.brand_id = '$brand_id' $ext group by g.goods_id ORDER BY $sort $order";
+				
+	}
+	
+	/* 代码增加_end  By  bbs.hongyuvip.com */
     $res = $GLOBALS['db']->selectLimit($sql, $size, ($page - 1) * $size);
 
     $arr = array();
@@ -311,18 +357,32 @@ function brand_get_goods($brand_id, $cate, $size, $page, $sort, $order)
         {
             $arr[$row['goods_id']]['goods_name']       = $row['goods_name'];
         }
-		$arr[$row['goods_id']]['sales_volume']      = $row['sales_volume'];
-		$arr[$row['goods_id']]['comments_number']      = $row['comments_number'];
-		
+		$arr[$row['goods_id']]['name']             = $row['goods_name'];
         $arr[$row['goods_id']]['market_price']  = price_format($row['market_price']);
         $arr[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $arr[$row['goods_id']]['promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';
         $arr[$row['goods_id']]['goods_brief']   = $row['goods_brief'];
+		$arr[$row['goods_id']]['goods_style_name'] = add_style($row['goods_name'],$row['goods_name_style']);
         $arr[$row['goods_id']]['goods_thumb']   = get_image_path($row['goods_id'], $row['goods_thumb'], true);
         $arr[$row['goods_id']]['goods_img']     = get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['url']           = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
-    }
+	$arr[$row['goods_id']]['comment_count']    = get_comment_count($row['goods_id']);
+	$arr[$row['goods_id']]['count']            = selled_count($row['goods_id']);
+	$arr[$row['goods_id']]['click_count']   = $row['click_count'];
+	$arr[$row['goods_id']]['goods_number']  = $row['goods_number'];
 
+	/* 检查是否已经存在于用户的收藏夹 */
+	$sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('collect_goods') .
+	" WHERE user_id='$_SESSION[user_id]' AND goods_id = " . $row['goods_id'];
+	if ($GLOBALS['db']->GetOne($sql) > 0)
+	{
+		$arr[$row['goods_id']]['is_collet'] = 1;
+	}
+	else
+	{
+		$arr[$row['goods_id']]['is_collet'] = 0;
+	}
+    }
     return $arr;
 }
 
@@ -354,5 +414,7 @@ function brand_related_cat($brand)
 
     return $arr;
 }
+
+
 
 ?>

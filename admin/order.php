@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP 订单管理
+ * 鸿宇多用户商城 订单管理
  * ============================================================================
- * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2005-2010 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * $Author: yehuaixiao $
  * $Id: order.php 17219 2011-01-27 10:49:19Z yehuaixiao $
@@ -44,7 +44,7 @@ if ($_REQUEST['act'] == 'order_query')
 
     /* 模板赋值 */
     $smarty->assign('ur_here', $_LANG['03_order_query']);
-    $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['02_order_list']));
+    $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['01_order_list']));
 
     /* 显示模板 */
     assign_query_info();
@@ -61,7 +61,7 @@ elseif ($_REQUEST['act'] == 'list')
     admin_priv('order_view');
 
     /* 模板赋值 */
-    $smarty->assign('ur_here', $_LANG['02_order_list']);
+    $smarty->assign('ur_here', $_LANG['01_order_list']);
     $smarty->assign('action_link', array('href' => 'order.php?act=order_query', 'text' => $_LANG['03_order_query']));
 
     $smarty->assign('status_list', $_LANG['cs']);   // 订单状态
@@ -72,6 +72,13 @@ elseif ($_REQUEST['act'] == 'list')
     $smarty->assign('full_page',        1);
 
     $order_list = order_list();
+    
+    
+    if(intval($_REQUEST['supp']) > 0){
+    	$suppliers_list = get_supplier_list();
+    	$smarty->assign('supp_list',   $suppliers_list);
+    }
+    
     $smarty->assign('order_list',   $order_list['orders']);
     $smarty->assign('filter',       $order_list['filter']);
     $smarty->assign('record_count', $order_list['record_count']);
@@ -83,15 +90,51 @@ elseif ($_REQUEST['act'] == 'list')
     $smarty->display('order_list.htm');
 }
 
+/*增值税发票_添加_START_bbs.hongyuvip.com*/
+elseif($_REQUEST['act'] == 'invoice_list')
+{
+    admin_priv('invoice_manage');
+    $smarty->assign('ur_here',$_LANG['12_invoice_list']);
+    $smarty->assign('os_unconfirmed',   OS_UNCONFIRMED);
+    $smarty->assign('cs_await_pay',     CS_AWAIT_PAY);
+    $smarty->assign('cs_await_ship',    CS_AWAIT_SHIP);
+    $smarty->assign('full_page',        1);
+    $order_list = order_list();
+    $smarty->assign('order_list',   $order_list['orders']);
+    $smarty->assign('filter',       $order_list['filter']);
+    $smarty->assign('record_count', $order_list['record_count']);
+    $smarty->assign('page_count',   $order_list['page_count']);
+    $smarty->assign('sort_order_time', '<img src="images/sort_desc.gif">');
+    assign_query_info();
+    $smarty->assign('act','invoice_list');
+    $smarty->display('order_list.htm');
+}
+/*增值税发票_添加_END_bbs.hongyuvip.com*/
+
 /*------------------------------------------------------ */
 //-- 排序、分页、查询
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'query')
 {
     /* 检查权限 */
-    admin_priv('order_view');
+    /*增值税发票_更改_START_bbs.hongyuvip.com*/
+    if(isset($_REQUEST['act_detail'])&&$_REQUEST['act_detail']=='invoice_query')
+    {
+        admin_priv('invoice_manage');
+        $smarty->assign('act','invoice_list');
+    }
+    else
+    {
+        admin_priv('order_view');
+    }
+    /*增值税发票_更改_END_bbs.hongyuvip.com*/
 
     $order_list = order_list();
+    
+	if(intval($_REQUEST['supp']) > 0){
+    	$suppliers_list = get_supplier_list();
+    	$smarty->assign('supp_list',   $suppliers_list);
+    }
 
     $smarty->assign('order_list',   $order_list['orders']);
     $smarty->assign('filter',       $order_list['filter']);
@@ -113,6 +156,69 @@ elseif ($_REQUEST['act'] == 'info')
     {
         $order_id = intval($_REQUEST['order_id']);
         $order = order_info($order_id);
+	if ($db->getOne("select shipping_code from ".$ecs->table('shipping')." where shipping_id=".$order['shipping_id']) == "tc_express")
+	{
+		$order['tc_express'] = 1;
+			
+		$ko_order_sn  = $db->getOne("select invoice_no from ".$ecs->table('delivery_order')." where order_id=".$order_id);
+		if ($ko_order_sn)
+		{
+			$kos_order_id = $db->getOne("select order_id from ".$ecs->table('kuaidi_order')." where order_sn='".$ko_order_sn."'");
+		}
+
+		$sql="select * from ". $ecs->table('kuaidi_order_status') ." where order_id='$kos_order_id'  order by status_id";
+		$res_status = $db->query($sql);
+		$have_shipping_info =0;
+		$shipping_info ="";
+		while($row_status = $db->fetchRow($res_status))
+		{
+			if ($row_status['status_display']==1)
+			{				
+				switch ($row_status['status_id'])
+				{
+					case 1 :
+						$shipping_info .= "您提交了订单，请等待确认。 (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+					case 2 :
+						$shipping_info .= "您的快件已经确认，等待快递员揽收。 (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+					case 3 :
+						$postman_id = $db->getOne("select postman_id from ".$ecs->table('kuaidi_order')." where order_sn='".$order['invoice_no']."'");
+						$postman_info = $db->getRow("select postman_name, mobile from ".$ecs->table('postman')." where postman_id=".$postman_id);
+						$shipping_info .= "您的快件正在派送，快递员：".$postman_info['postman_name']."，电话：".$postman_info['mobile']." (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+					case 4 :
+						$shipping_info .= "您的快件已经签收。 (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+					case 5 :
+						$shipping_info .= "您的快件已被拒收。 (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+					case 6 :
+						$shipping_info .= "您拒收的快件已被退回。 (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+					case 7 :
+						$shipping_info .= "您的快件已经取消。 (".local_date('Y-m-d H:i:s', $row_status['status_time']).")";
+						break;
+				}
+					
+				$shipping_info .= "<br>";
+
+				if ($row_status['status_id'] >= 1)
+				{
+					$have_shipping_info++;
+				}
+			}
+		}
+		if ($have_shipping_info)
+		{
+				$result_content = $shipping_info;
+		}
+		else
+		{    
+				$result_content ='抱歉，暂时还没有该运单的物流信息哦！';    					
+		}
+	}
+	$smarty->assign('result_content',$result_content);
     }
     elseif (isset($_REQUEST['order_sn']))
     {
@@ -152,6 +258,27 @@ elseif ($_REQUEST['act'] == 'info')
         }
     }
 
+    //如果为预售活动则需要判断预售活动是否已经成功结束了，如果未成功结束则不允许发货
+    if($order['extension_code'] == PRE_SALE_CODE)
+    {
+    	$pre_sale_id = $order['extension_id'];
+    	$sql = "select is_finished from " . $ecs->table('goods_activity') . " where act_id = '" . $pre_sale_id . "'";
+    	$is_finished = $db->getOne($sql);
+    	if($is_finished == PSS_SUCCEED)
+    	{
+    		$smarty->assign('pre_sale_success', '1');
+    	}
+    	else 
+    	{
+    		$smarty->assign('pre_sale_success', '0');
+    	}
+    	$smarty->assign('is_pre_sale', '1');
+    }
+    else 
+    {
+    	$smarty->assign('is_pre_sale', '0');
+    }
+    
     /* 取得上一个、下一个订单号 */
     if (!empty($_COOKIE['ECSCP']['lastfilter']))
     {
@@ -235,12 +362,22 @@ elseif ($_REQUEST['act'] == 'info')
         $order['formated_money_refund'] = price_format(abs($order['order_amount']));
     }
 
+	/*增值税发票_添加_START_bbs.hongyuvip.com*/
+    /*增值税发票收票地址*/
+    if($order['inv_type'] == 'vat_invoice')
+    {
+        $order['inv_complete_address'] = get_inv_complete_address($order);
+    }
+    /*发票金额*/
+    $order['formatted_inv_money'] = price_format($order['inv_money']);
+    /*增值税发票_添加_END_bbs.hongyuvip.com*/
+
     /* 其他处理 */
     $order['order_time']    = local_date($_CFG['time_format'], $order['add_time']);
     $order['pay_time']      = $order['pay_time'] > 0 ?
-        local_date($_CFG['time_format'], $order['pay_time']) : $_LANG['ps'][PS_UNPAYED];
+    local_date($_CFG['time_format'], $order['pay_time']) : $_LANG['ps'][PS_UNPAYED];
     $order['shipping_time'] = $order['shipping_time'] > 0 ?
-        local_date($_CFG['time_format'], $order['shipping_time']) : $_LANG['ss'][SS_UNSHIPPED];
+    local_date($_CFG['time_format'], $order['shipping_time']) : $_LANG['ss'][SS_UNSHIPPED];
     $order['status']        = $_LANG['os'][$order['order_status']] . ',' . $_LANG['ps'][$order['pay_status']] . ',' . $_LANG['ss'][$order['shipping_status']];
     $order['invoice_no']    = $order['shipping_status'] == SS_UNSHIPPED || $order['shipping_status'] == SS_PREPARING ? $_LANG['ss'][SS_UNSHIPPED] : $order['invoice_no'];
 
@@ -344,8 +481,45 @@ elseif ($_REQUEST['act'] == 'info')
         {
             $row['storage'] = '';
             $row['brand_name'] = '';
-            $row['package_goods_list'] = get_package_goods($row['goods_id']);
+            $row['package_goods_list'] = get_package_goods($row['goods_id'], $row['package_attr_id']); //修改 by bbs.hongyuvip.com
         }
+		
+		$sql_back = "SELECT bg.*, bo.back_type FROM " . $ecs->table('back_goods') . " AS bg " .
+					" LEFT JOIN " . $ecs->table('back_order') . " AS bo " .
+					" ON bg.back_id = bo.back_id " .
+					" WHERE bo.order_id = " . $order['order_id'] .
+					" AND bg.goods_id = " . $row['goods_id'] .
+					" AND bg.product_id = " . $row['product_id'] .
+					" AND bg.status_back < 6";
+		$back_info = $db->getRow($sql_back);
+		
+		if (count($back_info['back_id']) > 0)
+		{
+			switch ($back_info['status_back'])
+			{
+				case '3' : $sb = "已完成"; break;
+				case '5' : $sb = "已申请"; break;
+				//case '6' : $sb = ""; break;
+				//case '7' : $sb = ""; break;
+				default : $sb = "正在"; break;
+			}
+			
+			switch ($back_info['back_type'])
+			{
+				case '1' : $bt = "退货"; break;
+				case '3' : $bt = "申请维修"; break;
+				case '4' : $bt = "退款"; break;
+				default : break;
+			}
+			
+			$shouhou = $sb." ".$bt;
+		}
+		else
+		{
+			$shouhou = "正常";
+		}
+		
+		$row['shouhou'] = $shouhou;
 
         $goods_list[] = $row;
     }
@@ -381,7 +555,13 @@ elseif ($_REQUEST['act'] == 'info')
         $act_list[] = $row;
     }
     $smarty->assign('action_list', $act_list);
-
+	/* 代码增加_start   By bbs.hongyuvip.com */
+	if($order['pickup_point'] > 0)
+	{
+		$pickup_point = $db->getRow('select * from ' . $ecs->table('pickup_point') . ' where id=' . $order['pickup_point']);
+		$smarty->assign('pickup_point',        $pickup_point);
+	}
+	/* 代码增加_end   By bbs.hongyuvip.com */
     /* 取得是否存在实体商品 */
     $smarty->assign('exist_real_goods', exist_real_goods($order['order_id']));
 
@@ -407,8 +587,16 @@ elseif ($_REQUEST['act'] == 'info')
         $region_id = !empty($_CFG['shop_country']) ? $_CFG['shop_country'] . ',' : '';
         $region_id .= !empty($_CFG['shop_province']) ? $_CFG['shop_province'] . ',' : '';
         $region_id .= !empty($_CFG['shop_city']) ? $_CFG['shop_city'] . ',' : '';
+        $region_id .= !empty($_CFG['shop_district']) ? $_CFG['shop_district'] . ',' : '';
+        
+        $region_id .= !empty($order['country']) ? $order['country'] . ',' : '';
+        $region_id .= !empty($order['province']) ? $order['province'] . ',' : '';
+        $region_id .= !empty($order['city']) ? $order['city'] . ',' : '';
+        $region_id .= !empty($order['district']) ? $order['district'] . ',' : '';
+        
         $region_id = substr($region_id, 0, -1);
         $region = $db->getAll("SELECT region_id, region_name FROM " . $ecs->table("region") . " WHERE region_id IN ($region_id)");
+
         if (!empty($region))
         {
             foreach($region as $region_data)
@@ -453,7 +641,7 @@ elseif ($_REQUEST['act'] == 'info')
             $lable_box['t_shop_city'] = $region_array[$_CFG['shop_city']]; //网店-城市
             $lable_box['t_shop_province'] = $region_array[$_CFG['shop_province']]; //网店-省份
             $lable_box['t_shop_name'] = $_CFG['shop_name']; //网店-名称
-            $lable_box['t_shop_district'] = ''; //网店-区/县
+            $lable_box['t_shop_district'] = $region_array[$_CFG['shop_district']]; //网店-区/县
             $lable_box['t_shop_tel'] = $_CFG['service_phone']; //网店-联系电话
             $lable_box['t_shop_address'] = $_CFG['shop_address']; //网店-地址
             $lable_box['t_customer_country'] = $region_array[$order['country']]; //收件人-国家
@@ -525,7 +713,7 @@ elseif ($_REQUEST['act'] == 'info')
     {
         /* 模板赋值 */
         $smarty->assign('ur_here', $_LANG['order_info']);
-        $smarty->assign('action_link', array('href' => 'order.php?act=list&' . list_link_postfix(), 'text' => $_LANG['02_order_list']));
+        $smarty->assign('action_link', array('href' => 'order.php?act=list&' . list_link_postfix(), 'text' => $_LANG['01_order_list']));
 
         /* 显示模板 */
         assign_query_info();
@@ -846,6 +1034,19 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
     $arr['shipping_time']       = GMTIME_UTC; // 发货时间
     $arr['invoice_no']          = trim($order['invoice_no'] . '<br>' . $invoice_no, '<br>');
     update_order($order_id, $arr);
+	
+	$delivery_id = $GLOBALS['db']->getRow("select delivery_id from ".$GLOBALS['ecs']->table('delivery_order')."where order_id=".$order_id);
+	if (!empty($delivery_id))
+	{
+		update_kuaidi_order($delivery_id['delivery_id'], $_delivery['invoice_no']);
+	}
+	
+	$sql_back_old = $db->getOne("SELECT back_id FROM " . $ecs->table('back_order') . " WHERE order_id = " . $order['order_id'] . " AND back_type = 4 AND status_back < 6 AND status_back != 3");
+	if (!empty($sql_back_old))
+	{
+		$db->query("UPDATE " . $ecs->table('back_order') . " SET status_back = 6 WHERE back_id = " . $sql_back_old);
+		$db->query("UPDATE " . $ecs->table('back_goods') . " SET status_back = 6 WHERE back_id = " . $sql_back_old);
+	}
 
     /* 发货单发货记录log */
     order_action($order['order_sn'], OS_CONFIRMED, $shipping_status, $order['pay_status'], $action_note, null, 1);
@@ -865,7 +1066,7 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
             log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($_LANG['order_gift_integral'], $order['order_sn']));
 
             /* 发放红包 */
-            send_order_bonus($order_id);
+            send_order_bonus($order_id,$order['supplier_id']);
         }
 
         /* 发送邮件 */
@@ -891,30 +1092,13 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
         /* 如果需要，发短信 */
         if ($GLOBALS['_CFG']['sms_order_shipped'] == '1' && $order['mobile'] != '')
         {
-            include_once('../includes/cls_sms.php');
-            $sms = new sms();
-            $sms->send($order['mobile'], sprintf($GLOBALS['_LANG']['order_shipped_sms'], $order['order_sn'],
-                local_date($GLOBALS['_LANG']['sms_time_format']), $GLOBALS['_CFG']['shop_name']), 0);
+            include_once('../sms/sms.php');
+            $order_sn = $order['order_sn'];
+            $consignee = $order['consignee'];
+            $address = $order['address'];
+			$content = array($_CFG['sms_order_shipped_tpl'],"{\"order_sn\":\"$order_sn\",\"consignee\":\"$consignee\",\"address\":\"$address\"}",$_CFG['sms_sign']);
+			sendSMS($order['mobile'],$content);
         }
-		
-		/* 更新商品销量 */
-		$sql = 'SELECT goods_id,goods_number FROM '.$GLOBALS['ecs']->table('order_goods').' WHERE order_id ='.$order_id;
-		$order_res = $GLOBALS['db']->getAll($sql);	
-		foreach($order_res as $idx=>$val)
-		{
-			$sql = 'SELECT SUM(og.goods_number) as goods_number ' .
-				'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g, ' .
-                $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
-                $GLOBALS['ecs']->table('order_goods') . ' AS og ' .
-				"WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND og.order_id = o.order_id AND og.goods_id = g.goods_id " .
-				"AND (o.order_status = '" . OS_CONFIRMED .  "' OR o.order_status = '" . OS_SPLITED . "') " .
-				"AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') AND g.goods_id=".$val['goods_id'];
-
-			$sales_volume = $GLOBALS['db']->getOne($sql);	
-			$sql = "update " . $ecs->table('goods') . " set sales_volume=$sales_volume WHERE goods_id =".$val['goods_id'];
-	
-			$db->query($sql);
-		}	
     }
 
     /* 清除缓存 */
@@ -982,6 +1166,12 @@ elseif ($_REQUEST['act'] == 'delivery_cancel_ship')
         }
     }
     $_order['invoice_no'] = implode('<br>', $invoice_no_order);
+	
+	$delivery_id = $GLOBALS['db']->getRow("select delivery_id from ".$GLOBALS['ecs']->table('delivery_order')."where order_id=".$order_id);
+	if (!empty($delivery_id))
+	{
+		update_kuaidi_order($delivery_id['delivery_id']);
+	}
 
     /* 更新配送状态 */
     $order_finish = get_all_delivery_finish($order_id);
@@ -1213,6 +1403,11 @@ elseif ($_REQUEST['act'] == 'step_post')
     $step_list = array('user', 'edit_goods', 'add_goods', 'goods', 'consignee', 'shipping', 'payment', 'other', 'money', 'invoice');
     $step = isset($_REQUEST['step']) && in_array($_REQUEST['step'], $step_list) ? $_REQUEST['step'] : 'user';
 
+	
+	
+file_put_contents('./3$_REQUEST3.txt',var_export($_REQUEST,true));
+	
+	
     /* 取得参数 order_id */
     $order_id = isset($_REQUEST['order_id']) ? intval($_REQUEST['order_id']) : 0;
     if ($order_id > 0)
@@ -1784,8 +1979,10 @@ elseif ($_REQUEST['act'] == 'step_post')
             $order['card_fee']  = 0;
             $order['card_message'] = '';
         }
-        $order['inv_type']      = $_POST['inv_type'];
-        $order['inv_payee']     = $_POST['inv_payee'];
+        /*增值税发票_删除_START_bbs.hongyuvip.com*/
+        //$order['inv_type']      = $_POST['inv_type'];
+        //$order['inv_payee']     = $_POST['inv_payee'];
+		/*增值税发票_删除_END_bbs.hongyuvip.com*/
         $order['inv_content']   = $_POST['inv_content'];
         $order['how_oos']       = $_POST['how_oos'];
         $order['postscript']    = $_POST['postscript'];
@@ -2017,7 +2214,11 @@ elseif ($_REQUEST['act'] == 'step_post')
     /* 保存发货后的配送方式和发货单号 */
     elseif ('invoice' == $step)
     {
-        /* 如果不存在实体商品，退出 */
+		
+		
+		
+		
+		        /* 如果不存在实体商品，退出 */
         if (!exist_real_goods($order_id))
         {
             die ('Hacking Attemp');
@@ -2044,6 +2245,87 @@ elseif ($_REQUEST['act'] == 'step_post')
             ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
             exit;
         }
+		
+		
+		
+		
+        /*增值税发票_更改_START_bbs.hongyuvip.com*/
+    	$order = array();
+        $arr = array('inv_type','inv_payee_type','inv_payee',
+            'inv_content','inv_money','inv_remark',
+            'vat_inv_company_name','vat_inv_taxpayer_id','vat_inv_registration_address',
+            'vat_inv_registration_phone','vat_inv_deposit_bank','vat_inv_bank_account',
+            'inv_consignee_name','inv_consignee_phone','inv_consignee_address',
+            'inv_consignee_province','inv_consignee_city','inv_consignee_district');
+
+        foreach($arr as $item)
+        {
+            $tmp = !empty($_REQUEST[$item])?trim($_REQUEST[$item]):'';;
+            if(!empty($tmp))
+            {
+                $order[$item] = $tmp;
+            }
+        }
+		/*发票金额*/
+		$orderinfo = order_info($_GET['order_id']);
+		$order['inv_money'] = $orderinfo['order_amount'];
+
+		/*发票金额*/
+        if(isset($order['inv_payee_type']) && $order['inv_payee_type'] == 'individual')
+        {
+            $order['inv_payee'] = '个人';
+        }
+        $inv_remark = trim($_REQUEST['inv_remark']);
+        $order['inv_remark'] = $inv_remark;
+
+        if(!empty($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == '1')
+        {
+            require_once(ROOT_PATH . 'includes/cls_json.php');
+            $json = new JSON;
+            $result = array();
+            if(empty($order))
+            {
+                $result['result'] = 'fail';
+            }
+            else
+            {			
+                if(update_order($order_id, $order) != false)
+                {
+                    $result['result'] = 'success';
+                }
+                else
+                {
+                    $result['result'] = 'fail';
+
+                }
+            }
+            echo $json->encode($result);
+        }
+        else
+        {
+            if(update_order($order_id, $order))
+            {
+                $msg_detail = '编辑成功！';
+                $msg_type = '0';
+            }
+            else
+            {
+                $msg_detail = '编辑失败！';
+                $msg_type = '1';
+            }
+            $link_text = '订单信息';
+            $link_href = 'order.php?act=info&order_id='.$order_id;
+            $links = array(array('text'=>$link_text,'href'=>$link_href));
+            $auto_redirect = true;
+            sys_msg($msg_detail, $msg_type,$links, $auto_redirect);
+            ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+        }
+
+        /* todo 记录日志 */
+        $sn = $old_order['order_sn'];
+        admin_log($sn, 'edit', 'order');
+        exit;
+	/*增值税发票_更改_END_bbs.hongyuvip.com*/
     }
 }
 
@@ -2061,7 +2343,9 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     $smarty->assign('order_id', $order_id);
 
     /* 取得参数 step */
-    $step_list = array('user', 'goods', 'consignee', 'shipping', 'payment', 'other', 'money');
+    /*增值税发票_更改_START_bbs.hongyuvip.com*/
+    $step_list = array('user', 'goods', 'consignee', 'shipping', 'payment', 'other', 'money','invoice');
+    /*增值税发票_更改_END_bbs.hongyuvip.com*/
     $step = isset($_GET['step']) && in_array($_GET['step'], $step_list) ? $_GET['step'] : 'user';
     $smarty->assign('step', $step);
 
@@ -2069,7 +2353,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     $act = $_GET['act'];
     $smarty->assign('ur_here',$_LANG['add_order']);
     $smarty->assign('step_act', $act);
-
+		
     /* 取得订单信息 */
     if ($order_id > 0)
     {
@@ -2077,6 +2361,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
 
         /* 发货单格式化 */
         $order['invoice_no'] = str_replace('<br>', ',', $order['invoice_no']);
+
 
         /* 如果已发货，就不能修改订单了（配送方式和发货单号除外） */
         if ($order['shipping_status'] == SS_SHIPPED || $order['shipping_status'] == SS_RECEIVED)
@@ -2196,6 +2481,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     // 选择配送方式
     elseif ('shipping' == $step)
     {
+
         /* 如果不存在实体商品 */
         if (!exist_real_goods($order_id))
         {
@@ -2206,8 +2492,23 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
         $region_id_list = array(
             $order['country'], $order['province'], $order['city'], $order['district']
         );
-        $shipping_list = available_shipping_list($region_id_list);
 
+        //$shipping_list = available_shipping_list($region_id_list);
+		
+        $shipping_info = shipping_info($order['shipping_id']);
+        
+        $shipping_list = available_shipping_list($region_id_list, $order['supplier_id'], 0, $shipping_info['shipping_code']);
+        
+        $smarty->assign('shipping_list', $shipping_list);
+        
+        if($shipping_info['shipping_code'] == 'pups')
+        {
+        	$pickup_point_list = get_pickup_info($order['city'], $order['supplier_id']);
+        	$smarty->assign('pickup_point_list', $pickup_point_list);
+        	 
+        	echo var_dump($pickup_point_list);
+        }
+	
         /* 取得配送费用 */
         $total = order_weight_price($order_id);
         foreach ($shipping_list AS $key => $shipping)
@@ -2289,42 +2590,68 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
             $smarty->assign('available_pay_points', $order['integral'] + $user['pay_points']);
 
             /* 取得用户可用红包 */
-            $user_bonus = user_bonus($order['user_id'], $order['goods_amount']);
+            $user_bonus = user_bonus($order['user_id'], array($order['supplier_id']=>$order['goods_amount']));
+
+			/*
             if ($order['bonus_id'] > 0)
             {
                 $bonus = bonus_info($order['bonus_id']);
                 $user_bonus[] = $bonus;
-            }
-            $smarty->assign('available_bonus', $user_bonus);
+            }*/
+			if (!empty($user_bonus)){
+				$user_bonus1 = $user_bonus[$order['supplier_id']];
+				foreach($user_bonus1 as $key=>$val){
+					$user_bonus1[$key] = bonus_info($val['bonus_id']);
+				}
+				$smarty->assign('available_bonus', $user_bonus1);
+			}
         }
     }
 
     // 发货后修改配送方式和发货单号
     elseif ('invoice' == $step)
     {
-        /* 如果不存在实体商品 */
-        if (!exist_real_goods($order_id))
-        {
-            die ('Hacking Attemp');
-        }
-
-        /* 取得可用的配送方式列表 */
-        $region_id_list = array(
-            $order['country'], $order['province'], $order['city'], $order['district']
+		$region_id_list = array(
+         $order['country'], $order['province'], $order['city'], $order['district']
         );
-        $shipping_list = available_shipping_list($region_id_list);
+		
+		$shipping_info = shipping_info($order['shipping_id']);
+		
+		$shipping_list = available_shipping_list($region_id_list, $order['supplier_id'], 0, $shipping_info['shipping_code']);
 
-//        /* 取得配送费用 */
-//        $total = order_weight_price($order_id);
-//        foreach ($shipping_list AS $key => $shipping)
-//        {
-//            $shipping_fee = shipping_fee($shipping['shipping_code'],
-//                unserialize($shipping['configure']), $total['weight'], $total['amount'], $total['number']);
-//            $shipping_list[$key]['shipping_fee'] = $shipping_fee;
-//            $shipping_list[$key]['format_shipping_fee'] = price_format($shipping_fee);
-//            $shipping_list[$key]['free_money'] = price_format($shipping['configure']['free_money']);
-//        }
-        $smarty->assign('shipping_list', $shipping_list);
+		$smarty->assign('shipping_list', $shipping_list);
+		
+        if($shipping_info['shipping_code'] == 'pups')
+        {
+        	$pickup_point_list = get_pickup_info($order['city'], $order['supplier_id']);
+        	$smarty->assign('pickup_point_list', $pickup_point_list);
+        	
+        }
+		
+        /*增值税发票_更改_START_bbs.hongyuvip.com*/
+        $order['order_time']    = local_date($_CFG['time_format'], $order['add_time']);
+        if(!empty($_REQUEST['step_detail']))
+        {
+            $smarty->assign('step_detail',$_REQUEST['step_detail']);
+            if($_REQUEST['step_detail'] == 'edit')
+            {
+                $smarty->assign('ur_here',$_LANG['edit_invoice']);
+                $order['inv_consignee_regions'] = get_inv_consignee_regions($order);
+            }
+            elseif($_REQUEST['step_detail'] == 'info')
+            {
+                $action_link = array('text'=>'发票列表','href'=>'order.php?act=invoice_list&uselastfilter=1');
+                $smarty->assign('action_link',$action_link);
+                $order['inv_complete_address'] = get_inv_complete_address($order);
+                $order['formatted_inv_money'] = price_format($order['inv_money']);
+                $smarty->assign('ur_here',$_LANG['check_invoice']);
+            }
+            $_CFG['invoice_content'] = explode("\n",str_replace("\r",'',$_CFG['invoice_content']));
+        }
+        $smarty->assign('cfg',$_CFG);
+        $smarty->assign('order', $order);
+        /*增值税发票_更改_END_bbs.hongyuvip.com*/
+	
     }
 
     /* 显示模板 */
@@ -2464,7 +2791,7 @@ elseif ($_REQUEST['act'] == 'merge')
 
     /* 模板赋值 */
     $smarty->assign('ur_here', $_LANG['04_merge_order']);
-    $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['02_order_list']));
+    $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['01_order_list']));
 
     /* 显示模板 */
     assign_query_info();
@@ -2500,13 +2827,46 @@ elseif ($_REQUEST['act'] == 'templates')
 
     /* 模板赋值 */
     $smarty->assign('ur_here',      $_LANG['edit_order_templates']);
-    $smarty->assign('action_link',  array('href' => 'order.php?act=list', 'text' => $_LANG['02_order_list']));
+    $smarty->assign('action_link',  array('href' => 'order.php?act=list', 'text' => $_LANG['01_order_list']));
     $smarty->assign('act', 'edit_templates');
 
     /* 显示模板 */
     assign_query_info();
     $smarty->display('order_templates.htm');
 }
+/* 打印小票 */
+
+elseif ($_REQUEST['act'] == 'templates_bill')
+{
+
+    /* 读入订单打印模板文件 */
+    $file_path    = ROOT_PATH. DATA_DIR . '/bill_print.html';
+    $file_content = file_get_contents($file_path);
+    @fclose($file_content);
+
+    include_once(ROOT_PATH."includes/fckeditor/fckeditor.php");
+
+    /* 编辑器 */
+    $editor = new FCKeditor('FCKeditor1');
+    $editor->BasePath   = "../includes/fckeditor/";
+    $editor->ToolbarSet = "Normal";
+    $editor->Width      = "95%";
+    $editor->Height     = "500";
+    $editor->Value      = $file_content;
+
+    $fckeditor = $editor->CreateHtml();
+    $smarty->assign('fckeditor', $fckeditor);
+
+    /* 模板赋值 */
+    $smarty->assign('ur_here',      $_LANG['edit_order_templates']);
+    $smarty->assign('action_link',  array('href' => 'order.php?act=list', 'text' => $_LANG['01_order_list']));
+    $smarty->assign('act', 'edit_templates');
+
+    /* 显示模板 */
+    assign_query_info();
+    $smarty->display('order_templates.htm');
+}
+/* 打印小票 */
 /*------------------------------------------------------ */
 //-- 订单打印模板（提交修改）
 /*------------------------------------------------------ */
@@ -2548,6 +2908,632 @@ elseif ($_REQUEST['act'] == 'operate')
         $action         = $_LANG['op_confirm'];
         $operation      = 'confirm';
     }
+/*------------------------------------------------------ */
+//-- start一键发货 增加 by bbs.hongyuvip.com
+/*------------------------------------------------------ */
+    elseif (isset($_POST['to_shipping']))
+	{
+	   $invoice_no = empty($_REQUEST['invoice_no']) ? '' : trim($_REQUEST['invoice_no']);  //快递单号
+
+       if (!empty($invoice_no))
+        {
+        $order_id = intval(trim($order_id));
+
+        $action_note = trim($action_note);
+
+        /* 查询：根据订单id查询订单信息 */
+        if (!empty($order_id))
+        {
+            $order = order_info($order_id);
+        }
+        else
+        {
+            die('order does not exist');
+        }
+        /* 查询：根据订单是否完成 检查权限 */
+        if (order_finished($order))
+        {
+            admin_priv('order_view_finished');
+        }
+        else
+        {
+            admin_priv('order_view');
+        }
+
+        /* 查询：如果管理员属于某个办事处，检查该订单是否也属于这个办事处 */
+        $sql = "SELECT agency_id FROM " . $ecs->table('admin_user') . " WHERE user_id = '$_SESSION[admin_id]'";
+        $agency_id = $db->getOne($sql);
+        if ($agency_id > 0)
+        {
+            if ($order['agency_id'] != $agency_id)
+            {
+                sys_msg($_LANG['priv_error'], 0);
+            }
+        }
+        /* 查询：取得用户名 */
+        if ($order['user_id'] > 0)
+        {
+            $user = user_info($order['user_id']);
+            if (!empty($user))
+            {
+                $order['user_name'] = $user['user_name'];
+            }
+        }
+        /* 查询：取得区域名 */
+        
+        $order['region'] = $db->getOne($sql);
+
+        /* 查询：其他处理 */
+        $order['order_time']    = local_date($_CFG['time_format'], $order['add_time']);
+        $order['invoice_no']    = $order['shipping_status'] == SS_UNSHIPPED || $order['shipping_status'] == SS_PREPARING ? $_LANG['ss'][SS_UNSHIPPED] : $order['invoice_no'];
+
+	    /* 查询：是否保价 */
+        $order['insure_yn'] = empty($order['insure_fee']) ? 0 : 1;
+        /* 查询：是否存在实体商品 */
+        $exist_real_goods = exist_real_goods($order_id);
+
+        
+		/* 查询：取得订单商品 */
+        $_goods = get_order_goods(array('order_id' => $order['order_id'], 'order_sn' =>$order['order_sn']));
+
+        $attr = $_goods['attr'];
+        $goods_list = $_goods['goods_list'];
+        unset($_goods);
+
+        /* 查询：商品已发货数量 此单可发货数量 */
+        if ($goods_list)
+        {
+            foreach ($goods_list as $key => $value)
+            {
+			}
+			foreach ($goods_list as $key=>$goods_value)
+            {
+                if (!$goods_value['goods_id'])
+                {
+                    continue;
+                }
+
+                /* 超级礼包 */
+                if (($goods_value['extension_code'] == 'package_buy') && (count($goods_value['package_goods_list']) > 0))
+                {
+                    $goods_list[$key]['package_goods_list'] = package_goods($goods_value['package_goods_list'], $goods_value['goods_number'], $goods_value['order_id'], $goods_value['extension_code'], $goods_value['goods_id']);
+
+                    foreach ($goods_list[$key]['package_goods_list'] as $pg_key => $pg_value)
+                    {
+                        $goods_list[$key]['package_goods_list'][$pg_key]['readonly'] = '';
+                        /* 使用库存 是否缺货 */
+                        if ($pg_value['storage'] <= 0 && $_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_SHIP)
+                        {
+                            $goods_list[$key]['package_goods_list'][$pg_key]['send'] = $_LANG['act_good_vacancy'];
+                            $goods_list[$key]['package_goods_list'][$pg_key]['readonly'] = 'readonly="readonly"';
+                        }
+                        /* 将已经全部发货的商品设置为只读 */
+                        elseif ($pg_value['send'] <= 0)
+                        {
+                            $goods_list[$key]['package_goods_list'][$pg_key]['send'] = $_LANG['act_good_delivery'];
+                            $goods_list[$key]['package_goods_list'][$pg_key]['readonly'] = 'readonly="readonly"';
+                        }
+                    }
+                }
+                else
+                {
+                    $goods_list[$key]['sended'] = $goods_value['send_number'];
+                    $goods_list[$key]['sended'] = $goods_value['goods_number'];
+                    $goods_list[$key]['send'] = $goods_value['goods_number'] - $goods_value['send_number'];
+					$goods_list[$key]['readonly'] = '';
+                    /* 是否缺货 */
+                    if ($goods_value['storage'] <= 0 && $_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP)
+                    {
+                        $goods_list[$key]['send'] = $_LANG['act_good_vacancy'];
+                        $goods_list[$key]['readonly'] = 'readonly="readonly"';
+                    }
+                    elseif ($goods_list[$key]['send'] <= 0)
+                    {
+                        $goods_list[$key]['send'] = $_LANG['act_good_delivery'];
+                        $goods_list[$key]['readonly'] = 'readonly="readonly"';
+                    }
+                }
+            }
+        }
+		
+		$suppliers_id = 0;
+		
+		$delivery['order_sn'] = trim($order['order_sn']);
+		$delivery['add_time'] = trim($order['order_time']);
+		$delivery['user_id'] = intval(trim($order['user_id']));
+		$delivery['how_oos'] = trim($order['how_oos']);
+		$delivery['shipping_id'] = trim($order['shipping_id']);
+		$delivery['shipping_fee'] = trim($order['shipping_fee']);
+		$delivery['consignee'] = trim($order['consignee']);
+		$delivery['address'] = trim($order['address']);
+		$delivery['country'] = intval(trim($order['country']));
+		$delivery['province'] = intval(trim($order['province']));
+		$delivery['city'] = intval(trim($order['city']));
+		$delivery['district'] = intval(trim($order['district']));
+		$delivery['sign_building'] = trim($order['sign_building']);
+		$delivery['email'] = trim($order['email']);
+		$delivery['zipcode'] = trim($order['zipcode']);
+		$delivery['tel'] = trim($order['tel']);
+		$delivery['mobile'] = trim($order['mobile']);
+		$delivery['best_time'] = trim($order['best_time']);
+		$delivery['postscript'] = trim($order['postscript']);
+		$delivery['how_oos'] = trim($order['how_oos']);
+		$delivery['insure_fee'] = floatval(trim($order['insure_fee']));
+		$delivery['shipping_fee'] = floatval(trim($order['shipping_fee']));
+		$delivery['agency_id'] = intval(trim($order['agency_id']));
+		$delivery['shipping_name'] = trim($order['shipping_name']);
+
+    /* 查询订单信息 */
+    $order = order_info($order_id);
+    /* 检查能否操作 */
+    $operable_list = operable_list($order);
+	
+    /* 初始化提示信息 */
+   $msg = '';
+
+		/* 定义当前时间 */
+       
+
+        /* 取得订单商品 */
+        $_goods = get_order_goods(array('order_id' => $order_id, 'order_sn' => $delivery['order_sn']));
+        $goods_list = $_goods['goods_list'];
+	
+
+		        /* 检查此单发货商品库存缺货情况 */
+        /* $goods_list已经过处理 超值礼包中商品库存已取得 */
+        $virtual_goods = array();
+        $package_virtual_goods = array();
+        /* 生成发货单 */
+        /* 获取发货单号和流水号 */
+        $delivery['delivery_sn'] = get_delivery_sn();
+        $delivery_sn = $delivery['delivery_sn'];
+
+        /* 获取当前操作员 */
+        $delivery['action_user'] = $_SESSION['admin_name'];
+
+        /* 获取发货单生成时间 */
+ 	define('GMTIME_UTC', gmtime()); 
+        $delivery['update_time'] = GMTIME_UTC;
+        $delivery_time = $delivery['update_time'];
+        $sql ="select add_time from ". $GLOBALS['ecs']->table('order_info') ." WHERE order_sn = '" . $delivery['order_sn'] . "'";
+        $delivery['add_time'] =  $GLOBALS['db']->GetOne($sql);
+        /* 获取发货单所属供应商 */
+        $delivery['suppliers_id'] = $suppliers_id;
+
+        /* 设置默认值 */
+        $delivery['status'] = 2; // 正常
+        $delivery['order_id'] = $order_id;
+
+        /* 过滤字段项 */
+        $filter_fileds = array(
+                               'order_sn', 'add_time', 'user_id', 'how_oos', 'shipping_id', 'shipping_fee',
+                               'consignee', 'address', 'country', 'province', 'city', 'district', 'sign_building',
+                               'email', 'zipcode', 'tel', 'mobile', 'best_time', 'postscript', 'insure_fee',
+                               'agency_id', 'delivery_sn', 'action_user', 'update_time',
+                               'suppliers_id', 'status', 'order_id', 'shipping_name'
+                               );
+        $_delivery = array();
+        foreach ($filter_fileds as $value)
+        {
+            $_delivery[$value] = $delivery[$value];
+        }
+        /* 发货单入库 */
+        $query = $db->autoExecute($ecs->table('delivery_order'), $_delivery, 'INSERT', '', 'SILENT');
+        $delivery_id = $db->insert_id();
+
+		$shipping_order_id = $db->getRow("select shipping_id from ".$ecs->table('delivery_order')."where delivery_id=".$delivery_id);
+		$shipping_order_code = $db->getRow("select shipping_code from ".$ecs->table('shipping')."where shipping_id=".$shipping_order_id['shipping_id']);
+		if ($shipping_order_code['shipping_code'] == "tc_express")
+		{
+			new_kuaidi_order($delivery_id);
+			update_kuaidi_order($delivery_id, $invoice_no);
+		}
+		
+		$sql_back_old = $db->getOne("SELECT back_id FROM " . $ecs->table('back_order') . " WHERE order_id = " . $order['order_id'] . " AND back_type = 4 AND status_back < 6 AND status_back != 3");
+		if (!empty($sql_back_old))
+		{
+			$db->query("UPDATE " . $ecs->table('back_order') . " SET status_back = 6 WHERE back_id = " . $sql_back_old);
+			$db->query("UPDATE " . $ecs->table('back_goods') . " SET status_back = 6 WHERE back_id = " . $sql_back_old);
+		}
+        if ($delivery_id)
+        {
+
+            $delivery_goods = array();
+			
+            //发货单商品入库
+            if (!empty($goods_list))
+            {
+                foreach ($goods_list as $value)
+                {
+                    // 商品（实货）（虚货）
+                    if (empty($value['extension_code']) || $value['extension_code'] == 'virtual_card')
+                    {
+                        $delivery_goods = array('delivery_id' => $delivery_id,
+                                                'goods_id' => $value['goods_id'],
+                                                'product_id' => $value['product_id'],
+                                                'product_sn' => $value['product_sn'],
+                                                'goods_id' => $value['goods_id'],
+                                                'goods_name' => $value['goods_name'],
+                                                'brand_name' => $value['brand_name'],
+                                                'goods_sn' => $value['goods_sn'],
+                                                'send_number' => $value['goods_number'],
+                                                'parent_id' => 0,
+                                                'is_real' => $value['is_real'],
+                                                'goods_attr' => $value['goods_attr']
+                                                );
+                        /* 如果是货品 */
+                        if (!empty($value['product_id']))
+                        {
+                            $delivery_goods['product_id'] = $value['product_id'];
+
+                        }
+                        $query = $db->autoExecute($ecs->table('delivery_goods'), $delivery_goods, 'INSERT', '', 'SILENT');
+						$sql = "UPDATE ".$GLOBALS['ecs']->table('order_goods'). "
+                SET send_number = " . $value['goods_number'] . "
+                WHERE order_id = '" . $value['order_id'] . "'
+                AND goods_id = '" . $value['goods_id'] . "' ";
+                $GLOBALS['db']->query($sql, 'SILENT');
+                    }
+                    // 商品（超值礼包）
+                    elseif ($value['extension_code'] == 'package_buy')
+                    {
+                        foreach ($value['package_goods_list'] as $pg_key => $pg_value)
+                        {
+                            $delivery_pg_goods = array('delivery_id' => $delivery_id,
+                                                    'goods_id' => $pg_value['goods_id'],
+                                                    'product_id' => $pg_value['product_id'],
+                                                    'product_sn' => $pg_value['product_sn'],
+                                                    'goods_name' => $pg_value['goods_name'],
+                                                    'brand_name' => '',
+                                                    'goods_sn' => $pg_value['goods_sn'],
+                                                    'send_number' => $value['goods_number'],
+                                                    'parent_id' => $value['goods_id'], // 礼包ID
+                                                    'extension_code' => $value['extension_code'], // 礼包
+                                                    'is_real' => $pg_value['is_real']
+                                                    );
+                            $query = $db->autoExecute($ecs->table('delivery_goods'), $delivery_pg_goods, 'INSERT', '', 'SILENT');
+							$sql = "UPDATE ".$GLOBALS['ecs']->table('order_goods'). "
+                SET send_number = " . $value['goods_number'] . "
+                WHERE order_id = '" . $value['order_id'] . "'
+                AND goods_id = '" . $pg_value['goods_id'] . "' ";
+                $GLOBALS['db']->query($sql, 'SILENT');
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            /* 操作失败 */
+            $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=info&order_id=' . $order_id);
+            sys_msg($_LANG['act_false'], 1, $links);
+        }
+        unset($filter_fileds, $delivery, $_delivery, $order_finish);
+
+        /* 定单信息更新处理 */
+        if (true)
+        {
+
+            /* 标记订单为已确认 "发货中" */
+            /* 更新发货时间 */
+            $order_finish = get_order_finish($order_id);
+            $shipping_status = SS_SHIPPED_ING;
+            if ($order['order_status'] != OS_CONFIRMED && $order['order_status'] != OS_SPLITED && $order['order_status'] != OS_SPLITING_PART)
+            {
+                $arr['order_status']    = OS_CONFIRMED;
+                $arr['confirm_time']    = GMTIME_UTC;
+            }
+            $arr['order_status'] = $order_finish ? OS_SPLITED : OS_SPLITING_PART; // 全部分单、部分分单
+            $arr['shipping_status']     = $shipping_status;
+            update_order($order_id, $arr);
+		}
+
+        /* 记录log */
+        order_action($order['order_sn'], $arr['order_status'], $shipping_status, $order['pay_status'], $action_note);
+
+        /* 清除缓存 */
+        clear_cache_files();
+
+	/* 根据发货单id查询发货单信息 */
+    if (!empty($delivery_id))
+    {
+        $delivery_order = delivery_order_info($delivery_id);
+    }
+	elseif (!empty($order_sn))
+    {
+
+		$delivery_id = $GLOBALS['db']->getOne("SELECT delivery_id FROM " . $ecs->table('delivery_order') . " WHERE order_sn = " . $order_sn );
+        $delivery_order = delivery_order_info($delivery_id);
+    }
+    else
+    {
+        die('order does not exist');
+    }
+
+    /* 如果管理员属于某个办事处，检查该订单是否也属于这个办事处 */
+    $sql = "SELECT agency_id FROM " . $ecs->table('admin_user') . " WHERE user_id = '" . $_SESSION['admin_id'] . "'";
+    $agency_id = $db->getOne($sql);
+    if ($agency_id > 0)
+    {
+        if ($delivery_order['agency_id'] != $agency_id)
+        {
+            sys_msg($_LANG['priv_error']);
+        }
+
+        /* 取当前办事处信息 */
+        $sql = "SELECT agency_name FROM " . $ecs->table('agency') . " WHERE agency_id = '$agency_id' LIMIT 0, 1";
+        $agency_name = $db->getOne($sql);
+        $delivery_order['agency_name'] = $agency_name;
+    }
+
+    /* 取得用户名 */
+    if ($delivery_order['user_id'] > 0)
+    {
+        $user = user_info($delivery_order['user_id']);
+        if (!empty($user))
+        {
+            $delivery_order['user_name'] = $user['user_name'];
+        }
+    }
+
+    /* 取得区域名 */
+    $sql = "SELECT concat(IFNULL(c.region_name, ''), '  ', IFNULL(p.region_name, ''), " .
+                "'  ', IFNULL(t.region_name, ''), '  ', IFNULL(d.region_name, '')) AS region " .
+            "FROM " . $ecs->table('order_info') . " AS o " .
+                "LEFT JOIN " . $ecs->table('region') . " AS c ON o.country = c.region_id " .
+                "LEFT JOIN " . $ecs->table('region') . " AS p ON o.province = p.region_id " .
+                "LEFT JOIN " . $ecs->table('region') . " AS t ON o.city = t.region_id " .
+                "LEFT JOIN " . $ecs->table('region') . " AS d ON o.district = d.region_id " .
+            "WHERE o.order_id = '" . $delivery_order['order_id'] . "'";
+    $delivery_order['region'] = $db->getOne($sql);
+
+    /* 是否保价 */
+    $order['insure_yn'] = empty($order['insure_fee']) ? 0 : 1;
+
+    /* 取得发货单商品 */
+    $goods_sql = "SELECT *
+                  FROM " . $ecs->table('delivery_goods') . "
+                  WHERE delivery_id = " . $delivery_order['delivery_id'];
+    $goods_list = $GLOBALS['db']->getAll($goods_sql);
+
+    /* 是否存在实体商品 */
+    $exist_real_goods = 0;
+    if ($goods_list)
+    {
+        foreach ($goods_list as $value)
+        {
+            if ($value['is_real'])
+            {
+                $exist_real_goods++;
+            }
+        }
+    }
+
+    /* 取得订单操作记录 */
+    $act_list = array();
+    $sql = "SELECT * FROM " . $ecs->table('order_action') . " WHERE order_id = '" . $delivery_order['order_id'] . "' AND action_place = 1 ORDER BY log_time DESC,action_id DESC";
+    $res = $db->query($sql);
+    while ($row = $db->fetchRow($res))
+    {
+        $row['order_status']    = $_LANG['os'][$row['order_status']];
+        $row['pay_status']      = $_LANG['ps'][$row['pay_status']];
+        $row['shipping_status'] = ($row['shipping_status'] == SS_SHIPPED_ING) ? $_LANG['ss_admin'][SS_SHIPPED_ING] : $_LANG['ss'][$row['shipping_status']];
+        $row['action_time']     = local_date($_CFG['time_format'], $row['log_time']);
+        $act_list[] = $row;
+    }
+
+	/*同步发货*/
+	/*判断支付方式是否支付宝*/
+	$alipay    = false;
+	$order     = order_info($delivery_order['order_id']);  //根据订单ID查询订单信息，返回数组$order
+	$payment   = payment_info($order['pay_id']);           //取得支付方式信息
+
+    /* 定义当前时间 */
+    define('GMTIME_UTC', gmtime()); // 获取 UTC 时间戳
+
+    /* 根据发货单id查询发货单信息 */
+    if (!empty($delivery_id))
+    {
+        $delivery_order = delivery_order_info($delivery_id);
+    }
+    else
+    {
+        die('order does not exist');
+    }
+
+    /* 查询订单信息 */
+    $order = order_info($order_id);
+
+    /* 检查此单发货商品库存缺货情况 */
+    $virtual_goods = array();
+    $delivery_stock_sql = "SELECT DG.goods_id, DG.is_real, DG.product_id, SUM(DG.send_number) AS sums, IF(DG.product_id > 0, P.product_number, G.goods_number) AS storage, G.goods_name, DG.send_number
+        FROM " . $GLOBALS['ecs']->table('delivery_goods') . " AS DG, " . $GLOBALS['ecs']->table('goods') . " AS G, " . $GLOBALS['ecs']->table('products') . " AS P
+        WHERE DG.goods_id = G.goods_id
+        AND DG.delivery_id = '$delivery_id'
+        AND DG.product_id = P.product_id
+        GROUP BY DG.product_id ";
+
+    $delivery_stock_result = $GLOBALS['db']->getAll($delivery_stock_sql);
+
+    /* 如果商品存在规格就查询规格，如果不存在规格按商品库存查询 */
+    if(!empty($delivery_stock_result))
+    {
+        foreach ($delivery_stock_result as $value)
+        {
+            if (($value['sums'] > $value['storage'] || $value['storage'] <= 0) && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $value['is_real'] == 0)))
+            {
+                /* 操作失败 */
+                $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
+                sys_msg(sprintf($_LANG['act_good_vacancy'], $value['goods_name']), 1, $links);
+                break;
+            }
+
+            /* 虚拟商品列表 virtual_card*/
+            if ($value['is_real'] == 0)
+            {
+                $virtual_goods[] = array(
+                               'goods_id' => $value['goods_id'],
+                               'goods_name' => $value['goods_name'],
+                               'num' => $value['send_number']
+                               );
+            }
+        }
+    }
+    else
+    {
+        $delivery_stock_sql = "SELECT DG.goods_id, DG.is_real, SUM(DG.send_number) AS sums, G.goods_number, G.goods_name, DG.send_number
+        FROM " . $GLOBALS['ecs']->table('delivery_goods') . " AS DG, " . $GLOBALS['ecs']->table('goods') . " AS G
+        WHERE DG.goods_id = G.goods_id
+        AND DG.delivery_id = '$delivery_id'
+        GROUP BY DG.goods_id ";
+        $delivery_stock_result = $GLOBALS['db']->getAll($delivery_stock_sql);
+        foreach ($delivery_stock_result as $value)
+        {
+            if (($value['sums'] > $value['goods_number'] || $value['goods_number'] <= 0) && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $value['is_real'] == 0)))
+            {
+                /* 操作失败 */
+                $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
+                sys_msg(sprintf($_LANG['act_good_vacancy'], $value['goods_name']), 1, $links);
+                break;
+            }
+
+            /* 虚拟商品列表 virtual_card*/
+            if ($value['is_real'] == 0)
+            {
+                $virtual_goods[] = array(
+                               'goods_id' => $value['goods_id'],
+                               'goods_name' => $value['goods_name'],
+                               'num' => $value['send_number'],
+                               );
+            }
+        }
+    }
+
+    /* 发货 */
+    /* 处理虚拟卡 商品（虚货） */
+    if (is_array($virtual_goods) && count($virtual_goods) > 0)
+    {
+        foreach ($virtual_goods as $virtual_value)
+        {
+            virtual_card_shipping($virtual_value,$order['order_sn'], $msg, 'split');
+        }
+    }
+
+    /* 如果使用库存，且发货时减库存，则修改库存 */
+    if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_SHIP)
+    {
+
+        foreach ($delivery_stock_result as $value)
+        {
+
+            /* 商品（实货）、超级礼包（实货） */
+            if ($value['is_real'] != 0)
+            {
+                //（货品）
+                if (!empty($value['product_id']))
+                {
+                    $minus_stock_sql = "UPDATE " . $GLOBALS['ecs']->table('products') . "
+                                        SET product_number = product_number - " . $value['sums'] . "
+                                        WHERE product_id = " . $value['product_id'];
+                    $GLOBALS['db']->query($minus_stock_sql, 'SILENT');
+                }
+
+                $minus_stock_sql = "UPDATE " . $GLOBALS['ecs']->table('goods') . "
+                                    SET goods_number = goods_number - " . $value['sums'] . "
+                                    WHERE goods_id = " . $value['goods_id'];
+
+                $GLOBALS['db']->query($minus_stock_sql, 'SILENT');
+            }
+        }
+    }
+
+    /* 修改发货单信息 */
+    $invoice_no = trim($invoice_no);
+    $_delivery['invoice_no'] = $invoice_no;
+    $_delivery['status'] = 0; // 0，为已发货
+    $query = $db->autoExecute($ecs->table('delivery_order'), $_delivery, 'UPDATE', "delivery_id = $delivery_id", 'SILENT');
+    if (!$query)
+    {
+        /* 操作失败 */
+        $links[] = array('text' => $_LANG['delivery_sn'] . $_LANG['detail'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
+        sys_msg($_LANG['act_false'], 1, $links);
+    }
+
+    /* 标记订单为已确认 "已发货" */
+    /* 更新发货时间 */
+    $order_finish = get_all_delivery_finish($order_id);
+    $shipping_status = ($order_finish == 1) ? SS_SHIPPED : SS_SHIPPED_PART;
+    $arr['shipping_status']     = $shipping_status;
+    $arr['shipping_time']       = GMTIME_UTC; // 发货时间
+    $arr['invoice_no']          = trim($order['invoice_no'] . '<br>' . $invoice_no, '<br>');
+    update_order($order_id, $arr);
+
+    /* 发货单发货记录log */
+    order_action($order['order_sn'], OS_CONFIRMED, $shipping_status, $order['pay_status'], $action_note, null, 1);
+    /* 如果当前订单已经全部发货 */
+    if ($order_finish)
+    {
+        /* 如果订单用户不为空，计算积分，并发给用户；发红包 */
+        if ($order['user_id'] > 0)
+        {
+            /* 取得用户信息 */
+            $user = user_info($order['user_id']);
+
+            /* 计算并发放积分 */
+            $integral = integral_to_give($order);
+
+            log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($_LANG['order_gift_integral'], $order['order_sn']));
+			//echo "<pre>";
+			//print_r($order);exit;
+            /* 发放红包 */
+            send_order_bonus($order_id,$order['supplier_id']);
+        }
+
+        /* 发送邮件 */
+        $cfg = $_CFG['send_ship_email'];
+        if ($cfg == '1')
+        {
+            $order['invoice_no'] = $invoice_no;
+            $tpl = get_mail_template('deliver_notice');
+            $smarty->assign('order', $order);
+            $smarty->assign('send_time', local_date($_CFG['time_format']));
+            $smarty->assign('shop_name', $_CFG['shop_name']);
+            $smarty->assign('send_date', local_date($_CFG['date_format']));
+            $smarty->assign('sent_date', local_date($_CFG['date_format']));
+            $smarty->assign('confirm_url', $ecs->url() . 'receive.php?id=' . $order['order_id'] . '&con=' . rawurlencode($order['consignee']));
+            $smarty->assign('send_msg_url',$ecs->url() . 'user.php?act=message_list&order_id=' . $order['order_id']);
+            $content = $smarty->fetch('str:' . $tpl['template_content']);
+            if (!send_mail($order['consignee'], $order['email'], $tpl['template_subject'], $content, $tpl['is_html']))
+            {
+                $msg = $_LANG['send_mail_fail'];
+            }
+        }
+
+        /* 如果需要，发短信 */
+        if ($GLOBALS['_CFG']['sms_order_shipped'] == '1' && $order['mobile'] != '')
+        {
+            include_once('../sms/sms.php');
+            $order_sn = $order['order_sn'];
+            $consignee = $order['consignee'];
+            $address = $order['address'];
+            $content = array($_CFG['sms_order_shipped_tpl'],"{\"order_sn\":\"$order_sn\",\"consignee\":\"$consignee\",\"address\":\"$address\"}",$_CFG['sms_sign']);
+			sendSMS($order['mobile'],$content);
+        }
+    }
+
+    /* 清除缓存 */
+    clear_cache_files();
+
+    /* 操作成功 */
+    $links[] = array('text' => $_LANG['09_delivery_order'], 'href' => 'order.php?act=delivery_list');
+    $links[] = array('text' => $_LANG['delivery_sn'] . $_LANG['detail'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
+    sys_msg($_LANG['act_ok'], 0, $links);
+	
+    }
+}
+/*------------------------------------------------------ */
+//-- end一键发货 增加 by bbs.hongyuvip.com
+/*------------------------------------------------------ */
     /* 付款 */
     elseif (isset($_POST['pay']))
     {
@@ -2710,6 +3696,13 @@ elseif ($_REQUEST['act'] == 'operate')
                 }
             }
         }
+        
+        $s_code = $db->getOne("SELECT shipping_code FROM " .
+            $ecs->table('shipping') . " WHERE shipping_id = '" . $order['shipping_id'] . "'");
+        if ($s_code == 'tc_express')
+        {
+            $order['shipping_name'] = "同城快递";
+        }
 
         /* 模板赋值 */
         $smarty->assign('order', $order);
@@ -2830,7 +3823,7 @@ elseif ($_REQUEST['act'] == 'operate')
         }
 
         /* 操作成功 */
-        $links[] = array('href' => 'order.php?act=list&' . list_link_postfix(), 'text' => $_LANG['02_order_list']);
+        $links[] = array('href' => 'order.php?act=list&' . list_link_postfix(), 'text' => $_LANG['01_order_list']);//supplier.hongyuvip.com
         sys_msg($_LANG['act_ok'], 0, $links);
     }
     /* 订单删除 */
@@ -2997,12 +3990,14 @@ elseif ($_REQUEST['act'] == 'operate')
             /* 其他处理 */
             $order['order_time']    = local_date($_CFG['time_format'], $order['add_time']);
             $order['pay_time']      = $order['pay_time'] > 0 ?
-                local_date($_CFG['time_format'], $order['pay_time']) : $_LANG['ps'][PS_UNPAYED];
+            local_date($_CFG['time_format'], $order['pay_time']) : $_LANG['ps'][PS_UNPAYED];
             $order['shipping_time'] = $order['shipping_time'] > 0 ?
-                local_date($_CFG['time_format'], $order['shipping_time']) : $_LANG['ss'][SS_UNSHIPPED];
+            local_date($_CFG['time_format'], $order['shipping_time']) : $_LANG['ss'][SS_UNSHIPPED];
             $order['status']        = $_LANG['os'][$order['order_status']] . ',' . $_LANG['ps'][$order['pay_status']] . ',' . $_LANG['ss'][$order['shipping_status']];
             $order['invoice_no']    = $order['shipping_status'] == SS_UNSHIPPED || $order['shipping_status'] == SS_PREPARING ? $_LANG['ss'][SS_UNSHIPPED] : $order['invoice_no'];
-
+            /*增值税发票收票人详细地址*/
+            $order['inv_complete_address'] = get_inv_complete_address($order);
+			
             /* 此订单的发货备注(此订单的最后一条操作记录) */
             $sql = "SELECT action_note FROM " . $ecs->table('order_action').
                    " WHERE order_id = '$order[order_id]' AND shipping_status = 1 ORDER BY log_time DESC";
@@ -3374,7 +4369,7 @@ elseif ($_REQUEST['act'] == 'batch_operate_post')
 
         /* 模板赋值 */
         $smarty->assign('order_info', $sn_str);
-        $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['02_order_list']));
+        $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['01_order_list']));//supplier.hongyuvip.com
         $smarty->assign('order_list',   $order_list_no_fail);
 
         /* 显示模板 */
@@ -3760,6 +4755,14 @@ elseif ($_REQUEST['act'] == 'operate_post')
         /* 发货单入库 */
         $query = $db->autoExecute($ecs->table('delivery_order'), $_delivery, 'INSERT', '', 'SILENT');
         $delivery_id = $db->insert_id();
+		
+		$shipping_order_id = $db->getRow("select shipping_id from ".$ecs->table('delivery_order')."where delivery_id=".$delivery_id);
+		$shipping_order_code = $db->getRow("select shipping_code from ".$ecs->table('shipping')."where shipping_id=".$shipping_order_id['shipping_id']);
+		if ($shipping_order_code['shipping_code'] == "tc_express")
+		{
+			new_kuaidi_order($delivery_id);
+		}
+
         if ($delivery_id)
         {
             $delivery_goods = array();
@@ -4276,6 +5279,156 @@ elseif ($_REQUEST['act'] == 'remove_order')
     }
 }
 
+/*增值税发票_添加_START_bbs.hongyuvip.com*/
+/*删除订单的发票信息*/
+elseif($_REQUEST['act'] == 'remove_invoice')
+{
+    admin_priv('invoice_manage');
+    $order_sns = explode(',',trim($_REQUEST['id']));
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON();
+    $result = array('error'=>0,  'content'=>'');
+    if(count($order_sns) > 0)
+    {
+        if(!delete_invoices($order_sns))
+        {
+            $result['error'] = '1';
+            $result['message'] = 'SQL错误！';
+        }
+    }
+    else
+    {
+        $result['error'] = '1';
+        $result['message'] = '参数为空！';
+    }
+    if($result['error'] == '1')
+    {
+        echo $json->encode($result);
+    }
+    else
+    {
+        $url = 'order.php?act=query&act_detail=invoice_query&' . str_replace('act=remove_invoice', '', $_SERVER['QUERY_STRING']);
+        ecs_header("Location: $url\n");
+        exit;
+    }
+}
+
+/*开票*/
+elseif($_REQUEST['act'] == 'provide_invoice')
+{
+    admin_priv('invoice_manage');
+    $order_sns = explode(',',trim($_REQUEST['order_sns']));
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON();
+    $result = array('error'=>0,  'content'=>'');
+    if(count($order_sns) > 0)
+    {
+        if(!provide_invoices($order_sns))
+        {
+            $result['error'] = '1';
+            $result['message'] = 'SQL错误！';
+        }
+    }
+    else
+    {
+        $result['error'] = '1';
+        $result['message'] = '参数为空！';
+    }
+    if($result['error'] == '1')
+    {
+        echo $json->encode($result);
+    }
+    else
+    {
+        if($_REQUEST['act_from'] == 'invoice_info')
+        {
+            $link_text = '发票列表';
+            $link_href = 'order.php?act=invoice_list';
+            $msg_detail = '开票成功！';
+            $msg_type = '0';
+            $links = array(array('text'=>$link_text,'href'=>$link_href));
+            $auto_redirect = true;
+            sys_msg($msg_detail, $msg_type,$links, $auto_redirect);
+        }
+        else
+        {
+            $url = 'order.php?act=query&act_detail=invoice_query&' . str_replace('act=provide_invoice', '', $_SERVER['QUERY_STRING']);
+            ecs_header("Location: $url\n");
+            exit;
+        }
+    }
+}
+/*取消开票*/
+elseif($_REQUEST['act'] == 'unprovide_invoice')
+{
+    admin_priv('invoice_manage');
+    $order_sns = explode(',',trim($_REQUEST['order_sns']));
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON();
+    $result = array('error'=>0,  'content'=>'');
+    if(count($order_sns) > 0)
+    {
+        if(!unprovide_provices($order_sns))
+        {
+            $result['error'] = '1';
+            $result['message'] = 'SQL错误！';
+        }
+    }
+    else
+    {
+        $result['error'] = '1';
+        $result['message'] = '参数为空！';
+    }
+    if($result['error'] == '1')
+    {
+        echo $json->encode($result);
+    }
+    else
+    {
+        if($_REQUEST['act_from'] == 'invoice_info')
+        {
+            $link_text = '发票列表';
+            $link_href = 'order.php?act=invoice_list';
+            $msg_detail = '取消开票成功！';
+            $msg_type = '0';
+            $links = array(array('text'=>$link_text,'href'=>$link_href));
+            $auto_redirect = true;
+            sys_msg($msg_detail, $msg_type,$links, $auto_redirect);
+        }
+        else
+        {
+            $url = 'order.php?act=query&act_detail=invoice_query&' . str_replace('act=unprovide_provice', '', $_SERVER['QUERY_STRING']);
+            ecs_header("Location: $url\n");
+            exit;
+        }
+    }
+}
+
+/*保存发票备注*/
+elseif($_REQUEST['act'] == 'save_inv_remark')
+{   
+    admin_priv('invoice_manage');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON();
+    $result = array('error'=>0,'message'=>'','content'=>'');
+    $inv_remark = empty($_GET['inv_remark']) ? '' : json_str_iconv(trim($_GET['inv_remark']));
+	$order_id = empty($_GET['order_id']) ? '' : json_str_iconv(trim($_GET['order_id']));
+	if(!empty($inv_remark))
+    {
+        $sql = 'UPDATE ' .$GLOBALS['ecs']->table('order_info').
+            ' SET `inv_remark`=\''.$inv_remark.'\''.
+            ' WHERE `order_id`=\''.$order_id.'\'';
+        $res = $db->query($sql);
+		return $res;
+    }
+    else
+    {
+        $result['error'] = 1;
+        $result['message'] = '备注不能为空！';
+    }
+}
+/*增值税发票_添加_END_bbs.hongyuvip.com*/
+
 /*------------------------------------------------------ */
 //-- 根据关键字和id搜索用户
 /*------------------------------------------------------ */
@@ -4481,6 +5634,386 @@ elseif ($_REQUEST['act'] == 'get_goods_info')
     $goods[] = array('order_id' => $order_id, 'str' => $str);
     make_json_result($goods);
 }
+
+/*增值税发票_添加_START_bbs.hongyuvip.com*/
+/*发票列表操作*/
+elseif($_REQUEST['act'] == 'invoice_op')
+{
+    admin_priv('invoice_manage');
+    if(isset($_REQUEST['export']))
+    {
+        $order_ids = explode(',',trim($_REQUEST['order_id']));
+        if(count($order_ids) > 0)
+        {
+            $rows = get_invoice_rows($order_ids);
+            if(count($rows) > 0)
+            {
+                $rows = format_invoice_rows($rows);
+                export_invoice_to_xml_excel($rows);
+            }
+        }
+    }
+}
+
+elseif($_REQUEST['act'] == 'export_all_invoice')
+{
+    $rows = get_invoice_rows();
+    if(count($rows) > 0)
+    {
+        $rows = format_invoice_rows($rows);
+        export_invoice_to_xml_excel($rows);
+    }
+}
+
+/*取消开票*/
+function unprovide_provices($order_sns)
+{
+    if(is_array($order_sns) && count($order_sns) > 0)
+    {
+        $sql = 'UPDATE ' .$GLOBALS['ecs']->table('order_info').
+            ' SET `inv_status` = \'unprovided\'';
+        $sql = stripslashes($sql);
+        foreach($order_sns as $order_sn)
+        {
+            $where .= '`order_sn` = \''.$order_sn.'\' OR ';
+        }
+        $sql = stripslashes($sql);
+        $where .= '0';
+        $sql .= ' WHERE '.$where;
+        return $GLOBALS['db']->query($sql);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/*开票*/
+function provide_invoices($order_sns)
+{
+     if(is_array($order_sns) && count($order_sns) > 0)
+    {
+        $sql = 'UPDATE ' .$GLOBALS['ecs']->table('order_info').
+            ' SET `inv_status` = \'provided\'';
+        $sql = stripslashes($sql);
+        foreach($order_sns as $order_sn)
+        {
+            $where .= '`order_sn` = \''.$order_sn.'\' OR ';
+        }
+        $sql = stripslashes($sql);
+        $where .= '0';
+        $sql .= ' WHERE '.$where;
+        return $GLOBALS['db']->query($sql);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+function delete_invoices($order_sns)
+{
+    if(is_array($order_sns) && count($order_sns) > 0)
+    {
+        $delete_cols = array('inv_type','inv_payee','inv_content',
+//'invoice_no',
+        'vat_inv_company_name','vat_inv_taxpayer_id','vat_inv_registration_address',
+        'vat_inv_registration_phone','vat_inv_deposit_bank','vat_inv_bank_account',
+        'inv_consignee_name','inv_consignee_phone','inv_consignee_province',
+            'inv_consignee_city','inv_consignee_district','inv_consignee_address',
+            'inv_status','inv_remark','inv_payee_type');
+        $sql = 'UPDATE ' .$GLOBALS['ecs']->table('order_info'). ' SET ';
+        foreach($delete_cols as $col)
+        {
+            $sql .= '`'.$col.'` = DEFAULT, ';
+        }
+        $sql = substr($sql,0,-2);
+        foreach($order_sns as $order_sn)
+        {
+            $where .= '`order_sn` = \''.$order_sn.'\' OR ';
+        }
+        $sql = stripslashes($sql);
+        $where .= '0';
+        $sql .= ' WHERE '.$where;
+        return $GLOBALS['db']->query($sql);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+function get_inv_consignee_regions($order)
+{
+    $inv_regions = array(
+        'inv_consignee_province_list' => get_regions(1,$order['inv_consignee_country']),
+        'inv_consignee_city_list' => get_regions(2,$order['inv_consignee_province']),
+        'inv_consignee_district_list' => get_regions(3,$order['inv_consignee_city']));
+    return $inv_regions;
+}
+
+function get_inv_complete_address($order)
+{	
+    if($order['inv_type'] == 'normal_invoice')
+    {
+        $address = trim(get_inv_complete_region($order['order_id'],$order['inv_type']));
+        if(empty($address))
+        {
+            return $order['address'];
+        }
+        else
+        {
+            return '['.$address.'] '.$order['address'];
+        }
+    }
+    elseif($order['inv_type'] == 'vat_invoice')
+    {
+        $address = trim(get_inv_complete_region($order['order_id'],$order['inv_type']));
+        if(empty($address))
+        {
+            return $order['inv_consignee_address'];
+        }
+        else
+        {
+            return '['.$address.'] '.$order['inv_consignee_address'];
+        }
+    }
+    else
+    {
+        return '';
+    }
+}
+
+function get_inv_complete_region($order_id,$inv_type)
+{
+    if(!empty($order_id))
+    {
+        if($inv_type == 'normal_invoice')
+        {
+            $sql = "SELECT concat(IFNULL(c.region_name, ''), '  ', IFNULL(p.region_name, ''), " .
+                        "'  ', IFNULL(t.region_name, ''), '  ', IFNULL(d.region_name, '')) AS region " .
+                    "FROM " . $GLOBALS['ecs']->table('order_info') . " AS o " .
+                        "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS c ON o.country = c.region_id " .
+                        "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS p ON o.province = p.region_id " .
+                        "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS t ON o.city = t.region_id " .
+                        "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS d ON o.district = d.region_id " .
+                    "WHERE o.order_id = '$order_id'";
+            return $GLOBALS['db']->getOne($sql);
+        }
+        elseif($inv_type == 'vat_invoice')
+        {
+            $sql = "SELECT concat(IFNULL(p.region_name, ''), " .
+                            "'  ', IFNULL(t.region_name, ''), '  ', IFNULL(d.region_name, '')) AS region " .
+                        "FROM " . $GLOBALS['ecs']->table('order_info') . " AS o " .
+                            "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS p ON o.inv_consignee_province = p.region_id " .
+                            "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS t ON o.inv_consignee_city = t.region_id " .
+                            "LEFT JOIN " . $GLOBALS['ecs']->table('region') . " AS d ON o.inv_consignee_district = d.region_id " .
+                        "WHERE o.order_id = '$order_id'";
+            return $GLOBALS['db']->getOne($sql);
+        }
+        else
+        {
+            return ' ';
+        }
+    }
+    else
+    {
+        return ' ';
+    }
+}
+
+function format_invoice_rows($rows)
+{
+    if(is_array($rows) && count($rows) > 0)
+    {
+        $_LANG['provided'] = '已开票';
+        $_LANG['unprovided'] = '未开票';
+        $_LANG['normal_invoice'] = '普通发票';
+        $_LANG['vat_invoice'] = '增值税发票';
+        $temp = array();
+        foreach($rows as $key => $value)
+        {
+            $value['add_time'] = local_date('Y-m-d H:i',$value['add_time']);
+            $value['inv_status'] = $_LANG[$value['inv_status']];
+            $value['inv_consignee_address'] = get_inv_complete_address($value);
+            $value['inv_type'] = $_LANG[$value['inv_type']];
+            $value['inv_money'] = price_format($value['inv_money']);
+            unset($value['order_id']);
+            $temp[$key] = $value;
+        }
+        return $temp;
+    }
+    else
+    {
+        return array();
+    }
+}
+
+function get_invoice_rows($ids = '')
+{
+    $sql = 'SELECT `order_id`,`order_sn`,`add_time`,`inv_status`,`inv_type`,'.
+            '`inv_payee`,`inv_content`,`vat_inv_company_name`,'.
+            '`vat_inv_taxpayer_id`,`vat_inv_registration_address`,'.
+            '`vat_inv_registration_phone`,`vat_inv_deposit_bank`,'.
+            '`vat_inv_bank_account`,`inv_consignee_name`,'.
+            '`inv_consignee_phone`,`inv_consignee_address`,`inv_money` FROM  '.
+            $GLOBALS['ecs']->table('order_info').' WHERE ';
+    if($ids == '')
+    {
+        $where = '`inv_type` != \'\'';
+    }
+    elseif(is_array($ids) && count($ids) > 0)
+    {
+        foreach ($ids as $id)
+        {
+            $where .= '`order_sn` = \'' .$id. '\' OR ';
+        }
+        $where = substr($where,0,-4);
+    }
+     $sql .= $where;
+     return $GLOBALS['db']->getAll($sql);
+}
+
+function export_invoice_to_excel($rows)
+{
+    /*导出发票列表*/
+    if(is_array($rows) && count($rows) > 0)
+    {
+        $filename = '发票列表'.date('Ymd').'.xls';
+        $filename =  iconv(mb_detect_encoding($filename, mb_detect_order(), true), "gbk", $filename);
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Content-type:application/vnd.ms-excel; charset=gbk");
+        $data .= '<table border="1">';
+        $data .= '<tr><th>订单号</th><th>下单时间</th><th>发票状态</th>'.
+                '<th>发票类型</th><th>发票抬头</th><th>发票内容</th>'.
+                '<th>单位名称</th><th>纳税人识别号</th><th>注册地址</th>'.
+                '<th>注册电话</th><th>开户银行</td><th>银行账户</th>'.
+                '<th>收票人姓名</th><th>收票人手机</th><th>收票人地址</th><th>发票金额</th></tr>';
+        foreach($rows as $key => $val)
+        {
+            $data .= '<tr>';
+            foreach($val as $key1 => $item)
+            {
+                if($key1 == 'order_sn')
+                {
+                    $data .= '<td style=\'mso-number-format:"\@";\'>' .$item. '</td>';
+                }
+                else
+                {
+                    $data .= '<td>'.$item.'</td>';
+                }
+            }
+            $data .= '</tr>';
+        }
+        $data .= "</table>";
+        if (EC_CHARSET != 'gbk')
+        {
+            echo ecs_iconv(EC_CHARSET, 'gbk', $data) . "\t";
+        }
+        else
+        {
+            echo $data. "\t";
+        }
+    }
+}
+
+function export_invoice_to_xml_excel($rows)
+{
+    $filename = '发票列表'.date('Ymd').'.xls';
+    $filename =  iconv(mb_detect_encoding($filename, mb_detect_order(), true), "gbk", $filename);
+    header("Content-Type: application/vnd.ms-excel;charset=utf-8");
+    header('Content-Disposition:attachment;filename="'.$filename.'"');
+    $data = '<?xml version="1.0"?><ss:Workbook xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+    <ss:Styles><ss:Style ss:ID="1"><ss:Font ss:Bold="1"/></ss:Style></ss:Styles>';
+    if(is_array($rows) && count($rows) > 0)
+    {
+        $arr = array('order_sn' => array('name' => '订单号','type' => 'String','width' => '100'),
+            'add_time' => array('name' => '下单时间','type' => 'String','width' => '100'),
+            'inv_status' => array('name' => '发票状态','type' => 'String','width' => '50'),
+            'inv_payee' => array('name' => '发票抬头','type' => 'String','width' => '100'),
+            'inv_content' => array('name' => '发票内容','type' => 'String','width' => '60'),
+            'inv_money' => array('name' => '发票金额','type' => 'String','width' => '80'),
+            'vat_inv_company_name' => array('name' => '单位名称','type' => 'String','width' => '120'),
+            'vat_inv_taxpayer_id' => array('name' => '纳税人识别号','type' => 'String','width' => '100'),
+            'vat_inv_registration_address' => array('name' => '注册地址','type' => 'String','width' => '200'),
+            'vat_inv_registration_phone' => array('name' => '注册电话','type' => 'String','width' => '80'),
+            'vat_inv_deposit_bank' => array('name' => '开户银行','type' => 'String','width' => '100'),
+            'vat_inv_bank_account' => array('name' => '银行账户','type' => 'String','width' => '150'),
+            'inv_consignee_name' => array('name' => '收票人姓名','type' => 'String','width' => '100'),
+            'inv_consignee_phone' => array('name' => '收票人手机','type' => 'String','width' => '80'),
+            'inv_consignee_address' => array('name' => '收票人地址','type' => 'String','width' => '200'));
+        $vat_inv_array = array('order_sn','add_time','inv_status','inv_content',
+            'vat_inv_company_name','vat_inv_taxpayer_id','vat_inv_registration_address',
+            'vat_inv_registration_phone','vat_inv_deposit_bank','vat_inv_bank_account',
+            'inv_consignee_name','inv_consignee_phone','inv_consignee_address','inv_money');
+        $normal_inv_array = array('order_sn','add_time','inv_status','inv_payee','inv_content','inv_money');
+        $has_normal_inv = false;
+        $has_vat_inv = false;
+
+        $normal_inv_sheet = '<ss:Worksheet ss:Name="普通发票"><ss:Table>';
+        $normal_inv_sheet_col_width = '';
+        $normal_inv_sheet_col_name = '<ss:Row ss:StyleID="1">';
+        foreach($normal_inv_array as $val)
+        {
+            $normal_inv_sheet_col_width .= '<ss:Column ss:Width="' .$arr[$val]['width']. '" />';
+            $normal_inv_sheet_col_name .= '<ss:Cell><ss:Data ss:Type="' .$arr[$val]['type']. '">' .$arr[$val]['name']. '</ss:Data></ss:Cell>';
+        }
+        $normal_inv_sheet_col_name .= '</ss:Row>';
+        $normal_inv_sheet .= $normal_inv_sheet_col_width;
+        $normal_inv_sheet .= $normal_inv_sheet_col_name;
+
+        $vat_inv_sheet = '<ss:Worksheet ss:Name="增值税发票"><ss:Table>';
+        $vat_inv_sheet_col_width = '';
+        $vat_inv_sheet_col_name = '<ss:Row ss:StyleID="1">';
+        foreach($vat_inv_array as $val)
+        {
+            $vat_inv_sheet_col_width .= '<ss:Column ss:Width="' .$arr[$val]['width']. '" />';
+            $vat_inv_sheet_col_name .= '<ss:Cell><ss:Data ss:Type="' .$arr[$val]['type']. '">' .$arr[$val]['name']. '</ss:Data></ss:Cell>';
+        }
+        $vat_inv_sheet_col_name .= '</ss:Row>';
+        $vat_inv_sheet .= $vat_inv_sheet_col_width;
+        $vat_inv_sheet .= $vat_inv_sheet_col_name;
+
+
+        foreach($rows as $row)
+        {
+            if($row['inv_type'] == '普通发票')
+            {
+                $has_normal_inv = true;
+                $normal_inv_sheet .= '<ss:Row>';
+                foreach($normal_inv_array as $val)
+                {
+                    $normal_inv_sheet .= '<ss:Cell><ss:Data ss:Type="' .$arr[$val]['type']. '">' .$row[$val]. '</ss:Data></ss:Cell>';
+                }
+                $normal_inv_sheet .= '</ss:Row>';
+            }
+            elseif($row['inv_type'] == '增值税发票')
+            {
+                $has_vat_inv = true;
+                $vat_inv_sheet .= '<ss:Row>';
+                foreach($vat_inv_array as $val)
+                {
+                    $vat_inv_sheet .= '<ss:Cell><ss:Data ss:Type="' .$arr[$val]['type']. '">' .$row[$val]. '</ss:Data></ss:Cell>';
+                }
+                $vat_inv_sheet .= '</ss:Row>';
+            }
+        }
+
+        if($has_normal_inv == true)
+        {
+            $normal_inv_sheet .= '</ss:Table></ss:Worksheet>';
+            $data .= $normal_inv_sheet;
+        }
+        if($has_vat_inv == true)
+        {
+            $vat_inv_sheet .= '</ss:Table></ss:Worksheet>';
+            $data .= $vat_inv_sheet;
+        }
+        $data .= '</ss:Workbook>';
+        echo $data;
+    }
+}
+/*增值税发票_添加_END_bbs.hongyuvip.com*/
 
 /**
  * 取得状态列表
@@ -4890,14 +6423,40 @@ function order_list()
         $filter['user_name'] = empty($_REQUEST['user_name']) ? '' : trim($_REQUEST['user_name']);
         $filter['composite_status'] = isset($_REQUEST['composite_status']) ? intval($_REQUEST['composite_status']) : -1;
         $filter['group_buy_id'] = isset($_REQUEST['group_buy_id']) ? intval($_REQUEST['group_buy_id']) : 0;
+        //预售 
+        $filter['pre_sale_id'] = isset($_REQUEST['pre_sale_id']) ? intval($_REQUEST['pre_sale_id']) : 0;
 
         $filter['sort_by'] = empty($_REQUEST['sort_by']) ? 'add_time' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
 
         $filter['start_time'] = empty($_REQUEST['start_time']) ? '' : (strpos($_REQUEST['start_time'], '-') > 0 ?  local_strtotime($_REQUEST['start_time']) : $_REQUEST['start_time']);
         $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : (strpos($_REQUEST['end_time'], '-') > 0 ?  local_strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']);
-
-        $where = 'WHERE 1 ';
+        /* 代码增加_start   By bbs.hongyuvip.com */
+		$filter['order_type'] = isset($_REQUEST['order_type']) ? intval($_REQUEST['order_type']) : 0;
+		/* 代码增加_end   By bbs.hongyuvip.com */
+        $filter['supp'] = (isset($_REQUEST['supp']) && !empty($_REQUEST['supp']) && intval($_REQUEST['supp'])>0) ? intval($_REQUEST['supp']) : 0;    
+        $filter['suppid'] = (isset($_REQUEST['suppid']) && !empty($_REQUEST['suppid']) && intval($_REQUEST['suppid'])>0) ? intval($_REQUEST['suppid']) : 0;
+        /*增值税发票_添加_START_bbs.hongyuvip.com*/
+        $filter['inv_status'] = empty($_REQUEST['inv_status']) ? '' : trim($_REQUEST['inv_status']);
+        $filter['inv_type'] = empty($_REQUEST['inv_type']) ? '' : trim($_REQUEST['inv_type']);
+        $filter['vat_inv_consignee_name'] = empty($_REQUEST['vat_inv_consignee_name']) ? '' : trim($_REQUEST['vat_inv_consignee_name']);
+        $filter['vat_inv_consignee_phone'] = empty($_REQUEST['vat_inv_consignee_phone']) ? '' : trim($_REQUEST['vat_inv_consignee_phone']);
+        $filter['add_time'] = empty($_REQUEST['add_time']) ? '' : (strpos($_REQUEST['add_time'], '-') > 0 ?  local_strtotime($_REQUEST['add_time']) : $_REQUEST['add_time']);
+        if(!empty($filter['add_time']))
+        {
+            $filter['start_time'] = $filter['add_time'];
+            $filter['end_time'] = $filter['add_time'] + '86400';
+        }
+        /*增值税发票_添加_END_bbs.hongyuvip.com*/
+		
+		//$where = 'WHERE 1 ';
+        $where = ($filter['supp']>0) ? 'WHERE o.supplier_id > 0' : 'WHERE o.supplier_id = 0';
+        
+        if ($filter['suppid']){
+        	//$where .= " AND o.supplier_id = ".$filter['suppid'];
+        	$where = 'WHERE o.supplier_id = '.$filter['suppid'];
+        }
+        
         if ($filter['order_sn'])
         {
             $where .= " AND o.order_sn LIKE '%" . mysql_like_quote($filter['order_sn']) . "%'";
@@ -4978,7 +6537,43 @@ function order_list()
         {
             $where .= " AND o.add_time <= '$filter[end_time]'";
         }
-
+		/*增值税发票_添加_START_bbs.hongyuvip.com*/
+        if($filter['inv_status'])
+        {
+            $where .= " AND o.inv_status = '$filter[inv_status]'";
+        }
+        if($filter['inv_type'])
+        {
+            $where .= " AND o.inv_type = '$filter[inv_type]'";
+        }
+        if($filter['vat_inv_consignee_name'])
+        {
+            $where .= " AND o.inv_consignee_name = '$filter[vat_inv_consignee_name]'";
+        }
+        if($filter['vat_inv_consignee_phone'])
+        {
+            $where .= " AND o.inv_consignee_phone = '$filter[vat_inv_consignee_phone]'";
+        }
+        if($_REQUEST['act'] == 'invoice_list' || (isset($_REQUEST['act_detail'])&&$_REQUEST['act_detail']=='invoice_query'))
+        {
+            $where .= " AND o.inv_type != ''";
+        }
+       
+         /* 普通订单不显示虚拟团购订单 添加_START_bbs.hongyuvip.com*/
+        $where .= " AND o.extension_code != 'virtual_good'";
+         /* 普通订单不显示虚拟团购订单 添加_END_bbs.hongyuvip.com*/
+		/*增值税发票_添加_END_bbs.hongyuvip.com*/
+		/* 代码增加_start   By bbs.hongyuvip.com */
+		switch($filter['order_type'])
+		{
+			case 1:
+				$where .= " AND o.is_pickup = 0";
+				break;
+			case 2:
+				$where .= " AND o.is_pickup > 0";
+				break;
+		}
+		/* 代码增加_end   By bbs.hongyuvip.com */
         //综合状态
         switch($filter['composite_status'])
         {
@@ -5016,7 +6611,13 @@ function order_list()
         /* 团购订单 */
         if ($filter['group_buy_id'])
         {
-            $where .= " AND o.extension_code = 'group_buy' AND o.extension_id = '$filter[group_buy_id]' ";
+        	$where .= " AND o.extension_code = '" . GROUP_BUY_CODE . "' AND o.extension_id = '$filter[group_buy_id]' ";
+        }
+        
+        /* 预售订单 */
+        if ($filter['pre_sale_id'])
+        {
+        	$where .= " AND o.extension_code = '" . PRE_SALE_CODE . "' AND o.extension_id = '$filter[pre_sale_id]' ";
         }
 
         /* 如果管理员属于某个办事处，只列出这个办事处管辖的订单 */
@@ -5058,14 +6659,45 @@ function order_list()
         $filter['page_count']     = $filter['record_count'] > 0 ? ceil($filter['record_count'] / $filter['page_size']) : 1;
 
         /* 查询 */
-        $sql = "SELECT o.order_id, o.order_sn, o.add_time, o.order_status, o.shipping_status, o.order_amount, o.money_paid," .
+        if($filter['supp']){
+        	$sql = "SELECT o.order_id, o.order_sn, o.add_time, o.order_status, o.shipping_status, o.order_amount, o.money_paid," .
                     "o.pay_status, o.consignee, o.address, o.email, o.tel, o.extension_code, o.extension_id, " .
                     "(" . order_amount_field('o.') . ") AS total_fee, " .
-                    "IFNULL(u.user_name, '" .$GLOBALS['_LANG']['anonymous']. "') AS buyer ".
-                " FROM " . $GLOBALS['ecs']->table('order_info') . " AS o " .
+                    "IFNULL(u.user_name, '" .$GLOBALS['_LANG']['anonymous']. "') AS buyer,supplier_name,o.froms,is_pickup  ".
+                	/*增值税发票_添加_START_bbs.hongyuvip.com*/
+					',o.mobile,o.inv_payee,o.inv_content,o.inv_type,o.vat_inv_company_name'.
+					',o.vat_inv_taxpayer_id,o.vat_inv_registration_address,o.vat_inv_registration_phone'.
+					',o.vat_inv_deposit_bank,o.vat_inv_bank_account'.
+					',o.inv_consignee_name,o.inv_consignee_phone,o.inv_consignee_country'.
+					',o.inv_consignee_province,o.inv_consignee_city,o.inv_consignee_district'.
+					',o.inv_consignee_address,o.inv_status,o.inv_payee_type,o.inv_money'.
+        			/*增值税发票_添加_END_bbs.hongyuvip.com*/
+			    " FROM " . $GLOBALS['ecs']->table('order_info') . " AS o " .
+        		" LEFT JOIN " . $GLOBALS['ecs']->table('supplier') . " AS s ON s.supplier_id=o.supplier_id ".
                 " LEFT JOIN " .$GLOBALS['ecs']->table('users'). " AS u ON u.user_id=o.user_id ". $where .
                 " ORDER BY $filter[sort_by] $filter[sort_order] ".
                 " LIMIT " . ($filter['page'] - 1) * $filter['page_size'] . ",$filter[page_size]";
+        	
+        }else{
+        	$sql = "SELECT o.order_id, o.order_sn, o.add_time, o.order_status, o.shipping_status, o.order_amount, o.money_paid," .
+                    "o.pay_status, o.consignee, o.address, o.email, o.tel, o.extension_code, o.extension_id, " .
+                    "(" . order_amount_field('o.') . ") AS total_fee, " .
+                    "IFNULL(u.user_name, '" .$GLOBALS['_LANG']['anonymous']. "') AS buyer, o.froms , is_pickup ".
+                	/*增值税发票_添加_START_bbs.hongyuvip.com*/
+					',o.mobile,o.inv_payee,o.inv_content,o.inv_type,o.vat_inv_company_name'.
+					',o.vat_inv_taxpayer_id,o.vat_inv_registration_address,o.vat_inv_registration_phone'.
+					',o.vat_inv_deposit_bank,o.vat_inv_bank_account'.
+					',o.inv_consignee_name,o.inv_consignee_phone,o.inv_consignee_country'.
+					',o.inv_consignee_province,o.inv_consignee_city,o.inv_consignee_district'.
+					',o.inv_consignee_address,o.inv_status,o.inv_payee_type,o.inv_money'.
+        			/*增值税发票_添加_END_bbs.hongyuvip.com*/
+				" FROM " . $GLOBALS['ecs']->table('order_info') . " AS o " .
+                " LEFT JOIN " .$GLOBALS['ecs']->table('users'). " AS u ON u.user_id=o.user_id ". $where .
+                " ORDER BY $filter[sort_by] $filter[sort_order] ".
+                " LIMIT " . ($filter['page'] - 1) * $filter['page_size'] . ",$filter[page_size]";
+        }
+        
+        //echo $sql;
 
         foreach (array('order_sn', 'consignee', 'email', 'address', 'zipcode', 'tel', 'user_name') AS $val)
         {
@@ -5088,7 +6720,11 @@ function order_list()
         $row[$key]['formated_money_paid'] = price_format($value['money_paid']);
         $row[$key]['formated_total_fee'] = price_format($value['total_fee']);
         $row[$key]['short_order_time'] = local_date('m-d H:i', $value['add_time']);
-        if ($value['order_status'] == OS_INVALID || $value['order_status'] == OS_CANCELED)
+        /*增值税发票_添加_START_bbs.hongyuvip.com*/
+        $row[$key]['formatted_add_time'] = local_date('Y-m-d H:i',$value['add_time']);
+        $row[$key]['formatted_inv_money'] = price_format($value['inv_money']);
+		/*增值税发票_添加_END_bbs.hongyuvip.com*/
+		if ($value['order_status'] == OS_INVALID || $value['order_status'] == OS_CANCELED)
         {
             /* 如果该订单为无效或取消则显示删除链接 */
             $row[$key]['can_remove'] = 1;
@@ -5097,9 +6733,69 @@ function order_list()
         {
             $row[$key]['can_remove'] = 0;
         }
+		$tuihuan_info = $GLOBALS['db']->getRow("select * from " . $GLOBALS['ecs']->table('back_order') . " where order_sn = '" . $row[$key]['order_sn']. "' ORDER BY back_id DESC LIMIT 1");
+		if (!empty($tuihuan_info))
+		{
+			switch ($tuihuan_info['back_type'])
+			{
+				case 1 :
+					$back_type = "退货";
+					break;
+				case 3 :
+					$back_type = "申请维修";
+					break;
+				case 4 :
+					$back_type = "退款";
+					break;
+				default :
+					break;
+			}
+
+			switch ($tuihuan_info['status_back'])
+			{
+				case 0 :
+					$status_back = "已通过申请";
+					break;
+				case 1 :
+					$status_back = "已收到换回商品";
+					break;
+				case 2 :
+					$status_back = "换出商品已寄回";
+					break;
+				case 3 :
+					$status_back = "已完成";
+					break;
+				case 4 :
+					$status_back = "退款(无需退货)";
+					break;
+				case 5 :
+					$status_back = "申请中";
+					break;
+				case 6 :
+					$status_back = "已拒绝申请";
+					break;
+				case 7 :
+					$status_back = "系统自动取消";
+					break;
+				case 8 :
+					$status_back = "用户自行取消";
+					break;
+				default :
+					break;
+			}
+
+			$row[$key]['tuihuan']['back_type'] = $back_type;
+			$row[$key]['tuihuan']['status_back'] = $status_back;
+		}
     }
     $arr = array('orders' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
-
+	/*增值税发票_添加_START_bbs.hongyuvip.com*/
+    if($filter['inv_type'])
+    {
+        global $smarty;
+        $smarty->assign('inv_type',$filter['inv_type']);
+    }
+    /*增值税发票_添加_END_bbs.hongyuvip.com*/
     return $arr;
 }
 
@@ -5152,6 +6848,26 @@ function get_suppliers_list()
             FROM ' . $GLOBALS['ecs']->table('suppliers') . '
             WHERE is_check = 1
             ORDER BY suppliers_name ASC';
+    $res = $GLOBALS['db']->getAll($sql);
+
+    if (!is_array($res))
+    {
+        $res = array();
+    }
+
+    return $res;
+}
+
+/**
+ * 取得入驻商列表
+ * @return array    二维数组
+ */
+function get_supplier_list()
+{
+    $sql = 'SELECT *
+            FROM ' . $GLOBALS['ecs']->table('supplier') . '
+            WHERE status=1 
+            ORDER BY supplier_name ASC';
     $res = $GLOBALS['db']->getAll($sql);
 
     if (!is_array($res))
@@ -5617,6 +7333,12 @@ function del_order_delivery($order_id)
     {
         return $return_res;
     }
+	
+	$delivery_id = $GLOBALS['db']->getRow("select delivery_id from ".$GLOBALS['ecs']->table('delivery_order')."where order_id=".$order_id);
+	if (!empty($delivery_id))
+	{
+		del_kuaidi_order($delivery_id['delivery_id']);
+	}
 
     $sql = 'DELETE O, G
             FROM ' . $GLOBALS['ecs']->table('delivery_order') . ' AS O, ' . $GLOBALS['ecs']->table('delivery_goods') . ' AS G
@@ -5647,6 +7369,12 @@ function del_delivery($order_id, $action_array)
     {
         return $return_res;
     }
+	
+	$delivery_id = $GLOBALS['db']->getRow("select delivery_id from ".$GLOBALS['ecs']->table('delivery_order')."where order_id=".$order_id);
+	if (!empty($delivery_id))
+	{
+		del_kuaidi_order($delivery_id['delivery_id']);
+	}
 
     $query_delivery = 1;
     $query_back = 1;
@@ -6356,5 +8084,61 @@ function get_site_root_url()
 {
     return 'http://' . $_SERVER['HTTP_HOST'] . str_replace('/' . ADMIN_PATH . '/order.php', '', PHP_SELF);
 
+}
+
+function new_kuaidi_order($delivery_id)
+{
+	$delivery_order = $GLOBALS['db']->getRow("select * from ".$GLOBALS['ecs']->table('delivery_order')." where delivery_id = ".$delivery_id);
+	
+	if (!empty($delivery_order['mobile']))
+	{
+		$to_tel = $delivery_order['mobile'];
+	}
+	elseif (!empty($delivery_order['tel']))
+	{
+		$to_tel = $delivery_order['tel'];
+	}
+	else
+	{
+		$to_tel = "";
+	}
+	
+	/* 快递单状态 */
+	$orderstatus_array = array( '1'=> array('name'=>'待确认', 'type'=>'0'),
+								'2'=> array('name'=>'已确认未揽收', 'type'=>'0'),
+								'3'=> array('name'=>'已确认已揽收', 'type'=>'0'),
+								'4'=> array('name'=>'已签收', 'type'=>'1'),
+								'5'=> array('name'=>'拒收', 'type'=>'2'),
+								'6'=> array('name'=>'拒收已退回', 'type'=>'2'),
+								'7'=> array('name'=>'已取消', 'type'=>'3'), );
+	
+	$sql = "insert into ".$GLOBALS['ecs']->table('kuaidi_order')." (user_id, to_name, to_tel, to_region_id, to_address, goods_name, package_num, start_time, end_time, add_time) values ('$delivery_order[user_id]', '$delivery_order[consignee]', '$to_tel', '$delivery_order[district]', '$delivery_order[address]', '$delivery_id', '1', '0', '0', '".gmtime()."')";
+	$GLOBALS['db']->query($sql);
+	
+	$order_id = $GLOBALS['db']->insert_id();
+	
+	foreach ($orderstatus_array AS $okey=>$oval)
+	{
+		$status_display = $okey ==1 ? '1' : '0';
+		$sql="insert into ".$GLOBALS['ecs']->table('kuaidi_order_status').
+					"(order_id, status_id, status_name, status_type, status_display, status_time) ".
+					"values('$order_id', '$okey', '$oval[name]', '$oval[type]', '$status_display', '".gmtime()."') ";
+		$GLOBALS['db']->query($sql);
+	}
+}
+
+function del_kuaidi_order($delivery_id)
+{
+	$kuaidi_order_id = $GLOBALS['db']->getRow("select order_id from ".$GLOBALS['ecs']->table('kuaidi_order')." where goods_name='".$delivery_id."' and send_name=''");
+
+	if ($kuaidi_order_id['order_id']) {
+		$GLOBALS['db']->query("delete from ".$GLOBALS['ecs']->table('kuaidi_order')." where order_id=".$kuaidi_order_id['order_id']);
+		$GLOBALS['db']->query("delete from ".$GLOBALS['ecs']->table('kuaidi_order_status')." where order_id=".$kuaidi_order_id['order_id']);
+	}
+}
+
+function update_kuaidi_order($delivery_id, $order_sn = "")
+{
+	$GLOBALS['db']->query("update ".$GLOBALS['ecs']->table('kuaidi_order')." set order_sn='".$order_sn."' where goods_name='".$delivery_id."' and send_name=''");
 }
 ?>

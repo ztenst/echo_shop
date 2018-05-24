@@ -1,25 +1,25 @@
 <?php
 
 /**
- * ECSHOP 支付响应页面
+ * 鸿宇多用户商城 支付响应页面
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: respond.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: respond.php 17217 2016-01-19 06:29:08Z derek $
  */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
-require(ROOT_PATH . 'include/lib_payment.php');
-require(ROOT_PATH . 'include/lib_order.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/lib_payment.php');
+require(ROOT_PATH . 'includes/lib_order.php');
 /* 支付方式代码 */
-$pay_code = !empty($_REQUEST['code']) ? trim($_REQUEST['code']) : '';
+$pay_code = !empty($_REQUEST['code']) ? trim($_REQUEST['code']) : 'weixin';
 
 //获取首信支付方式
 if (empty($pay_code) && !empty($_REQUEST['v_pmode']) && !empty($_REQUEST['v_pstring']))
@@ -36,7 +36,7 @@ if (empty($pay_code) && ($_REQUEST['ext1'] == 'shenzhou') && ($_REQUEST['ext2'] 
 /* 参数是否为空 */
 if (empty($pay_code))
 {
-    $msg = $_LANG['pay_success'];
+    $msg = $_LANG['pay_not_exist'];
 }
 else
 {
@@ -54,17 +54,18 @@ else
     }
 
     /* 判断是否启用 */
-    $sql = "SELECT COUNT(*) FROM " . $ecs->table('touch_payment') . " WHERE pay_code = '$pay_code' AND enabled = 1";
+    $sql = "SELECT COUNT(*) FROM " . $ecs->table('ecsmart_payment') . " WHERE pay_code = '$pay_code' AND enabled = 1";
     if ($db->getOne($sql) == 0)
     {
         $msg = $_LANG['pay_disabled'];
     }
     else
     {
-        $plugin_file = 'include/modules/payment/' . $pay_code . '.php';
+        $plugin_file = 'includes/modules/payment/' . $pay_code . '.php';
 
         /* 检查插件文件是否存在，如果存在则验证支付是否成功，否则则返回失败信息 */
-        if (file_exists($plugin_file))
+//        if (file_exists($plugin_file))
+		if (file_exists(ROOT_PATH.$plugin_file))
         {
             /* 根据支付方式代码创建支付类的对象并调用其响应操作方法 */
             include_once($plugin_file);
@@ -91,4 +92,5 @@ $smarty->assign('message',    $msg);
 $smarty->assign('shop_url',   $ecs->url());
 
 $smarty->display('respond.dwt');
+
 ?>

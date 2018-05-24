@@ -2,7 +2,7 @@
 var Compare = new Object();
 
 Compare = {
-  add : function(goodsId, goodsName, type)
+  add : function(goodsId, goodsName, type, goodsImg, price)
   {
     var count = 0;
     for (var k in this.data)
@@ -15,56 +15,121 @@ Compare = {
       }
       count++;
     }
-
+	
     if (this.data[goodsId])
     {
-      alert(exist.replace("%s",goodsName));
+      this.remove(goodsId);
       return;
     }
     else
     {
-      this.data[goodsId] = {n:goodsName,t:type};
+      this.data[goodsId] = {n:goodsName,t:type,img:goodsImg,p:price};
+	  $('.compare-btn').each(function(index, element) {
+		  if($(this).attr('data-goods') == goodsId)
+			  $(this).css('background-position', '0 -99px');
+	  });
     }
+	if(count>=4)
+	{
+		alert('对比商品已有4个，请删除再行添加。');
+		return;
+	}
+	if($('#compareBox').css('display') == 'none')
+	{
+		$('#compareBox').css('display', 'block');
+		$('.compareHolder').css('display', 'none');
+	}
     this.save();
     this.init();
-  },
-  relocation : function()
-  {
-    if (this.compareBox.style.display != "") return;
-    var diffY = Math.max(document.documentElement.scrollTop,document.body.scrollTop);
-
-    var percent = .2*(diffY - this.lastScrollY);
-    if(percent > 0)
-      percent = Math.ceil(percent);
-    else
-      percent = Math.floor(percent);
-    this.compareBox.style.top = parseInt(this.compareBox.style.top)+ percent + "px";
-
-    this.lastScrollY = this.lastScrollY + percent;
   },
   init : function(){
     this.data = new Object();
     var cookieValue = document.getCookie("compareItems");
     if (cookieValue != null) {
-      this.data = $.evalJSON(cookieValue);
+      eval("this.data = " + cookieValue);
     }
-    if (!this.compareBox)
+	
+    this.compareBox = document.getElementById(this.compareBoxId);
+    this.compareList = document.getElementById(this.compareListId);
+    this.compareList.id = "compareList";	
+	
+	
+    this.compareList.innerHTML = "";
+    var self = this;
+	var count = 0;
+    for (var key in this.data)
     {
-      this.compareBox = document.createElement("DIV");
-      var submitBtn = document.createElement("INPUT");
-      this.compareList = document.createElement("UL");
-      this.compareBox.id = "compareBox";
-      this.compareBox.style.display = "none";
-      this.compareBox.style.top = "200px";
-      this.compareBox.align = "center";
-      this.compareList.id = "compareList";
-      submitBtn.type = "button";
-      submitBtn.value = "开始对比";
-			this.compareBox.appendChild(this.compareList);
-      this.compareBox.appendChild(submitBtn);
-      submitBtn.onclick = function() {
+      if(typeof(this.data[key]) == "function")
+        continue;
+	  var img = document.createElement('IMG');
+	  var aimg = document.createElement('A');
+      var dl = document.createElement("DL");
+      var span = document.createElement("SPAN");
+	  var a = document.createElement('A');
+	  var dt = document.createElement('DT');
+	  var dd = document.createElement('DD');
+	  var span = document.createElement('SPAN');
+	  var strong = document.createElement('STRONG');
+	  img.style.width = "50px";
+	  img.style.height = "50px";
+	  img.src = this.data[key].img;
+	  aimg.href = 'goods.php?id='+key;
+	  aimg.appendChild(img);
+      span.style.overflow = "hidden";
+      span.style.width = "100px";
+      span.style.height = "20px";
+      span.style.display = "block";
+      a.innerHTML = this.data[key].n;
+	  a.className = 'name';
+	  a.href = 'goods.php?id='+key;
+	  span.appendChild(a);
+	  dt.appendChild(aimg);
+	  dd.appendChild(a);
+	  dl.appendChild(dt);
+      dl.appendChild(dd);
+	  strong.innerHTML = this.data[key].p;
+      var delBtn = document.createElement("A");
+      delBtn.innerHTML = "删除";
+      delBtn.className = key;
+      delBtn.onclick = function(){
+         self.remove(this.className);
+      }
+
+	  dl.onmousemove = function (){
+		  this.childNodes[1].childNodes[1].childNodes[1].style.visibility = 'visible';
+	  };
+	  dl.onmouseout = function (){
+	  	this.childNodes[1].childNodes[1].childNodes[1].style.visibility = 'hidden';
+	  };
+	  span.appendChild(strong);
+	  span.appendChild(delBtn);
+      dd.appendChild(span);
+      this.compareList.appendChild(dl);
+	  count++;
+    }
+	while(count<4)
+	{
+	  var dl = document.createElement("DL");
+	  var dt = document.createElement('DT');
+	  var dd = document.createElement('DD');
+	  dt.style.backgroundColor = '#F6F6F6';
+	  dt.innerHTML = count+1;
+	  dd.innerHTML = '您还可以继续添加';
+	  dl.appendChild(dt);
+      dl.appendChild(dd);
+      
+      this.compareList.appendChild(dl);
+	  count++;
+	}
+	var operate = document.createElement('DIV');
+	var comp = document.createElement('A');
+	var clr = document.createElement('A');
+	//'<div class="diff-operate"><a class="btn-compare-b compare-active" href="#none" id="goto-contrast" target="_blank">对比</a><a class="del-items">清空对比栏</a></div>';
+	comp.innerHTML = '对比';
+	comp.className = 'compare';
+	comp.onclick = function() {
         var cookieValue = document.getCookie("compareItems");
-        var obj = $.evalJSON(cookieValue);
+        var obj = JSON.parse(cookieValue);
         var url = document.location.href;
         url = url.substring(0,url.lastIndexOf('/')+1) + "compare.php";
         var i = 0;
@@ -85,52 +150,50 @@ Compare = {
         }
         document.location.href = url;
       }
-      document.body.appendChild(this.compareBox);
-    }
-    this.compareList.innerHTML = "";
-    var self = this;
-    for (var key in this.data)
-    {
-      if(typeof(this.data[key]) == "function")
-        continue;
-      var li = document.createElement("LI");
-      var span = document.createElement("SPAN");
-      span.style.overflow = "hidden";
-      span.style.width = "100px";
-      span.style.height = "20px";
-      span.style.display = "block";
-      span.innerHTML = this.data[key].n;
-      li.appendChild(span);
-      li.style.listStyle = "none";
-      var delBtn = document.createElement("IMG");
-      delBtn.src = "themes/default/images/drop.gif";
-      delBtn.className = key;
-      delBtn.onclick = function(){
-        document.getElementById("compareList").removeChild(this.parentNode);
-        delete self.data[this.className];
-        self.save();
-        self.init();
-      }
-      li.insertBefore(delBtn,li.childNodes[0]);
-      this.compareList.appendChild(li);
-    }
-    if (this.compareList.childNodes.length > 0)
-    {
-      this.compareBox.style.display = "";
-      this.timer = window.setInterval(this.relocation.bind(this), 50);
-    }
-    else
-    {
-      this.compareBox.style.display = "none";
-      window.clearInterval(this.timer);
-      this.timer = 0;
-    }
+	clr.innerHTML = '清空对比栏';
+	clr.className = 'clear';
+	clr.onclick = function(){
+		Compare.clear();
+	};
+	operate.className = 'operate';
+	operate.appendChild(comp);
+	operate.appendChild(clr);
+	compareList.appendChild(operate);
+	
   },
   save : function()
   {
     var date = new Date();
     date.setTime(date.getTime() + 99999999);
-    document.setCookie("compareItems", $.toJSON(this.data));
+    document.setCookie("compareItems", JSON.stringify(this.data));
   },
-  lastScrollY : 0
+  clear : function()
+  {
+	  for(var k in this.data)
+	  {
+	  	delete this.data[k];
+	  }
+	  $('.compare-btn').each(function(index, element) {
+			$(this).css('background-position', '0 -75px');
+		});
+	  this.save();
+      this.init();
+  },
+  remove : function(id){
+  		delete this.data[id];
+		$('.compare-btn').each(function(index, element) {
+			if($(this).attr('data-goods') == id)
+				$(this).css('background-position', '0 -75px');
+		});
+		if($('#compareBox').css('display') == 'none')
+		{
+			$('#compareBox').css('display', 'block');
+			$('.compareHolder').css('display', 'none');
+		}
+        this.save();
+        this.init();
+  },
+  show : 1,
+  compareBoxId : 'compareBox',
+  compareListId : 'compareList'
 }

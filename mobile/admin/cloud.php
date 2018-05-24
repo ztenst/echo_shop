@@ -1,29 +1,29 @@
 <?php
 
 /**
- * ECSHOP  云服务接口
+ * 鸿宇多用户商城  云服务接口
  * ============================================================================
- * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: cloud.php 17063 2011-07-25 06:35:46Z liubo $
+ * $Author: derek $
+ * $Id: cloud.php 17063 2011-07-25 06:35:46Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require(ROOT_PATH . 'include/cls_transport.php');
-require(ROOT_PATH . 'include/cls_json.php');
+require(ROOT_PATH . 'includes/cls_transport.php');
+require(ROOT_PATH . 'includes/cls_json.php');
 
-require(ROOT_PATH . 'include/shopex_json.php');
+require(ROOT_PATH . 'includes/shopex_json.php');
 
 $data['api_ver'] = '1.0';
 $data['version'] = VERSION;
-$data['patch'] = file_get_contents(ROOT_PATH.ADMIN_PATH."/patch_num");
+$data['patch'] = file_get_contents(ROOT_PATH.ADMIN_PATH_M."/patch_num");
 $data['ecs_lang'] = $_CFG['lang'];
 $data['release'] = RELEASE;
 $data['charset'] = strtoupper(EC_CHARSET);
@@ -33,9 +33,9 @@ $data['certi'] = $_CFG['certi'];
 $data['php_ver'] = PHP_VERSION;
 $data['mysql_ver'] = $db->version();
 $data['shop_url'] = urlencode($ecs->url());
-$data['admin_url'] = urlencode($ecs->url().ADMIN_PATH);
+$data['admin_url'] = urlencode($ecs->url().ADMIN_PATH_M);
 $data['sess_id'] = $GLOBALS['sess']->get_session_id();
-$data['stamp'] = time();
+$data['stamp'] = mktime();
 $data['ent_id'] = $_CFG['ent_id'];
 $data['ent_ac'] = $_CFG['ent_ac'];
 $data['ent_sign'] = $_CFG['ent_sign'];
@@ -57,7 +57,7 @@ if($act =='menu_api')
     {
         $t = new transport;
        $apiget = "ver= $data[version] &ecs_lang= $data[ecs_lang] &charset= $data[charset]&ent_id=$data[ent_id]& certificate_id=$data[certificate_id]";
-        $api_comment = $t->request('http://cloud.ecshop.com/menu_api.php', $apiget);
+        $api_comment = $t->request('http://cloud.hongyuvip.com/menu_api.php', $apiget);
         $api_str = $api_comment["body"];
         if (!empty($api_str))
         {
@@ -97,7 +97,7 @@ elseif($act == 'cloud_remind')
     {
         $t = new transport('-1',5);
         $apiget = "ver=$data[version]&ecs_lang=$data[ecs_lang]&charset=$data[charset]&certificate_id=$data[certificate_id]&ent_id=$data[ent_id]";
-        $api_comment = $t->request('http://cloud.ecshop.com/cloud_remind.php', $apiget);
+        $api_comment = $t->request('http://cloud.hongyuvip.com/cloud_remind.php', $apiget);
         $api_str=    $api_comment["body"];
         $json = new Services_JSON;
         $api_arr = @$json->decode($api_str,1);
@@ -137,7 +137,7 @@ elseif($act == 'close_remind')
     $remind_id=$_REQUEST['remind_id'];
     $t = new transport('-1',5);
     $apiget = "ver= $data[version] &ecs_lang= $data[ecs_lang] &charset= $data[charset] &certificate_id=$data[certificate_id]&ent_id=$data[ent_id]&remind_id=$remind_id";
-    $api_comment = $t->request('http://cloud.ecshop.com/cloud_remind.php', $apiget);
+    $api_comment = $t->request('http://cloud.hongyuvip.com/cloud_remind.php', $apiget);
 
     $api_str = $api_comment["body"];
     $json = new Services_JSON;
@@ -155,7 +155,7 @@ elseif($act == 'close_remind')
             if (admin_priv('all','',false))
             {
                 $apiget.="&act=close_remind&ent_ac=$data[ent_ac]";
-                $result=$t->request('http://cloud.ecshop.com/cloud_remind.php', $apiget);
+                $result=$t->request('http://cloud.hongyuvip.com/cloud_remind.php', $apiget);
                 $api_str = $result["body"];
                 //var_dump($api_str);
                 $api_arr = array();
@@ -225,7 +225,7 @@ else
     {
         $query .= '&'.$v.'='.$data[$v];
     }
-    ecs_header("Location: http://cloud.ecshop.com/api.php?act=".$act.$query."\n");
+    ecs_header("Location: http://cloud.hongyuvip.com/api.php?act=".$act.$query."\n");
     exit();
 }
 

@@ -11,7 +11,6 @@
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
 <link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
-{insert_scripts files='jquery-1.9.1.min.js,jquery.json.js'}
 {insert_scripts files='common.js,global.js,compare.js'}
 </head>
 <body>
@@ -30,7 +29,7 @@
     <!-- TemplateBeginEditable name="左边区域" -->
 <!-- #BeginLibraryItem "/library/cart.lbi" -->
 
-{insert_scripts files='transport_jquery.js'}
+{insert_scripts files='transport.js'}
 <div class="cart" id="ECS_CARTINFO">
  {insert name='cart_info'}
 </div>

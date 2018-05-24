@@ -11,9 +11,6 @@
     <th>{$lang.schp_imgurl}</th>
       <th>{$lang.schp_imgdesc}</th>
       <th>{$lang.schp_sort}</th>
-        <!-- 周欢改 start-->
-       <th>宽窄屏</th>
-       <!-- 周欢改 end-->
     <th width="70px">{$lang.handler}</th>
     </tr>
     {foreach from=$playerdb item=item key=key}
@@ -22,12 +19,9 @@
     <td align="left"><a href="{$item.url}" target="_blank">{$item.url}</a></td>
       <td align="left">{$item.text}</td>
       <td align="left">{$item.sort}</td>
-         <!-- 周欢改 start-->
-      <td align="left">{if $item.width_screen eq 0}宽{else}窄{/if}</td>
-      <!-- 周欢改 end-->
     <td align="center">
-        <a href="flashplay.php?act=edit&id={$key}" title="{$lang.edit}"><img src="images/icon_edit.gif" width="21" height="21" border="0" /></a>
-        <a href="flashplay.php?act=del&id={$key}" onclick="return check_del();" title="{$lang.trash_img}"><img src="images/icon_drop.gif" width="21" height="21" border="0" /></a>
+        <a href="flashplay.php?act=edit&id={$key}" title="{$lang.edit}"><img src="images/icon_edit.gif" width="16" height="16" border="0" /></a>
+        <a href="flashplay.php?act=del&id={$key}" onclick="return check_del();" title="{$lang.trash_img}"><img src="images/icon_drop.gif" width="16" height="16" border="0" /></a>
       </td>
     </tr>
     {/foreach}
@@ -40,12 +34,12 @@
     </tr>
   </table>
   </div>
-  <div class="list-div list-div-ad" style="margin-top:15px;">
+  <div class="list-div list-div-ad" style="margin-top:15px;display:none">
   <table>
   <tr><th>{$lang.flash_template}</th></tr>
   <tr>
       <td>{foreach from=$flashtpls item=flashtpl}
-  <table style="float:left;width: 220px;">
+  <table style="float:left;width: 220px;background:none;margin-right:40px">
   <tr>
     <td><strong><center>{$flashtpl.name}&nbsp;{if $flashtpl.code eq $current_flashtpl}<span style="color:red;" id="current_theme">{$lang.current_theme}</span>{/if}</center></strong></td>
   </tr>

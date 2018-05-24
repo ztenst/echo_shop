@@ -1,21 +1,21 @@
 <?php
 
 /**
- * ECSHOP 文章内容
+ * 鸿宇多用户商城 文章内容
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: article.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: article.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -30,7 +30,7 @@ $_REQUEST['id'] = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 $article_id     = $_REQUEST['id'];
 if(isset($_REQUEST['cat_id']) && $_REQUEST['cat_id'] < 0)
 {
-    $article_id = $db->getOne("SELECT article_id FROM " . $ecs->table('article') . " WHERE cat_id = '".intval($_REQUEST['cat_id'])."' ");
+    $article_id = $db->getOne("SELECT article_id FROM " . $ecs->table('ecsmart_article') . " WHERE cat_id = '".intval($_REQUEST['cat_id'])."' ");
 }
 
 /*------------------------------------------------------ */
@@ -103,24 +103,31 @@ if (!$smarty->is_cached('article.dwt', $cache_id))
     $smarty->assign('goods_list', $db->getAll($sql));
 
     /* 上一篇下一篇文章 */
-    $next_article = $db->getRow("SELECT article_id, title FROM " .$ecs->table('article'). " WHERE article_id > $article_id AND cat_id=$article[cat_id] AND is_open=1 LIMIT 1");
+    $next_article = $db->getRow("SELECT article_id, title FROM " .$ecs->table('ecsmart_article'). " WHERE article_id > $article_id AND cat_id=$article[cat_id] AND is_open=1 LIMIT 1");
     if (!empty($next_article))
     {
         $next_article['url'] = build_uri('article', array('aid'=>$next_article['article_id']), $next_article['title']);
         $smarty->assign('next_article', $next_article);
     }
 
-    $prev_aid = $db->getOne("SELECT max(article_id) FROM " . $ecs->table('article') . " WHERE article_id < $article_id AND cat_id=$article[cat_id] AND is_open=1");
+    $prev_aid = $db->getOne("SELECT max(article_id) FROM " . $ecs->table('ecsmart_article') . " WHERE article_id < $article_id AND cat_id=$article[cat_id] AND is_open=1");
     if (!empty($prev_aid))
     {
-        $prev_article = $db->getRow("SELECT article_id, title FROM " .$ecs->table('article'). " WHERE article_id = $prev_aid");
+        $prev_article = $db->getRow("SELECT article_id, title FROM " .$ecs->table('ecsmart_article'). " WHERE article_id = $prev_aid");
         $prev_article['url'] = build_uri('article', array('aid'=>$prev_article['article_id']), $prev_article['title']);
         $smarty->assign('prev_article', $prev_article);
     }
 
     assign_dynamic('article');
 }
-$smarty->display('article.dwt', $cache_id); //文章详细页 by wang
+if(isset($article) && $article['cat_id'] > 2)
+{
+    $smarty->display('article.dwt', $cache_id);
+}
+else
+{
+    $smarty->display('article_pro.dwt', $cache_id);
+}
 
 /*------------------------------------------------------ */
 //-- PRIVATE FUNCTION
@@ -137,7 +144,7 @@ function get_article_info($article_id)
 {
     /* 获得文章的信息 */
     $sql = "SELECT a.*, IFNULL(AVG(r.comment_rank), 0) AS comment_rank ".
-            "FROM " .$GLOBALS['ecs']->table('article'). " AS a ".
+            "FROM " .$GLOBALS['ecs']->table('ecsmart_article'). " AS a ".
             "LEFT JOIN " .$GLOBALS['ecs']->table('comment'). " AS r ON r.id_value = a.article_id AND comment_type = 1 ".
             "WHERE a.is_open = 1 AND a.article_id = '$article_id' GROUP BY a.article_id";
     $row = $GLOBALS['db']->getRow($sql);

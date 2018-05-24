@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心帐户变动记录
+ * 鸿宇多用户商城 管理中心帐户变动记录
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: account_log.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: account_log.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
@@ -107,6 +107,7 @@ elseif ($_REQUEST['act'] == 'add')
 {
     /* 检查权限 */
     admin_priv('account_manage');
+
     /* 检查参数 */
     $user_id = empty($_REQUEST['user_id']) ? 0 : intval($_REQUEST['user_id']);
     if ($user_id <= 0)
@@ -134,13 +135,6 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 {
     /* 检查权限 */
     admin_priv('account_manage');
-    $token=trim($_POST['token']);
-    if($token!=$_CFG['token'])
-    {
-        sys_msg($_LANG['no_account_change'], 1);
-    }
-
-
 
     /* 检查参数 */
     $user_id = empty($_REQUEST['user_id']) ? 0 : intval($_REQUEST['user_id']);
@@ -168,7 +162,31 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 
     /* 保存 */
     log_account_change($user_id, $user_money, $frozen_money, $rank_points, $pay_points, $change_desc, ACT_ADJUSTING);
-
+	//是否开启余额变动给客户发短信-管理员调节
+	if($_CFG['sms_user_money_change'] == 1)
+	{
+		if(abs($user_money) > 0)
+		{
+			if($_POST['add_sub_user_money'] > 0)
+			{
+				$user_money = '+'.$user_money;
+			}
+			else
+			{
+				$user_money = '-'.$user_money;
+			}
+			$sql = "SELECT user_money,mobile_phone FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_id = '$user_id'";
+			$users = $GLOBALS['db']->getRow($sql);
+            $time = date('Y-m-d H:i:s');
+            $money = $users['user_money'];
+            $content = array($_CFG['sms_admin_operation_tpl'],"{\"time\":\"$time\",\"user_money\":\"$user_money\",\"money\":\"$money\"}",$_CFG['sms_sign']);
+			if($users['mobile_phone'])
+			{
+				include_once('../sms/sms.php');
+				sendSMS($users['mobile_phone'],$content);
+			}
+		}
+	}
     /* 提示信息 */
     $links = array(
         array('href' => 'account_log.php?act=list&user_id=' . $user_id, 'text' => $_LANG['account_list'])

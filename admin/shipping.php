@@ -1,22 +1,28 @@
 <?php
 
 /**
- * ECSHOP 配送方式管理程序
+ * 鸿宇多用户商城 配送方式管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: shipping.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: shipping.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/lib_shipping.php');
 $exc = new exchange($ecs->table('shipping'), $db, 'shipping_code', 'shipping_name');
+
+$not_set_default = array('pups','tc_express');//设置不用设置默认配送方式的二个方式
+
+$display1 = array('pups');//门店自提
+$display2 = array('tc_express');//同城快递
 
 /*------------------------------------------------------ */
 //-- 配送方式列表
@@ -36,7 +42,7 @@ if ($_REQUEST['act'] == 'list')
         }
 
         /* 检查该插件是否已经安装 */
-        $sql = "SELECT shipping_id, shipping_name, shipping_desc, insure, support_cod,shipping_order FROM " .$ecs->table('shipping'). " WHERE shipping_code='" .$modules[$i]['code']. "' ORDER BY shipping_order";
+        $sql = "SELECT shipping_id, shipping_name, shipping_desc, insure, support_cod,shipping_order,is_default_show FROM " .$ecs->table('shipping'). " WHERE shipping_code='" .$modules[$i]['code']. "' and supplier_id=0 ORDER BY shipping_order";
         $row = $db->GetRow($sql);
 
         if ($row)
@@ -67,10 +73,33 @@ if ($_REQUEST['act'] == 'list')
             $modules[$i]['cod']     = $modules[$i]['cod'];
             $modules[$i]['install'] = 0;
         }
+		$modules[$i]['is_default_show'] = $row['is_default_show'];
     }
 
+	$ret = array();
+	foreach($modules as $key => $val){
+		if(in_array($val['code'],$display1)){
+			//门店自提
+			$ret[0]['shiplist'][$key] = $val;
+			$ret[0]['name'] = '门店自提';
+			$ret[0]['desc'] = "门店自提区别于普通快递和同城快递，安装后买家选择门店自提后可选择距离自己最近的自提点，快递送至自提点后，买家可自行上门提货（自提点设置见自提点管理）";
+		}elseif(in_array($val['code'],$display2)){
+			//同城快递
+			$ret[1]['shiplist'][$key] = $val;
+			$ret[1]['name'] = '同城快递';
+			$ret[1]['desc'] = "同城快递区别于普通快递和门店自提，是网站自己的快递，主要用于进行同城配送，安装后买家选择同城快递，后台即可生成快递配送物流单（物流单见订单管理-快递单列表）";
+		}else{
+			//普通快递
+			$ret[2]['shiplist'][$key] = $val;
+			$ret[2]['name'] = '普通快递';
+			$ret[2]['desc'] = "普通快递区别于同城快递和门店自提，您可以设置默认的普通快递，如:申通快递，买家选择普通快递时,订单自动使用申通快递";
+		}
+	}
+
+	sort($ret);
+
     $smarty->assign('ur_here', $_LANG['03_shipping_list']);
-    $smarty->assign('modules', $modules);
+    $smarty->assign('modules', $ret);
     assign_query_info();
     $smarty->display('shipping_list.htm');
 }
@@ -87,23 +116,26 @@ elseif ($_REQUEST['act'] == 'install')
     include_once(ROOT_PATH . 'includes/modules/shipping/' . $_GET['code'] . '.php');
 
     /* 检查该配送方式是否已经安装 */
-    $sql = "SELECT shipping_id FROM " .$ecs->table('shipping'). " WHERE shipping_code = '$_GET[code]'";
+	$sql = "SELECT shipping_id FROM " .$ecs->table('shipping'). " WHERE shipping_code = '$_GET[code]' and supplier_id=0";
     $id = $db->GetOne($sql);
 
     if ($id > 0)
     {
         /* 该配送方式已经安装过, 将该配送方式的状态设置为 enable */
-        $db->query("UPDATE " .$ecs->table('shipping'). " SET enabled = 1 WHERE shipping_code = '$_GET[code]' LIMIT 1");
+		$db->query("UPDATE " .$ecs->table('shipping'). " SET enabled = 1 WHERE shipping_code = '$_GET[code]' and supplier_id=0 LIMIT 1");
     }
     else
     {
         /* 该配送方式没有安装过, 将该配送方式的信息添加到数据库 */
         $insure = empty($modules[0]['insure']) ? 0 : $modules[0]['insure'];
+		$support_pickup =  isset($modules[0]['support_pickup']) && $modules[0]['support_pickup'] ? 1 : 0;
+		$is_default_show = (in_array(addslashes($modules[0]['code']),$not_set_default)) ? 1 : 0;//如果在设置数据中，添加时就为默认配送方式
+		/* 代码修改_start   By bbs.hongyuvip.com */
         $sql = "INSERT INTO " . $ecs->table('shipping') . " (" .
-                    "shipping_code, shipping_name, shipping_desc, insure, support_cod, enabled, print_bg, config_lable, print_model" .
+                    "shipping_code, shipping_name, shipping_desc, insure, support_cod, enabled, print_bg, config_lable, print_model , support_pickup , is_default_show" .
                 ") VALUES (" .
                     "'" . addslashes($modules[0]['code']). "', '" . addslashes($_LANG[$modules[0]['code']]) . "', '" .
-                    addslashes($_LANG[$modules[0]['desc']]) . "', '$insure', '" . intval($modules[0]['cod']) . "', 1, '" . addslashes($modules[0]['print_bg']) . "', '" . addslashes($modules[0]['config_lable']) . "', '" . $modules[0]['print_model'] . "')";
+                    addslashes($_LANG[$modules[0]['desc']]) . "', '$insure', '" . intval($modules[0]['cod']) . "', 1, '" . addslashes($modules[0]['print_bg']) . "', '" . addslashes($modules[0]['config_lable']) . "', '" . $modules[0]['print_model'] . "', $support_pickup, $is_default_show)";
         $db->query($sql);
         $id = $db->insert_Id();
     }
@@ -128,10 +160,13 @@ elseif ($_REQUEST['act'] == 'uninstall')
     admin_priv('ship_manage');
 
     /* 获得该配送方式的ID */
-    $row = $db->GetRow("SELECT shipping_id, shipping_name, print_bg FROM " .$ecs->table('shipping'). " WHERE shipping_code='$_GET[code]'");
+	$row = $db->GetRow("SELECT shipping_id,shipping_code, shipping_name, print_bg, is_default_show FROM " .$ecs->table('shipping'). " WHERE shipping_code='$_GET[code]' and supplier_id=0");
+	if($row['is_default_show'] && !in_array($row['shipping_code'],$not_set_default)){
+		$lnk[] = array('text' => $_LANG['go_back'], 'href'=>'shipping.php?act=list');
+        sys_msg('默认配送地址不可以卸载,请先设置别的配送地址为默认后再卸载', 0, $lnk);
+	}
     $shipping_id = $row['shipping_id'];
     $shipping_name = $row['shipping_name'];
-
     /* 删除 shipping_fee 以及 shipping 表中的数据 */
     if ($row)
     {
@@ -362,6 +397,41 @@ elseif ($_REQUEST['act'] == 'do_edit_print_template')
 }
 
 /*------------------------------------------------------ */
+//-- 设置配送方式为默认前台显示的
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'is_default_show')
+{
+	global $ecs, $_LANG;
+
+    admin_priv('ship_manage');
+
+	
+	if(in_array($_REQUEST['code'],$not_set_default)){
+		$lnk[] = array('text' => $_LANG['go_back'], 'href'=>'shipping.php?act=list');
+		sys_msg('这种配送方式没必要设置默认', 0, $lnk);
+	}
+
+	$sql = "select shipping_id,shipping_name from ".$ecs->table("shipping")." where is_default_show=0 and supplier_id=0 and enabled=1 and shipping_code='".$_REQUEST['code']."'";
+	$info = $db->getRow($sql);
+	if($info){
+
+		$shipping_name = $info['shipping_name'];
+		$shipping_id = $info['shipping_id'];
+
+		set_default_show($shipping_id,0);
+
+		//记录管理员操作
+		admin_log(addslashes($shipping_name), 'is_default_show', 'shipping');
+
+		$lnk[] = array('text' => $_LANG['go_back'], 'href'=>'shipping.php?act=list');
+		sys_msg(sprintf($_LANG['is_default_show'], $shipping_name), 0, $lnk);
+	}else{
+		$lnk[] = array('text' => $_LANG['go_back'], 'href'=>'shipping.php?act=list');
+		sys_msg('已经是默认显示配送地址', 0, $lnk);
+	}
+}
+
+/*------------------------------------------------------ */
 //-- 编辑配送方式名称
 /*------------------------------------------------------ */
 
@@ -519,4 +589,6 @@ function is_print_bg_default($print_bg)
 
     return false;
 }
+
+
 ?>

@@ -64,6 +64,22 @@ function ReWriterConfirm(sender)
   }
   return res;
 }
+
+function change_tpl(val)
+{
+	var arr = new Array('sms_use_balance_reduce_tpl','sms_deposit_balance_reduce_tpl','sms_recharge_balance_add_tpl','sms_admin_operation_tpl','sms_return_goods_tpl');
+	for(var i = 0; i < arr.length; i++)
+	{
+		if(val == arr[i])
+		{
+			document.getElementById(val).style.display = 'table-row'; 
+		} 
+		else
+		{
+			document.getElementById(arr[i]).style.display = 'none'; 
+		}
+	}
+}
 </script>
 {/literal}
 {include file="pagefooter.htm"}

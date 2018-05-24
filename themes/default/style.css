@@ -1,10 +1,10 @@
 /*
 Template Name: ECSHOP Default
-Template URI: http://www.dede168.com/
-Description: 下载：www.oeob.net<br/>QQ：2355497362
-Version: 2.7.3
-Author: 创资源oeob.net
-Author URI: http://www.oeob.net/
+Template URI: http://bbs.hongyuvip.com/
+Description: 默认升级版.
+Version: 2.7.2
+Author: ECSHOP Team
+Author URI: http://bbs.hongyuvip.com/
 Logo filename: logo.gif
 Template Type: type_0
 */
@@ -435,44 +435,394 @@ visibility:hidden;
    #footer .text a{color:#404040; text-decoration:none;}
 
 
-/* ======商品比较浮动块 ====== */
+/* 代码增加_start  By  bbs.hongyuvip.com */
 #compareBox {
- width:128px;
- background:url(images/compareBg.gif) no-repeat top center;
- background-color:#edf8ff;
- padding:35px 0 8px 0;
- border: 1px solid #c5e4ff;
- position: absolute;
- right:1px;
- top:200px;
+ width:990px;
+ background-color:white;
+ position: fixed;
+ bottom:0;
+ right:100px;
+ z-index:999;
 }
 
-#compareBox input {
-    width:52px; height:13px;
-    border:none;
-    background:url(images/compareSub.gif) no-repeat;
+#compareBox .menu{
+	position:relative;
+	border:1px solid #ddd;
+	z-index:2;
+}
+#compareBox .menu li{
+	float: left;
+    font: 14px/30px 'microsoft yahei';
+    height: 30px;
+    position: relative;
+    text-align: center;
+    width: 80px;
+	bottom:-3px;
+	z-index:2000;
+}
+#compareBox .menu li.current{
+	background-color: #fff;
+	top:3px;
+	border:2px solid #7ABD54;
+	border-bottom:none;
+    height: 36px;
+	left:-1px;
+    margin-top: -4px;
+    position: relative;
+}
+
+#compareBox .operate{
+	position: absolute;
+    right: 22px;
+    text-align: center;
+    top: 22px;
+    width: 85px;
+}
+#compareBox .operate .compare{
+	background-color: #E74649;
+    background-image: linear-gradient(to bottom, #E74649 0px, #DF3033 100%);
+    border: 0 none;
+    color: #FFFFFF;
+    cursor: pointer;
+	border-radius: 3px;
+    cursor: default;
+    display: block;
+    font: 700 14px/30px verdana;
+    height: 30px;
+    margin-bottom: 11px;
+    margin-left: 13px;
+    width: 59px;
+	cursor:pointer;
+}
+#compareBox .operate .clear{
+	cursor:pointer;
 }
 
 #compareList {
- margin:0px 0px 8px 0px;
- padding:0px;
- width:120px;
- background:#FFFFFF;
- border:1px solid #d6ecff;
+	color: #CCCCCC;
+    height: 90px;
+    overflow: hidden;
+    padding: 6px;
+	position:relative;
+	border:2px solid #7ABD54;
+	z-index:1;
 }
 
-#compareList li {
- color: #333;
- text-align:left;
- background: #fff;
- padding: 3px 5px;
- margin: 3px 0;
+
+#compareList dl {
+	border-right: 1px dotted #7ABD54;
+    float: left;
+    margin-right: 10px;
+    overflow: hidden;
+    padding: 17px 10px 12px 0;
+}
+#compareList dt,dd{float:left;}
+#compareList dt{
+	border: 1px solid #FFFFFF;
+    color: #CCCCCC;
+    float: left;
+    font: 36px/48px arial;
+    height: 48px;
+    margin-right: 5px;
+    overflow: hidden;
+    text-align: center;
+    width: 48px;
+}
+#compareList dd{
+	float: left;
+    width: 140px;
+}
+#compareList dd .name{
+	color: #333333;
+    display: block;
+    height: 3em;
+    line-height: 1.5em;
+    overflow: hidden;
+	text-align:left;
+}
+#compareList dd span{
+	color: #999999;
+	overflow:hidden;
+	float:left;
+	text-align:left;
+}
+#compareBox strong{
+	color: #E4393C;
+    font-family: verdana;
+}
+#compareList dd span a{
+	color:#005AA0;
+	padding-left:10px;
+	visibility:hidden;
+}
+#compareList .current dd span a{
+	display:block
+}
+#compareBox a{
+	text-decoration:none;
+}
+#compareBox a:hover{
+	text-decoration:underline;
 }
 
 #compareList li img {
  float:right;
  padding-top:4px;
 }
+#historyList{
+	border: 2px solid #7ABD54;
+    color: #CCCCCC;
+    height: 90px;
+    overflow: hidden;
+    padding: 6px;
+    position: relative;
+}
+#historyList ul{height:84px;position:absolute;left:0;top:0;}
+#historyList li{
+	float: left;
+    height: 84px;
+    overflow: hidden;
+}
+#historyList li .item_wrap{
+	border-right: 1px dotted #7ABD54;
+    margin-right: 10px;
+    overflow: hidden;
+    padding: 10px 10px 0 0;
+    width: 205px;
+}
+#historyList .item_wrap .dt{
+	color: #CCCCCC;
+    float: left;
+    font: 36px/48px arial;
+    height: 48px;
+    margin-right: 5px;
+    overflow: hidden;
+    text-align: center;
+    width: 48px;
+}
+#historyList .item_wrap .dd{
+	float: left;
+    width: 140px;
+	text-align:left;
+}
+.compare-btn{
+	float:left;
+	height: 21px;
+    line-height: 100px;
+    margin-right: 10px;
+    overflow: hidden;
+    width: 58px;
+	background:url(images/cmp-btns.png) no-repeat;
+}
+#historyList .item_wrap .dd a.name{
+	color: #333333;
+    display: block;
+    height: 3em;
+    line-height: 1.5em;
+    overflow: hidden;
+}
+#historyList .scroll_wrap{
+	height: 90px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    width: 905px;
+}
+
+#historyList .scroll-btn{
+	background:url(images/footprint-arr.png) no-repeat;
+	cursor: pointer;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+    text-indent: -9999px;
+    top: 30px;
+    width: 14px;
+    z-index: 10;
+}
+#historyList .sc-prev{
+	background-position: 0 0;
+    float: left;
+	margin-left:10px;
+}
+#historyList .sc-next{
+	background-position: -16px 0;
+    float: right;
+	margin-right:10px;
+}
+#historyList .disable{
+	background-position: 0 -100px;
+    cursor: default;
+}
+#historyList .sc-next.disable{
+	background-position: -16px -100px;
+    cursor: default;
+}
+.attr-group{
+	cursor:pointer;
+}
+.attr-group-expand{
+	background:url(images/expand.png) no-repeat 10% center;
+}
+.attr-group-fold{
+	background:url(images/fold.png) no-repeat 10% center;
+}
+.compare_wrap .attr{height:40px;}
+#tool {
+    background-position: 0 0;
+    bottom: 0;
+    height: 52px;
+    left: 50%;
+    margin: 10px 0 0 -301px;
+    position: fixed;
+    width: 602px;
+    z-index: 1;
+	background: url(images/tool.png) no-repeat;
+}
+#tool .con, #locate, #static {
+    position: relative;
+}
+#locate {
+    background-position: 0 -79px;
+}
+#static {
+    background-position: -86px -79px;
+    display: none;
+}
+#locate, #static {
+    cursor: pointer;
+    float: right;
+    height: 25px;
+    right: 30px;
+    top: 13px;
+    width: 85px;
+}
+
+#tool .con {
+	margin:0;
+    background-position: -53px 0;
+    display: block;
+    height: 34px;
+    line-height: 34px;
+    padding: 13px 0 0 130px;
+    width: 340px;
+}
+#tool #compare_highlight {
+    background-position: 0 -53px;
+    padding-left: 24px;
+}
+#tool #compare_equal {
+    background-position: -124px -53px;
+    padding-left: 24px;
+}
+#tool a.setup {
+    background-position: -224px -53px;
+    color: #FFFFFF;
+    float: left;
+    height: 25px;
+    line-height: 24px;
+    margin-right: 10px;
+    padding-left: 21px;
+    text-align: center;
+    width: 92px;
+}
+#tool, #tool a.setup, #compare_highlight, #compare_equal, #locate, #static {
+    background-image: url(images/tool.png);
+    background-repeat: no-repeat;
+}
+#tool, #tool a.setup, #compare_highlight, #compare_equal, #locate, #static {
+    background-image: url(images/tool.png);
+    background-repeat: no-repeat;
+}
+
+#tool a.setup b {
+    display: none;
+    float: right;
+    height: 34px;
+    width: 12px;
+}
+.compare_wrap{width:1208px;}
+.compare_wrap h5{background-color:#F7F7F7;height:31px;line-height:31px;border:1px solid #ddd;border-bottom:none;}
+.compare_wrap h5 span{color:#333;background:none;}
+.compare_wrap table{
+	border-collapse:collapse;
+	width: 1208px;
+	margin-top: -1px;
+    table-layout: fixed;
+}
+.compare_wrap th{
+	color: #999999;
+    padding-left: 30px;
+    text-align: left;
+    width: 84px;
+	border: 1px solid #DDDDDD;
+    line-height: 20px;
+	word-wrap: break-word;
+}
+.compare_wrap td{
+	border: 1px solid #DDDDDD;
+    line-height: 20px;
+	padding:8px 0;
+    word-wrap: break-word;
+	overflow: hidden;
+    text-align: center;
+	width: 250px;
+}
+.compare_wrap a:link, .compare_wrap a:visited{
+	color:#005EA7;
+	text-decoration:none;
+}
+.compare_wrap a:hover{
+	color:red;
+	text-decoration:underline;
+}
+.compare_wrap .delBtn{
+	position:absolute;
+	top:15px;
+	right:-25px;
+	background-color:#E2E2E2;
+	color:white;
+	border-top-left-radius:15px;
+	border-bottom-left-radius:15px;
+	padding:3px 0 3px;
+	cursor:pointer;
+	padding-left:5px;
+}
+.compare_wrap .delBtn:before{
+	content:"×";
+	padding:3px 5px;
+}
+.compare_wrap a.delBtn:hover{
+	color:white;
+	text-decoration:none;
+	background-color:#CD2A2C;
+}
+.compare_wrap .no-contrast{
+	color: #CCCCCC;
+    font-family: "微软雅黑";
+    font-size: 25px;
+    padding: 70px 0 5px;
+    text-align: center;
+}
+.compareHolder{
+	height: 66px;
+    line-height: 14px;
+    margin: 5px 0;
+    padding: 28px 4px 0;
+    position: fixed;
+    text-align: center;
+    text-decoration: none;
+    width: 17px;
+	right:100px;
+	bottom:150px;
+	cursor:pointer;
+	color:#666;
+	background:url(images/compare-btn.png) no-repeat;
+}
+.compareHolder:hover{
+	background:url(images/compare-hover-btn.png) no-repeat;
+}
+/* 代码增加_end  By  bbs.hongyuvip.com */
 
 /*购物车提示点击更新按钮式样2.6.2版本添加*/
 .messageli {
@@ -497,4 +847,3 @@ visibility:hidden;
  float:left;
  width:300px;
 }
-

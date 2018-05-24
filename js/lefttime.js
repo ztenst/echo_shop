@@ -1,10 +1,8 @@
 /* $Id : lefttime.js 4865 2007-01-31 14:04:10Z paulgao $ */
-
 /* *
  * 给定一个剩余时间（s）动态显示一个剩余时间.
  * 当大于一天时。只显示还剩几天。小于一天时显示剩余多少小时，多少分钟，多少秒。秒数每秒减1 *
  */
-
 // 初始化变量
 var auctionDate = 0;
 var _GMTEndTime = 0;
@@ -126,9 +124,11 @@ function macauclock()
 
 function onload_leftTime(now_time)
 {
+
   /* 第一次运行时初始化语言项目 */
   try
   {
+
     _GMTEndTime = gmt_end_time;
     // 剩余时间
     _day = day;
@@ -148,7 +148,8 @@ function onload_leftTime(now_time)
     }
     else
     {
-      var tmp_val = parseInt(_GMTEndTime) - now_time;
+      //var tmp_val = parseInt(_GMTEndTime) - parseInt((new Date()).valueOf()/1000);
+	  var tmp_val = parseInt(_GMTEndTime) - now_time;
     }
     if (tmp_val > 0)
     {

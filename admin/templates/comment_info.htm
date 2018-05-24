@@ -8,6 +8,7 @@
       <td>
       <a href="mailto:{$msg.email}"><b>{if $msg.user_name}{$msg.user_name}{else}{$lang.anonymous}{/if}</b></a>&nbsp;{$lang.from}
       &nbsp;{$msg.add_time}&nbsp;{$lang.to}&nbsp;<b>{$id_value}</b>&nbsp;{$lang.send_comment}
+      <span style="float:right;"><img src="images/stars{$msg.comment_rank}.gif" /></span>
     </td>
     </tr>
     <tr>
@@ -67,15 +68,15 @@
   <strong>{$lang.reply_comment}</strong>
   </th></tr>
   <tr>
-    <td>{$lang.user_name}:</td>
+    <td align="right">{$lang.user_name}:</td>
     <td><input name="user_name" type="text" {if $reply_info.user_name eq ""}value="{$admin_info.user_name}"{else} value="{$reply_info.user_name}"{/if} size="30" readonly="true" /></td>
   </tr>
   <tr>
-    <td>{$lang.email}:</td>
+    <td align="right">{$lang.email}:</td>
     <td><input name="email" type="text" {if $reply_info.email eq ""}value="{$admin_info.email}"{else} value="{$reply_info.email}"{/if} size="30" readonly="true" /></td>
   </tr>
   <tr>
-    <td>{$lang.reply_content}:</td>
+    <td align="right">{$lang.reply_content}:</td>
     <td><textarea name="content" cols="50" rows="4" wrap="VIRTUAL">{$reply_info.content}</textarea></td>
   </tr>
   {if $reply_info.content}

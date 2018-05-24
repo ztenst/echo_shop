@@ -14,7 +14,6 @@
 <link href="{$cat_style}" rel="stylesheet" type="text/css" />
 <!-- {/if} -->
 {* 包含脚本文件 *}
-{insert_scripts files='jquery-1.9.1.min.js,jquery.json.js'}
 {insert_scripts files='common.js,global.js,compare.js'}
 </head>
 <body>
@@ -33,7 +32,7 @@
     <!-- TemplateBeginEditable name="左边区域" -->
 <!-- #BeginLibraryItem "/library/cart.lbi" -->
 
-{insert_scripts files='transport_jquery.js'}
+{insert_scripts files='transport.js'}
 <div class="cart" id="ECS_CARTINFO">
  {insert name='cart_info'}
 </div>
@@ -52,7 +51,7 @@
      <dd><a href="{$child.url}">{$child.name|escape:html}</a></dd>
      <!--{/foreach}-->
      </dl>
-    <!--{/foreach}-->
+    <!--{/foreach}--> 
   </div>
  </div>
 </div>
@@ -78,7 +77,7 @@
 			  <strong>{$lang.brand}：</strong>
 				<!--{foreach from=$brands item=brand}-->
 					<!-- {if $brand.selected} -->
-					<a href="javascript:void(0);" class="curr">{$brand.brand_name}</a>
+					<span>{$brand.brand_name}</span>
 					<!-- {else} -->
 					<a href="{$brand.url}">{$brand.brand_name}</a>&nbsp;
 					<!-- {/if} -->

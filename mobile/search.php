@@ -1,18 +1,19 @@
 <?php
 
 /**
- * ECSHOP ËÑË÷³ÌÐò
+ * é¸¿å®‡å¤šç”¨æˆ·å•†åŸŽ æœç´¢ç¨‹åº
  * ============================================================================
- * * °æÈ¨ËùÓÐ 2005-2012 ÉÏº£ÉÌÅÉÍøÂç¿Æ¼¼ÓÐÏÞ¹«Ë¾£¬²¢±£ÁôËùÓÐÈ¨Àû¡£
- * ÍøÕ¾µØÖ·: http://www.ecshop.com£»
+ * * ç‰ˆæƒæ‰€æœ‰ 2008-2015 é¸¿å®‡å¤šç”¨æˆ·å•†åŸŽç§‘æŠ€æœ‰é™å…¬å¸ï¼Œå¹¶ä¿ç•™æ‰€æœ‰æƒåˆ©ã€‚
+ * ç½‘ç«™åœ°å€: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * Õâ²»ÊÇÒ»¸ö×ÔÓÉÈí¼þ£¡ÄúÖ»ÄÜÔÚ²»ÓÃÓÚÉÌÒµÄ¿µÄµÄÇ°ÌáÏÂ¶Ô³ÌÐò´úÂë½øÐÐÐÞ¸ÄºÍ
- * Ê¹ÓÃ£»²»ÔÊÐí¶Ô³ÌÐò´úÂëÒÔÈÎºÎÐÎÊ½ÈÎºÎÄ¿µÄµÄÔÙ·¢²¼¡£
+ * ä»…ä¾›å­¦ä¹ äº¤æµä½¿ç”¨ï¼Œå¦‚éœ€å•†ç”¨è¯·è´­ä¹°æ­£ç‰ˆç‰ˆæƒã€‚é¸¿å®‡ä¸æ‰¿æ‹…ä»»ä½•æ³•å¾‹è´£ä»»ã€‚
+ * è¸è¸å®žå®žåšäº‹ï¼Œå ‚å ‚æ­£æ­£åšäººã€‚
  * ============================================================================
- * $Author: liubo $
- * $Id: search.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: search.php 17217 2016-01-19 06:29:08Z derek $
 */
-define('IN_ECTOUCH', true);
+
+define('IN_ECS', true);
 
 if (!function_exists("htmlspecialchars_decode"))
 {
@@ -21,13 +22,14 @@ if (!function_exists("htmlspecialchars_decode"))
         return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
     }
 }
+
 if (empty($_GET['encode']))
 {
     $string = array_merge($_GET, $_POST);
     if (get_magic_quotes_gpc())
     {
-        require(dirname(__FILE__) . '/include/lib_base.php');
-        //require(dirname(__FILE__) . '/include/lib_common.php');
+        require(dirname(__FILE__) . '/includes/lib_base.php');
+        //require(dirname(__FILE__) . '/includes/lib_common.php');
 
         $string = stripslashes_deep($string);
     }
@@ -46,7 +48,7 @@ else
         $string = unserialize($string);
         if ($string !== false)
         {
-            /* ÓÃ»§ÔÚÖØ¶¨ÏòµÄÇé¿öÏÂµ±×÷Ò»´Î·ÃÎÊ */
+            /* ç”¨æˆ·åœ¨é‡å®šå‘çš„æƒ…å†µä¸‹å½“ä½œä¸€æ¬¡è®¿é—® */
             if (!empty($string['search_encode_time']))
             {
                 if (time() > $string['search_encode_time'] + 2)
@@ -70,13 +72,19 @@ else
     }
 }
 
-require(dirname(__FILE__) . '/include/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 $_REQUEST = array_merge($_REQUEST, addslashes_deep($string));
 
 $_REQUEST['act'] = !empty($_REQUEST['act']) ? trim($_REQUEST['act']) : '';
+
+if (!empty($_REQUEST['search_type']) && $_REQUEST['search_type'] == 'stores')
+{
+	header("Location:stores.php?keywords=" . $_REQUEST['keywords']);
+}
+
 /*------------------------------------------------------ */
-//-- ¸ß¼¶ËÑË÷
+//-- é«˜çº§æœç´¢
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'advanced_search')
 {
@@ -89,12 +97,12 @@ if ($_REQUEST['act'] == 'advanced_search')
     assign_template();
     assign_dynamic('search');
     $position = assign_ur_here(0, $_LANG['advanced_search']);
-    $smarty->assign('page_title', $position['title']);    // Ò³Ãæ±êÌâ
-    $smarty->assign('ur_here',    $position['ur_here']);  // µ±Ç°Î»ÖÃ
+    $smarty->assign('page_title', $position['title']);    // é¡µé¢æ ‡é¢˜
+    $smarty->assign('ur_here',    $position['ur_here']);  // å½“å‰ä½ç½®
 
-    $smarty->assign('categories', get_categories_tree()); // ·ÖÀàÊ÷
-    $smarty->assign('helps',      get_shop_help());       // Íøµê°ïÖú
-    $smarty->assign('top_goods',  get_top10());           // ÏúÊÛÅÅÐÐ
+    $smarty->assign('categories', get_categories_tree()); // åˆ†ç±»æ ‘
+    $smarty->assign('helps',      get_shop_help());       // ç½‘åº—å¸®åŠ©
+    $smarty->assign('top_goods',  get_top10());           // é”€å”®æŽ’è¡Œ
     $smarty->assign('promotion_info', get_promotion_info());
     $smarty->assign('cat_list',   cat_list(0, 0, true, 2, false));
     $smarty->assign('brand_list', get_brand_list());
@@ -102,10 +110,11 @@ if ($_REQUEST['act'] == 'advanced_search')
     $smarty->assign('use_storage', $_CFG['use_storage']);
 
     $smarty->display('search.dwt');
+
     exit;
 }
 /*------------------------------------------------------ */
-//-- ËÑË÷½á¹û
+//-- æœç´¢ç»“æžœ
 /*------------------------------------------------------ */
 else
 {
@@ -117,11 +126,111 @@ else
     $_REQUEST['goods_type'] = !empty($_REQUEST['goods_type']) ? intval($_REQUEST['goods_type']) : 0;
     $_REQUEST['sc_ds']      = !empty($_REQUEST['sc_ds']) ? intval($_REQUEST['sc_ds']) : 0;
     $_REQUEST['outstock']   = !empty($_REQUEST['outstock']) ? 1 : 0;
+    $page       = !empty($_REQUEST['page'])  && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
+    $size       = !empty($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
+    if(isset($_REQUEST['type']) && $_REQUEST['type'] == '1'){
+        
+    	//åº—é“ºæœç´¢
+    	//æ¨¡ç³Šæœå‡ºæ¥çš„åº—é“ºid
+    	$sql = "SELECT DISTINCT supplier_id
+				FROM ".$ecs->table('supplier_shop_config')." AS ssc
+				WHERE (
+				code = 'shop_name'
+				AND value LIKE '%".$_REQUEST['keywords']."%'
+				)
+				OR (
+				code = 'shop_keywords'
+				AND value LIKE '%".$_REQUEST['keywords']."%'
+				)";
+	    $suppids = $db->getAll($sql);
+	    $count = count($suppids);
+	    $start = ($page-1)*$size;
+	   
+	    $splice = array_slice($suppids,$start,$size);
+	    
+	    $suppliers = array();
+	    if(is_array($splice)){
+	    	foreach($splice as $key => $val){
+	    		$suppliers[] = $val['supplier_id'];
+	    	}
+	    }
+	    
+	
+	    $max_page = ($count> 0) ? ceil($count / $size) : 1;
+	    if ($page > $max_page)
+	    {
+	        $page = $max_page;
+    	}
+    	$arr = array();
+    	if(!empty($suppliers)){
+	    	$sql = "select supplier_id,code,value from ".$ecs->table('supplier_shop_config')." where supplier_id in(".implode(',',$suppliers).")";
+	    	$res = $info = $db->query($sql);
+	    	
+	    	while ($row = $db->FetchRow($res)){
+	    		if(!isset($arr[$row['supplier_id']])){
+	    			//èŽ·å–åº—é“ºä¸‰ä¸ªæœ€æ–°å•†å“
+	    			$gsql = "select goods_id, goods_name,shop_price, goods_thumb, goods_img from ".$ecs->table('goods')." where supplier_id=".$row['supplier_id']." AND is_delete = 0 AND is_on_sale = 1 AND is_alone_sale = 1 AND is_virtual = 0 order by goods_id desc";
+	    			$glist = $db->getAll($gsql);
+	    			$arr[$row['supplier_id']]['goodlist'] = $glist;
+	    			foreach($glist as $k=>$v){
+	    				$arr[$row['supplier_id']]['goodlist'][$k]['goods_thumb']   = '../'.get_image_path($v['goods_id'], $v['goods_thumb'], true);
+	        			$arr[$row['supplier_id']]['goodlist'][$k]['goods_img']     = '../'.get_image_path($v['goods_id'], $v['goods_img']);
+	    				$arr[$row['supplier_id']]['goodlist'][$k]['url']           = build_uri('goods', array('gid' => $v['goods_id']), $v['goods_name']);
+                                        $arr[$row['supplier_id']]['goodlist'][$k]['shop_price']  =  $v['shop_price'];
+                                        
+                                }
+	    		}
+	    		$arr[$row['supplier_id']][$row['code']] = $row['value'];
+	    		$arr[$row['supplier_id']]['supplier_id'] = $row['supplier_id'];
+                        $arr[$row['supplier_id']]['shop_province_name'] = get_region_name($arr[$row['supplier_id']]['shop_province']);
+                        $arr[$row['supplier_id']]['shop_city_name'] = get_region_name($arr[$row['supplier_id']]['shop_city']);
+                        $arr[$row['supplier_id']]['goods_number'] = count($arr[$row['supplier_id']]['goodlist']);
+                     
+	    	}
+                   //èŽ·å–åº—é“ºè¯„åˆ†
+                foreach($arr as $k=>$v){
+                                        //ä»£ç å¢žåŠ  
+                    $sql1 = "SELECT AVG(comment_rank) FROM " . $GLOBALS['ecs']->table('comment') . " c" . " LEFT JOIN " . $GLOBALS['ecs']->table('order_info') . " o"." ON o.order_id = c.order_id"." WHERE c.status > 0 AND  o.supplier_id = " .$v['supplier_id'];
+                    $avg_comment = $GLOBALS['db']->getOne($sql1);
+                    $avg_comment = number_format(round($avg_comment),1);			
+                    $sql2 = "SELECT AVG(server), AVG(shipping) FROM " . $GLOBALS['ecs']->table('shop_grade') . " s" . " LEFT JOIN " . $GLOBALS['ecs']->table('order_info') . " o"." ON o.order_id = s.order_id"." WHERE s.is_comment > 0 AND  s.server >0 AND o.supplier_id = " .$v['supplier_id'];
+                    $row = $GLOBALS['db']->getRow($sql2);
+
+                    $avg_server = number_format(round($row['AVG(server)']),1);
+                    $avg_shipping = number_format(round($row['AVG(shipping)']),1);
+                    $haoping = round((($avg_comment+$avg_server+$avg_shipping)/3)/5,2)*100;
+                    //ä»£ç å¢žåŠ  
+                    $arr[$k]['c_rank'] = $avg_comment;
+                    $arr[$k]['serv_rank'] = $avg_server;
+                    $arr[$k]['shipp_rank'] = $avg_shipping;
+                }
+    	}
+        
+        
+    	$pager['search'] = array(
+	        'keywords'   => stripslashes(urlencode($_REQUEST['keywords'])),
+	        'sort'       => $_REQUEST['sort'],
+	        'intro'      => empty($intromode) ? '' : trim($intromode),
+	        'goods_type' => $_REQUEST['goods_type'],
+	        'sc_ds'      => $_REQUEST['sc_ds'],
+	        'outstock'   => $_REQUEST['outstock'],
+	    );
+
+ 	$pager = get_pager('search.php', $pager['search'], $count, $page, $size);
+        $display = 'shop_list';
+        $smarty->assign('display',$display);
+ 	$smarty->assign('pager',$pager);
+ 	$smarty->assign('shop_list',$arr);
+ 	assign_template();
+    	assign_dynamic('search');
+   	$smarty->display('search.dwt');
+    	exit;
+    }
 
     $action = '';
     if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'form')
     {
-        /* ÒªÏÔÊ¾¸ß¼¶ËÑË÷À¸ */
+        /* è¦æ˜¾ç¤ºé«˜çº§æœç´¢æ  */
         $adv_value['keywords']  = htmlspecialchars(stripcslashes($_REQUEST['keywords']));
         $adv_value['brand']     = $_REQUEST['brand'];
         $adv_value['min_price'] = $_REQUEST['min_price'];
@@ -130,7 +239,7 @@ else
 
         $attributes = get_seachable_attributes($_REQUEST['goods_type']);
 
-        /* ½«Ìá½»Êý¾ÝÖØÐÂ¸³Öµ */
+        /* å°†æäº¤æ•°æ®é‡æ–°èµ‹å€¼ */
         foreach ($attributes['attr'] AS $key => $val)
         {
             if (!empty($_REQUEST['attr'][$val['id']]))
@@ -161,7 +270,8 @@ else
 
         $action = 'form';
     }
-    /* ³õÊ¼»¯ËÑË÷Ìõ¼þ */
+
+    /* åˆå§‹åŒ–æœç´¢æ¡ä»¶ */
     $keywords  = '';
     $tag_where = '';
     if (!empty($_REQUEST['keywords']))
@@ -169,25 +279,25 @@ else
         $arr = array();
         if (stristr($_REQUEST['keywords'], ' AND ') !== false)
         {
-            /* ¼ì²é¹Ø¼ü×ÖÖÐÊÇ·ñÓÐAND£¬Èç¹û´æÔÚ¾ÍÊÇ²¢ */
+            /* æ£€æŸ¥å…³é”®å­—ä¸­æ˜¯å¦æœ‰ANDï¼Œå¦‚æžœå­˜åœ¨å°±æ˜¯å¹¶ */
             $arr        = explode('AND', $_REQUEST['keywords']);
             $operator   = " AND ";
         }
         elseif (stristr($_REQUEST['keywords'], ' OR ') !== false)
         {
-            /* ¼ì²é¹Ø¼ü×ÖÖÐÊÇ·ñÓÐOR£¬Èç¹û´æÔÚ¾ÍÊÇ»ò */
+            /* æ£€æŸ¥å…³é”®å­—ä¸­æ˜¯å¦æœ‰ORï¼Œå¦‚æžœå­˜åœ¨å°±æ˜¯æˆ– */
             $arr        = explode('OR', $_REQUEST['keywords']);
             $operator   = " OR ";
         }
         elseif (stristr($_REQUEST['keywords'], ' + ') !== false)
         {
-            /* ¼ì²é¹Ø¼ü×ÖÖÐÊÇ·ñÓÐ¼ÓºÅ£¬Èç¹û´æÔÚ¾ÍÊÇ»ò */
+            /* æ£€æŸ¥å…³é”®å­—ä¸­æ˜¯å¦æœ‰åŠ å·ï¼Œå¦‚æžœå­˜åœ¨å°±æ˜¯æˆ– */
             $arr        = explode('+', $_REQUEST['keywords']);
             $operator   = " OR ";
         }
         else
         {
-            /* ¼ì²é¹Ø¼ü×ÖÖÐÊÇ·ñÓÐ¿Õ¸ñ£¬Èç¹û´æÔÚ¾ÍÊÇ²¢ */
+            /* æ£€æŸ¥å…³é”®å­—ä¸­æ˜¯å¦æœ‰ç©ºæ ¼ï¼Œå¦‚æžœå­˜åœ¨å°±æ˜¯å¹¶ */
             $arr        = explode(' ', $_REQUEST['keywords']);
             $operator   = " AND ";
         }
@@ -202,7 +312,7 @@ else
             }
             $val        = mysql_like_quote(trim($val));
             $sc_dsad    = $_REQUEST['sc_ds'] ? " OR goods_desc LIKE '%$val%'" : '';
-            $keywords  .= "(goods_name LIKE '%$val%' OR goods_sn LIKE '%$val%' OR keywords LIKE '%$val%' $sc_dsad)";
+            $keywords  .= "(g.goods_name LIKE '%$val%' OR g.goods_sn LIKE '%$val%' OR g.keywords LIKE '%$val%' $sc_dsad)";
 
             $sql = 'SELECT DISTINCT goods_id FROM ' . $ecs->table('tag') . " WHERE tag_words LIKE '%$val%' ";
             $res = $db->query($sql);
@@ -232,12 +342,13 @@ else
     $min_price  = $_REQUEST['min_price'] != 0                               ? " AND g.shop_price >= '$_REQUEST[min_price]'" : '';
     $max_price  = $_REQUEST['max_price'] != 0 || $_REQUEST['min_price'] < 0 ? " AND g.shop_price <= '$_REQUEST[max_price]'" : '';
 
-    /* ÅÅÐò¡¢ÏÔÊ¾·½Ê½ÒÔ¼°ÀàÐÍ */
+    /* æŽ’åºã€æ˜¾ç¤ºæ–¹å¼ä»¥åŠç±»åž‹ */
     $default_display_type = $_CFG['show_order_type'] == '0' ? 'list' : ($_CFG['show_order_type'] == '1' ? 'grid' : 'text');
     $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
     $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'shop_price' : 'last_update');
 
-    $sort = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update', 'click_count', 'sales_count'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
+	$sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update', 'salenum'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;   /* ä»£ç å¢žåŠ _start  By  bbs.hongyuvip.com */
+	
     $order = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC'))) ? trim($_REQUEST['order']) : $default_sort_order_method;
     $display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_SESSION['display_search']) ? $_SESSION['display_search'] : $default_display_type);
 
@@ -246,7 +357,7 @@ else
     $page       = !empty($_REQUEST['page'])  && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
     $size       = !empty($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
 
-    $intromode = '';    //·½Ê½£¬ÓÃÓÚ¾ö¶¨ËÑË÷½á¹ûÒ³±êÌâÍ¼Æ¬
+    $intromode = '';    //æ–¹å¼ï¼Œç”¨äºŽå†³å®šæœç´¢ç»“æžœé¡µæ ‡é¢˜å›¾ç‰‡
 
     if (!empty($_REQUEST['intro']))
     {
@@ -288,7 +399,7 @@ else
     }
 
     /*------------------------------------------------------ */
-    //-- ÊôÐÔ¼ìË÷
+    //-- å±žæ€§æ£€ç´¢
     /*------------------------------------------------------ */
     $attr_in  = '';
     $attr_num = 0;
@@ -325,7 +436,7 @@ else
                 }
                 else
                 {
-                    /* ´¦ÀíÑ¡¹ºÖÐÐÄ¹ýÀ´µÄÁ´½Ó */
+                    /* å¤„ç†é€‰è´­ä¸­å¿ƒè¿‡æ¥çš„é“¾æŽ¥ */
                     $sql .= isset($_REQUEST['pickout']) ? " AND attr_id = '$key' AND attr_value = '" . $val . "' " : " AND attr_id = '$key' AND attr_value LIKE '%" . mysql_like_quote($val) . "%' ";
                     $attr_url .= "&amp;attr[$key]=$val";
                     $attr_arg["attr[$key]"] = $val;
@@ -335,7 +446,7 @@ else
             }
         }
 
-        /* Èç¹û¼ìË÷Ìõ¼þ¶¼ÊÇÎÞÐ§µÄ£¬¾Í²»ÓÃ¼ìË÷ */
+        /* å¦‚æžœæ£€ç´¢æ¡ä»¶éƒ½æ˜¯æ— æ•ˆçš„ï¼Œå°±ä¸ç”¨æ£€ç´¢ */
         if ($attr_num > 0)
         {
             $sql .= " GROUP BY goods_id HAVING num = '$attr_num'";
@@ -353,19 +464,19 @@ else
     }
     elseif (isset($_REQUEST['pickout']))
     {
-        /* ´ÓÑ¡¹ºÖÐÐÄ½øÈëµÄÁ´½Ó */
+        /* ä»Žé€‰è´­ä¸­å¿ƒè¿›å…¥çš„é“¾æŽ¥ */
         $sql = "SELECT DISTINCT(goods_id) FROM " . $ecs->table('goods_attr');
         $col = $db->getCol($sql);
-        //Èç¹ûÉÌµêÃ»ÓÐÉèÖÃÉÌÆ·ÊôÐÔ,ÄÇÃ´´Ë¼ìË÷Ìõ¼þÊÇÎÞÐ§µÄ
+        //å¦‚æžœå•†åº—æ²¡æœ‰è®¾ç½®å•†å“å±žæ€§,é‚£ä¹ˆæ­¤æ£€ç´¢æ¡ä»¶æ˜¯æ— æ•ˆçš„
         if (!empty($col))
         {
             $attr_in = " AND " . db_create_in($col, 'g.goods_id');
         }
     }
 
-    /* »ñµÃ·ûºÏÌõ¼þµÄÉÌÆ·×ÜÊý */
+    /* èŽ·å¾—ç¬¦åˆæ¡ä»¶çš„å•†å“æ€»æ•° */
     $sql   = "SELECT COUNT(*) FROM " .$ecs->table('goods'). " AS g ".
-        "WHERE g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1 $attr_in ".
+        "WHERE g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_virtual = 0 $attr_in ".
         "AND (( 1 " . $categories . $keywords . $brand . $min_price . $max_price . $intro . $outstock ." ) ".$tag_where." )";
     $count = $db->getOne($sql);
 
@@ -375,17 +486,33 @@ else
         $page = $max_page;
     }
 
-    /* ²éÑ¯ÉÌÆ· */
-    $sql = "SELECT g.goods_id, g.goods_name, g.market_price, g.is_new, g.is_best, g.is_hot, g.shop_price AS org_price, ".
+    /* æŸ¥è¯¢å•†å“ */
+    $sql = "SELECT g.goods_id, g.goods_name, g.market_price,g.click_count, g.is_new, g.is_best, g.is_hot, g.shop_price AS org_price, ".
                 "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, ".
                 "g.promote_price, g.promote_start_date, g.promote_end_date, g.goods_thumb, g.goods_img, g.goods_brief, g.goods_type ".
             "FROM " .$ecs->table('goods'). " AS g ".
             "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
                     "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
-            "WHERE g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1 $attr_in ".
+            "WHERE g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1  AND g.is_virtual = 0 $attr_in ".
                 "AND (( 1 " . $categories . $keywords . $brand . $min_price . $max_price . $intro . $outstock . " ) ".$tag_where." ) " .
-            "ORDER BY g.$sort $order"; 
+            "ORDER BY $sort $order";
+			
+	if ($sort=='salenum')
+	{
+		 $sql = "SELECT SUM(o.goods_number) as salenum, g.goods_id, g.goods_name, g.market_price,g.click_count, g.is_new, g.is_best, g.is_hot, g.shop_price AS org_price, ".
+                "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, ".
+                "g.promote_price, g.promote_start_date, g.promote_end_date, g.goods_thumb, g.goods_img, g.goods_brief, g.goods_type ".
+            "FROM " .$ecs->table('goods'). " AS g ".
+            "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
+                    "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
+			"LEFT JOIN " . $GLOBALS['ecs']->table('order_goods') .  " as o ON o.goods_id = g.goods_id " . 
+            "WHERE g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1  AND g.is_virtual = 0 $attr_in ".
+                "AND (( 1 " . $categories . $keywords . $brand . $min_price . $max_price . $intro . $outstock . " ) ".$tag_where." ) " .  " group by g.goods_id " .
+            "ORDER BY $sort $order";
+	}
+	
     $res = $db->SelectLimit($sql, $size, ($page - 1) * $size);
+
     $arr = array();
     while ($row = $db->FetchRow($res))
     {
@@ -398,8 +525,8 @@ else
             $promote_price = 0;
         }
 
-        /* ´¦ÀíÉÌÆ·Ë®Ó¡Í¼Æ¬ */
-        /* ´¦ÀíÉÌÆ·Ë®Ó¡Í¼Æ¬ */
+        /* å¤„ç†å•†å“æ°´å°å›¾ç‰‡ */
+        /* å¤„ç†å•†å“æ°´å°å›¾ç‰‡ */
         $watermark_img = '';
 
         if ($promote_price != 0)
@@ -438,10 +565,13 @@ else
         $arr[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $arr[$row['goods_id']]['promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';
         $arr[$row['goods_id']]['goods_brief']   = $row['goods_brief'];
-        $arr[$row['goods_id']]['goods_thumb']   = get_image_path($row['goods_id'], $row['goods_thumb'], true);
-        $arr[$row['goods_id']]['goods_img']     = get_image_path($row['goods_id'], $row['goods_img']);
+	$arr[$row['goods_id']]['click_count'] = $row['click_count'];
+        $arr[$row['goods_id']]['goods_thumb']   = '../'.get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']     = '../'.get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['url']           = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
+	$arr[$row['goods_id']]['wap_count']     = selled_wap_count($row['goods_id']);
     }
+
     if($display == 'grid')
     {
         if(count($arr) % 2 != 0)
@@ -450,17 +580,15 @@ else
         }
     }
     $smarty->assign('goods_list', $arr);
-    //print_r( $arr );
     $smarty->assign('category',   $category);
-    $smarty->assign('keywords',   htmlspecialchars(stripslashes($_REQUEST['keywords'])) );
-    $smarty->assign('search_keywords',   trim(stripslashes(htmlspecialchars_decode($_REQUEST['keywords']))));
-   
+    $smarty->assign('keywords',   htmlspecialchars(stripslashes($_REQUEST['keywords'])));
+    $smarty->assign('search_keywords',   stripslashes(htmlspecialchars_decode($_REQUEST['keywords'])));
     $smarty->assign('brand',      $_REQUEST['brand']);
     $smarty->assign('min_price',  $min_price);
     $smarty->assign('max_price',  $max_price);
     $smarty->assign('outstock',  $_REQUEST['outstock']);
 
-    /* ·ÖÒ³ */
+    /* åˆ†é¡µ */
     $url_format = "search.php?category=$category&amp;keywords=" . urlencode(stripslashes($_REQUEST['keywords'])) . "&amp;brand=" . $_REQUEST['brand']."&amp;action=".$action."&amp;goods_type=" . $_REQUEST['goods_type'] . "&amp;sc_ds=" . $_REQUEST['sc_ds'];
     if (!empty($intromode))
     {
@@ -489,26 +617,23 @@ else
         'outstock'   => $_REQUEST['outstock']
     );
     $pager['search'] = array_merge($pager['search'], $attr_arg);
-   
+
     $pager = get_pager('search.php', $pager['search'], $count, $page, $size);
     $pager['display'] = $display;
-    $pager['sort'] = $sort;
-    $pager['order'] = $order;
-    //print_r( $pager );
+
     $smarty->assign('url_format', $url_format);
     $smarty->assign('pager', $pager);
+
     assign_template();
     assign_dynamic('search');
     $position = assign_ur_here(0, $ur_here . ($_REQUEST['keywords'] ? '_' . $_REQUEST['keywords'] : ''));
-    $smarty->assign('page_title', $position['title']);    // Ò³Ãæ±êÌâ
-    $smarty->assign('ur_here',    $position['ur_here']);  // µ±Ç°Î»ÖÃ
+    $smarty->assign('page_title', $position['title']);    // é¡µé¢æ ‡é¢˜
+    $smarty->assign('ur_here',    $position['ur_here']);  // å½“å‰ä½ç½®
     $smarty->assign('intromode',      $intromode);
-    $smarty->assign('categories', get_categories_tree()); // ·ÖÀàÊ÷
-    $smarty->assign('helps',       get_shop_help());      // Íøµê°ïÖú
-    $smarty->assign('top_goods',  get_top10());           // ÏúÊÛÅÅÐÐ
+    $smarty->assign('categories', get_categories_tree()); // åˆ†ç±»æ ‘
+    $smarty->assign('helps',       get_shop_help());      // ç½‘åº—å¸®åŠ©
+    $smarty->assign('top_goods',  get_top10());           // é”€å”®æŽ’è¡Œ
     $smarty->assign('promotion_info', get_promotion_info());
-
-    $smarty->assign('script_name', 'search');
     $smarty->display('search.dwt');
 }
 
@@ -536,7 +661,7 @@ function is_not_null($value)
 }
 
 /**
- * »ñµÃ¿ÉÒÔ¼ìË÷µÄÊôÐÔ
+ * èŽ·å¾—å¯ä»¥æ£€ç´¢çš„å±žæ€§
  *
  * @access  public
  * @params  integer $cat_id
@@ -549,13 +674,13 @@ function get_seachable_attributes($cat_id = 0)
         'attr' => array()
     );
 
-    /* »ñµÃ¿ÉÓÃµÄÉÌÆ·ÀàÐÍ */
+    /* èŽ·å¾—å¯ç”¨çš„å•†å“ç±»åž‹ */
     $sql = "SELECT t.cat_id, cat_name FROM " .$GLOBALS['ecs']->table('goods_type'). " AS t, ".
            $GLOBALS['ecs']->table('attribute') ." AS a".
            " WHERE t.cat_id = a.cat_id AND t.enabled = 1 AND a.attr_index > 0 ";
     $cat = $GLOBALS['db']->getAll($sql);
 
-    /* »ñÈ¡¿ÉÒÔ¼ìË÷µÄÊôÐÔ */
+    /* èŽ·å–å¯ä»¥æ£€ç´¢çš„å±žæ€§ */
     if (!empty($cat))
     {
         foreach ($cat AS $val)
@@ -601,5 +726,17 @@ function get_seachable_attributes($cat_id = 0)
     }
 
     return $attributes;
+}
+
+/**
+ * æ ¹æ®åŒºåŸŸid èŽ·å¾—åŒºåŸŸåç§°
+ * @param int $region_id åŒºåŸŸid
+ * @return $region_name åŒºåŸŸåç§°
+ */
+function get_region_name($region_id){
+    $region_id = empty($region_id)?0:intval($region_id);
+    $sql = "select region_name from ".$GLOBALS['ecs']->table('region')." where region_id = $region_id";
+    $region_name = $GLOBALS['db'] -> getOne($sql);
+    return $region_name;
 }
 ?>

@@ -1,120 +1,131 @@
 <?php
 
-define('IN_ECTOUCH', true);
-require(dirname(__FILE__) . '/include/init.php');
+define('IN_ECS', true);
 
-/* * ****************************************************
-  短信发送 开始
- * **************************************************** */
-
-$mobile = $_POST['mobile'];
-$mobile_code = $_POST['mobile_code'];
-
-if ($_GET['act'] == 'check') {
-    if ($mobile != $_SESSION['sms_mobile'] or $mobile_code != $_SESSION['sms_mobile_code']) {
-        exit(json_encode(array('msg' => '手机验证码输入错误。')));
-    } else {
+require(dirname(__FILE__) . '/includes/init.php');
+include_once('includes/cls_json.php');
 
 
-        exit(json_encode(array('code' => '2')));
-    }
+
+if (!isset($_REQUEST['step']))
+{
+    $_REQUEST['step'] = "";
 }
 
-if ($_GET['act'] == 'send') {
-    if (empty($mobile)) {
-        exit(json_encode(array('msg' => '手机号码不能为空')));
-    }
+$result = array('error' => 0, 'message' => '');
+$json = new JSON;
 
-    $preg = '/^1[0-9]{10}$/'; //简单的方法
-    if (!preg_match($preg, $mobile)) {
-        exit(json_encode(array('msg' => '手机号码格式不正确')));
-    }
+$mobile = trim($_POST['mobile']);
+$old_log = '';
+if(file_exists("request.log")){
+	$old_log = file_get_contents("request.log");
+}
+$log = "ip=".real_ip()." mobile=".$mobile." time=".date('Y-m-d H:i:s',time())."\r\n";
+$new_log = $old_log.$log;
+file_put_contents("request.log",$new_log);
 
-    if ($_SESSION['sms_mobile']) {
-        if (strtotime(read_file($mobile)) > (time() - 60)) {
-            exit(json_encode(array('msg' => '获取验证码太过频繁，一分钟之内只能获取一次。')));
-        }
-    }
+$denied_log = '';
+if(file_exists("denied.log")){
+	$denied_log = file_get_contents("denied.log");
+}
 
-    $sql = "select user_id from " . $ecs->table('users') . " where mobile_phone='" . $mobile . "'";
-    $user_id = $db->getOne($sql);
-    if($_GET['flag'] == 'register'){
-        //手机注册
-        if (!empty($user_id)) {
-            exit(json_encode(array('msg' => '手机号码已存在，请更换手机号码')));
-        }
-    }elseif($_GET['flag'] == 'forget'){
-        //找回密码
-        if (empty($user_id)) {
-            exit(json_encode(array('msg' => "手机号码不存在\n无法通过该号码找回密码")));
-        }
-    }
+$ip_array = explode(",", $denied_log);
 
-    $mobile_code = random(4, 1);
-    $message = "您的验证码是：" . $mobile_code . "，请不要把验证码泄露给其他人，如非本人操作，可不用理会！";
-    //暂时关闭 上线后开启 by wang
-	include(ROOT_PATH . 'include/cls_sms.php');
-	$sms = new sms();
-	$sms_error = array();
-	$send_result = $sms->send($mobile, $message, $sms_error);
-	write_file($mobile, date("Y-m-d H:i:s"));
-	if ($send_result) {
-		$_SESSION['sms_mobile'] = $mobile;
-		$_SESSION['sms_mobile_code'] = $mobile_code;
-		exit(json_encode(array('code' => 2, 'mobile_code' => $mobile_code)));
-	} else {
-		exit(json_encode(array('msg' => $sms_error)));
+if(in_array(real_ip(), $ip_array)) {
+	$result['error'] = 6;
+	$result['message'] = '频率过快';
+	die($json->encode($result));
+}
+
+
+$count = $db->getOne("SELECT COUNT(id) FROM " . $ecs->table('verifycode') ." WHERE getip='" . real_ip() . "' AND dateline>'" . gmtime() ."'-120");
+
+if ($count >= 5 && !stristr($denied_log, $_G['clientip']))
+{
+	$log = real_ip().",";
+	$new_log = $denied_log.$log;
+	file_put_contents("denied.log",$new_log);
+
+	$result['error'] = 6;
+	$result['message'] = '频率过快';
+	die($json->encode($result));
+}
+
+if ($_REQUEST['step'] == 'getverifycode')
+{
+    require(dirname(__FILE__) . '/send.php');
+	//require(dirname(__FILE__) . '/includes/lib_sms.php');
+
+	/* 是否开启手机短信验证 */
+	if($_CFG['sms_register'] == '0') {
+		$result['error'] = 1;
+		$result['message'] = '客户注册发送手机验证码未开启';
+        die($json->encode($result));
 	}
-}
+	
+	/* 提交的手机号是否正确 */
+	//if (!ismobile($mobile))
+//	{
+//		$result['error'] = 2;
+//		$result['message'] = '手机号不正确';
+//        die($json->encode($result));
+//	}
+	/* 提交的手机号是否已经注册帐号 */
+    $sql = "SELECT COUNT(user_id) FROM " . $ecs->table('users') ." WHERE mobile_phone = '$mobile'";
 
-/* * ****************************************************
-  protected function
- * **************************************************** */
-
-function random($length = 6, $numeric = 0) {
-    PHP_VERSION < '4.2.0' && mt_srand((double) microtime() * 1000000);
-    if ($numeric) {
-        $hash = sprintf('%0' . $length . 'd', mt_rand(0, pow(10, $length) - 1));
-    } else {
-        $hash = '';
-        $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjkmnpqrstuvwxyz';
-        $max = strlen($chars) - 1;
-        for ($i = 0; $i < $length; $i++) {
-            $hash .= $chars[mt_rand(0, $max)];
-        }
+    if ($db->getOne($sql) > 0)
+    {
+        $result['error'] = 3;
+		$result['message'] = '手机号已经被注册，请重新输入！';
+        die($json->encode($result));
     }
-    return $hash;
-}
 
-function write_file($file_name, $content) {
-    mkdirs('./data/smslog/' . date('Ymd'));
-    $filename = './data/smslog/' . date('Ymd') . '/' . $file_name . '.log';
-    $Ts = fopen($filename, "a+");
-    fputs($Ts, "\r\n" . $content);
-    fclose($Ts);
-}
 
-function mkdirs($dir, $mode = 0777) {
-    if (is_dir($dir) || @mkdir($dir, $mode))
-        return TRUE;
-    if (!mkdirs(dirname($dir), $mode))
-        return FALSE;
-    return @mkdir($dir, $mode);
-}
+	/* 获取验证码请求是否获取过 */
+	$sql = "SELECT COUNT(id) FROM " . $ecs->table('verifycode') ." WHERE status=1 AND getip='" . real_ip() . "' AND dateline>'" . gmtime() ."'-"."60";
 
-function read_file($file_name) {
-    $content = '';
-    $filename = './data/smslog/' . date('Ymd') . '/' . $file_name . '.log';
-    if (function_exists('file_get_contents')) {
-        @$content = file_get_contents($filename);
-    } else {
-        if (@$fp = fopen($filename, 'r')) {
-            @$content = fread($fp, filesize($filename));
-            @fclose($fp);
-        }
+    if ($db->getOne($sql) > 0)
+    {
+        $result['error'] = 4;
+		$result['message'] = '每个ip每120秒只能获取一次验证码';
+        die($json->encode($result));
     }
-    $content = explode("\r\n", $content);
-    return end($content);
+	$shuzi = "0123456789";
+	$verifycode = mc_random(6,$shuzi);
+
+    $smarty->assign('user_mobile',	$mobile);
+    $smarty->assign('verify_code',  $verifycode);
+
+    $content = '您好，您的验证码'.$verifycode.';【鸿宇多用户商城】';
+	/* 发送注册手机短信验证 */
+	$ret = sendSMS($mobile, $content);
+	
+    $db->query("delete from ".$ecs->table('verifycode')." where mobile='$mobile'");
+	
+		//插入获取验证码数据记录
+		$sql = "INSERT INTO " . $ecs->table('verifycode') . "(mobile, getip, verifycode, dateline) VALUES ('" . $mobile . "', '" . real_ip() . "', '$verifycode', '" . gmtime() ."')";
+		$db->query($sql);
+
+		$result['error'] = 0;
+		$result['message'] = '发送手机验证码成功';
+		die($json->encode($result));
+//	}
+//	else
+//	{
+//		$result['error'] = 5;
+//		$result['message'] = '发送手机验证码失败';
+//		die($json->encode($result));
+//	}
+}
+
+function mc_random($length,$char_str = 'abcdefghijklmnopqrstuvwxyz0123456789'){
+	$hash='';
+	$chars = $char_str;
+	$max=strlen($chars);
+	for($i=0;$i<$length;$i++){
+		$hash .=substr($chars,(rand(0,1000)%$max),1); 
+	}
+	return $hash;
 }
 
 ?>

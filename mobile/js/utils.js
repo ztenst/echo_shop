@@ -71,9 +71,17 @@ Utils.isEmail = function( email )
   return reg1.test( email );
 }
 
+Utils.isMobile = function ( mobile )
+{
+	var reg = /^1\d{10}$/; //11位数字，以1开头。
+	
+	return reg.test( mobile );
+}
+
 Utils.isTel = function ( tel )
 {
   var reg = /^[\d|\-|\s|\_]+$/; //只允许使用数字-空格等
+  reg = /^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$/;
 
   return reg.test( tel );
 }

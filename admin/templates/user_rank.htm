@@ -7,6 +7,7 @@
 <!-- start ads list -->
 <div class="list-div" id="listDiv">
 {/if}
+
 <table cellspacing='1' id="list-table">
   <tr>
     <th>{$lang.rank_name}</th>
@@ -15,6 +16,9 @@
     <th>{$lang.discount}(%)</th>
     <th>{$lang.special_rank}</th>
     <th>{$lang.show_price_short}</th>
+    
+    <th>分成会员</th>
+
     <th>{$lang.handler}</th>
   </tr>
   {foreach from=$user_ranks item=rank}
@@ -25,8 +29,11 @@
     <td align="right"><span onclick="listTable.edit(this, 'edit_discount', {$rank.rank_id})">{$rank.discount}</span></td>
     <td align="center"><img src="images/{if $rank.special_rank}yes{else}no{/if}.gif" onclick="listTable.toggle(this, 'toggle_special', {$rank.rank_id})" /></td>
     <td align="center"><img src="images/{if $rank.show_price}yes{else}no{/if}.gif" onclick="listTable.toggle(this, 'toggle_showprice', {$rank.rank_id})" /></td>
+    <!--代码增加--cb--68ecshop-->
+    <td align="center"><img src="images/{if $rank.is_recomm}yes{else}no{/if}.gif" onclick="listTable.toggle(this, 'toggle_is_recomm', {$rank.rank_id})" /></td>
+	 <!--代码增加--cb--68ecshop-->
     <td align="center">
-    <a href="javascript:;" onclick="listTable.remove({$rank.rank_id}, '{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="21" width="21"></a></td>
+    <a href="javascript:;" onclick="listTable.remove({$rank.rank_id}, '{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16"></a></td>
   </tr>
   {/foreach}
   </table>

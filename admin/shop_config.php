@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心商店设置
+ * 鸿宇多用户商城 管理中心商店设置
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: shop_config.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: shop_config.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
@@ -29,9 +29,9 @@ else
 
 $sess_id = $GLOBALS['sess']->get_session_id();
 
-$auth = mktime();
+$auth = local_mktime(); //代码修改  By bbs.hongyuvip.com
 $ac = md5($certi_id.'SHOPEX_SMS'.$auth);
-$url= 'http://ecshop.ecmoban.com/sms/index.php?certificate_id='.$certi_id.'&sess_id='.$sess_id.'&auth='.$auth.'&ac='.$ac;
+$url = 'http://service.shopex.cn/sms/index.php?certificate_id='.$certi_id.'&sess_id='.$sess_id.'&auth='.$auth.'&ac='.$ac;
 
 /*------------------------------------------------------ */
 //-- 列表编辑 ?act=list_edit
@@ -55,7 +55,7 @@ if ($_REQUEST['act'] == 'list_edit')
 
     $smarty->assign('lang_list',    $lang_list);
     $smarty->assign('ur_here',      $_LANG['01_shop_config']);
-    $smarty->assign('group_list',   get_settings(null, array('5')));
+    $smarty->assign('group_list',   get_settings(null, array('5'), array('chat')));
     $smarty->assign('countries',    get_regions());
 
     if (strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'iis') !== false)
@@ -76,6 +76,8 @@ if ($_REQUEST['act'] == 'list_edit')
             $smarty->assign('cities', get_regions(2, $_CFG['shop_province']));
         }
     }
+	//echo "<pre>";
+	//print_r($_CFG);
     $smarty->assign('cfg', $_CFG);
 
     assign_query_info();
@@ -208,10 +210,15 @@ elseif ($_REQUEST['act'] == 'post')
             }
             $_POST['invoice_rate'][$key] = $rate;
         }
+	
+		/*增值税发票_更改_START_bbs.hongyuvip.com*/
         $invoice = array(
             'type' => $_POST['invoice_type'],
-            'rate' => $_POST['invoice_rate']
+            'rate' => $_POST['invoice_rate'],
+            'enable' => $_POST['invoice_enable']
         );
+		/*增值税发票_更改_END_bbs.hongyuvip.com*/
+		
         $sql = "UPDATE " . $ecs->table('shop_config') . " SET value = '" . serialize($invoice) . "' WHERE code = 'invoice_type'";
         $db->query($sql);
     }
@@ -228,19 +235,7 @@ elseif ($_REQUEST['act'] == 'post')
     $shop_province  = $db->getOne("SELECT region_name FROM ".$ecs->table('region')." WHERE region_id='$_CFG[shop_province]'");
     $shop_city      = $db->getOne("SELECT region_name FROM ".$ecs->table('region')." WHERE region_id='$_CFG[shop_city]'");
 
-    $spt = '<script type="text/javascript" src="http://ecshop.ecmoban.com/record.php?';
-    $spt .= "url=" .urlencode($ecs->url());
-    $spt .= "&shop_name=" .urlencode($_CFG['shop_name']);
-    $spt .= "&shop_title=".urlencode($_CFG['shop_title']);
-    $spt .= "&shop_desc=" .urlencode($_CFG['shop_desc']);
-    $spt .= "&shop_keywords=" .urlencode($_CFG['shop_keywords']);
-    $spt .= "&country=".urlencode($shop_country)."&province=".urlencode($shop_province)."&city=".urlencode($shop_city);
-    $spt .= "&address=" .urlencode($_CFG['shop_address']);
-    $spt .= "&qq=$_CFG[qq]&ww=$_CFG[ww]&ym=$_CFG[ym]&msn=$_CFG[msn]";
-    $spt .= "&email=$_CFG[service_email]&phone=$_CFG[service_phone]&icp=".urlencode($_CFG['icp_number']);
-    $spt .= "&version=".VERSION."&language=$_CFG[lang]&php_ver=" .PHP_VERSION. "&mysql_ver=" .$db->version();
-    $spt .= "&charset=".EC_CHARSET;
-    $spt .= '"></script>';
+	$spt='';
 
     if ($type == 'mail_setting')
     {
@@ -338,10 +333,11 @@ function update_configure($key, $val='')
  *
  * @param   array   $groups     需要获得的设置组
  * @param   array   $excludes   不需要获得的设置组
+ * @param   array   $excludeCodes   不需要获得的设置组的名称-code列
  *
  * @return  array
  */
-function get_settings($groups=null, $excludes=null)
+function get_settings($groups=null, $excludes=null, $excludeCodes=null)
 {
     global $db, $ecs, $_LANG;
 
@@ -361,6 +357,14 @@ function get_settings($groups=null, $excludes=null)
         foreach ($excludes AS $key=>$val)
         {
             $excludes_groups .= " AND (parent_id<>'$val' AND id<>'$val')";
+        }
+    }
+    
+    if (!empty($excludeCodes))
+    {
+        foreach ($excludeCodes AS $key=>$val)
+        {
+            $excludes_groups .= " AND (code<>'$val')";
         }
     }
 

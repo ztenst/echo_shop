@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 订单管理语言文件
+ * 鸿宇多用户商城 订单管理语言文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: order.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: order.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 /* 订单搜索 */
@@ -75,6 +75,7 @@ $_LANG['act_ship_num'] = '此单发货数量不能超出订单商品数量';
 $_LANG['act_good_vacancy'] = '商品已缺货';
 $_LANG['act_good_delivery'] = '货已发完';
 $_LANG['notice_gb_ship'] = '备注：团购活动未处理为成功前，不能发货';
+$_LANG['notice_ps_ship'] = '备注：预售活动未处理为成功前，不能发货';
 $_LANG['back_list'] = '返回订单列表';
 $_LANG['op_remove'] = '删除';
 $_LANG['op_you_can'] = '您可进行的操作';
@@ -163,6 +164,7 @@ $_LANG['product_sn'] = '货品号';
 $_LANG['goods_info'] = '商品信息';
 $_LANG['goods_name'] = '商品名称';
 $_LANG['goods_name_brand'] = '商品名称 [ 品牌 ]';
+$_LANG['goods_shouhou'] = '售后';
 $_LANG['goods_sn'] = '货号';
 $_LANG['goods_price'] = '价格';
 $_LANG['goods_number'] = '数量';
@@ -401,4 +403,62 @@ $_LANG['label_return_time'] = '退货时间';
 $_LANG['tips_back_del'] = '退货单删除成功！';
 
 $_LANG['goods_num_err'] = '库存不足，请重新选择！';
+/* 代码增加_start   By bbs.hongyuvip.com */
+$_LANG['label_pickup_point'] = '所选自提点：';
+$_LANG['p_shop_name'] = '店名：';
+$_LANG['p_address'] = '地址：';
+$_LANG['p_contact'] = '联系人：';
+$_LANG['p_phone'] = '联系方式：';
+$_LANG['order_type'] = '订单类型';
+$_LANG['pickup_order'] = '自提订单';
+$_LANG['normal_order'] = '一般订单';
+/* 代码增加_end   By bbs.hongyuvip.com */
+/*增值税发票_添加_START_bbs.hongyuvip.com*/
+/*发票列表新增*/
+$_LANG['unprovided'] = '未开票';
+$_LANG['provided'] = '已开票';
+$_LANG['provide_invoice'] = '开票';
+$_LANG['export'] = '导出';
+$_LANG['export_to_excel'] = '导出到Excel';
+$_LANG['export_all_to_excel'] = '全部导出到Excel';
+$_LANG['normal_invoice'] = '普通发票';
+$_LANG['vat_invoice'] = '增值税发票';
+$_LANG['please_select'] = '请选择';
+$_LANG['inv_type'] = '发票类型';
+$_LANG['inv_info'] = '发票信息';
+$_LANG['inv_payee'] = '发票抬头';
+$_LANG['inv_content'] = '发票内容';
+$_LANG['company_name1'] = '单位名称';
+$_LANG['taxpayer_id'] = '纳税人识别号';
+$_LANG['registration_address'] = '注册地址';
+$_LANG['registration_phone'] = '注册电话';
+$_LANG['deposit_bank'] = '开户银行';
+$_LANG['bank_account'] = '银行账户';
+$_LANG['inv_consignee_info'] = '收票人信息';
+$_LANG['inv_consignee_name'] = '收票人姓名';
+$_LANG['inv_consignee_phone'] = '收票人手机';
+$_LANG['inv_consignee_address'] = '收票人地址';
+$_LANG['inv_status'] = '发票状态';
+$_LANG['inv_money'] = '发票金额';
+$_LANG['edit_invoice'] = '编辑发票';
+$_LANG['check_invoice'] = '查看发票';
+$_LANG['individual'] = '个人';
+$_LANG['unit'] = '单位';
+
+$_LANG['label_inv_info'] = '发票信息：';
+$_LANG['label_company_name1'] = '单位名称：';
+$_LANG['label_taxpayer_id'] = '纳税人识别号：';
+$_LANG['label_registration_address'] = '注册地址：';
+$_LANG['label_registration_phone'] = '注册电话：';
+$_LANG['label_deposit_bank'] = '开户银行：';
+$_LANG['label_bank_account'] = '银行账户：';
+$_LANG['label_inv_consignee_info'] = '收票人信息：';
+$_LANG['label_inv_consignee_name'] = '收票人姓名：';
+$_LANG['label_inv_consignee_phone'] = '收票人手机：';
+$_LANG['label_inv_consignee_address'] = '收票人地址：';
+$_LANG['label_inv_status'] = '发票状态：';
+$_LANG['label_inv_money'] = '发票金额：';
+$_LANG['label_action_note2'] = '备注：';
+$_LANG['js_languages']['remove_invoice_confirm'] = '您确定删除该订单的发票信息吗？';
+/*增值税发票_添加_END_bbs.hongyuvip.com*/
 ?>

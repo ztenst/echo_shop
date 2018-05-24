@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理员信息以及权限管理程序
+ * 鸿宇多用户商城 管理员信息以及权限管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: privilege.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: privilege.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -114,6 +114,9 @@ elseif ($_REQUEST['act'] == 'signin')
         // 登录成功
         set_admin_session($row['user_id'], $row['user_name'], $row['action_list'], $row['last_login']);
         $_SESSION['suppliers_id'] = $row['suppliers_id'];
+		//dqy add start 2012-12-10
+		$_SESSION['user_name'] =$row['user_name'];
+		//dqy add end 2012-12-10
 		if(empty($row['ec_salt']))
 	    {
 			$ec_salt=rand(1,9999);
@@ -205,10 +208,7 @@ elseif ($_REQUEST['act'] == 'add')
 elseif ($_REQUEST['act'] == 'insert')
 {
     admin_priv('admin_manage');
-    if($_POST['token']!=$_CFG['token'])
-    {
-         sys_msg('add_error', 1);
-    }
+
     /* 判断管理员是否已经存在 */
     if (!empty($_POST['user_name']))
     {
@@ -334,10 +334,6 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
     $admin_email = !empty($_REQUEST['email'])     ? trim($_REQUEST['email'])     : '';
     $ec_salt=rand(1,9999);
     $password = !empty($_POST['new_password']) ? ", password = '".md5(md5($_POST['new_password']).$ec_salt)."'"    : '';
-    if($_POST['token']!=$_CFG['token'])
-    {
-         sys_msg('update_error', 1);
-    }
     if ($_REQUEST['act'] == 'update')
     {
         /* 查看是否有权限编辑其他管理员的信息 */
@@ -631,10 +627,7 @@ elseif ($_REQUEST['act'] == 'allot')
 elseif ($_REQUEST['act'] == 'update_allot')
 {
     admin_priv('admin_manage');
-    if($_POST['token']!=$_CFG['token'])
-    {
-         sys_msg('update_allot_error', 1);
-    }
+
     /* 取得当前管理员用户名 */
     $admin_name = $db->getOne("SELECT user_name FROM " .$ecs->table('admin_user'). " WHERE user_id = '$_POST[id]'");
 
@@ -731,13 +724,13 @@ function clear_cart()
     $valid_sess = $GLOBALS['db']->getCol($sql);
 
     // 删除cart中无效的数据
+
+	/* 代码修改_start  By  bbs.hongyuvip.com */
+	$time_valid = gmtime() - 86400*7;
     $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
-            " WHERE session_id NOT " . db_create_in($valid_sess);
-    $GLOBALS['db']->query($sql);
-	
-	// 删除cart_combo中无效的数据 by mike
-    $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart_combo') .
-            " WHERE session_id NOT " . db_create_in($valid_sess);
+            " WHERE  add_time < '". $time_valid ."' AND  session_id NOT " . db_create_in($valid_sess);
+	/* 代码修改_end  By  bbs.hongyuvip.com */
+
     $GLOBALS['db']->query($sql);
 }
 
@@ -752,3 +745,4 @@ function get_role_list()
 }
 
 ?>
+

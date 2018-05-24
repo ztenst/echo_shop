@@ -21,3 +21,6 @@ Disallow: /region.php
 Disallow: /respond.php
 Disallow: /feed.php
 Disallow: /gallery.php
+
+Sitemap: http://localhost/sitemaps.xml
+Sitemap: http://localhost/sitemaps.xml.gz

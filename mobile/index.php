@@ -1,25 +1,66 @@
 <?php
 
 /**
- * ECSHOP 首页文件
+ * 鸿宇多用户商城 首页文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: index.php 17217 2016-01-19 06:29:08Z derek $
 */
-//
-define('IN_ECTOUCH', true);
 
-require(dirname(__FILE__) . '/include/init.php');
-require(ROOT_PATH . 'include/lib_weixintong.php');
+define('IN_ECS', true);
+
+require(dirname(__FILE__) . '/includes/init.php');
+
 if ((DEBUG_MODE & 2) != 2)
 {
     $smarty->caching = true;
+}
+if (isset($_REQUEST['is_c']))
+{
+    $is_c = intval($_REQUEST['is_c']);
+}
+if($is_c == 1){
+
+    header("Location:../index.php?is_c=1"); 
+}
+/*------------------------------------------------------ */
+//-- Shopex系统地址转换
+/*------------------------------------------------------ */
+if (!empty($_GET['gOo']))
+{
+    if (!empty($_GET['gcat']))
+    {
+        /* 商品分类。*/
+        $Loaction = 'category.php?id=' . $_GET['gcat'];
+    }
+    elseif (!empty($_GET['acat']))
+    {
+        /* 文章分类。*/
+        $Loaction = 'article_cat.php?id=' . $_GET['acat'];
+    }
+    elseif (!empty($_GET['goodsid']))
+    {
+        /* 商品详情。*/
+        $Loaction = 'goods.php?id=' . $_GET['goodsid'];
+    }
+    elseif (!empty($_GET['articleid']))
+    {
+        /* 文章详情。*/
+        $Loaction = 'article.php?id=' . $_GET['articleid'];
+    }
+
+    if (!empty($Loaction))
+    {
+        ecs_header("Location: $Loaction\n");
+
+        exit;
+    }
 }
 
 //判断是否有ajax请求
@@ -29,7 +70,7 @@ if ($act == 'cat_rec')
     $rec_array = array(1 => 'best', 2 => 'new', 3 => 'hot');
     $rec_type = !empty($_REQUEST['rec_type']) ? intval($_REQUEST['rec_type']) : '1';
     $cat_id = !empty($_REQUEST['cid']) ? intval($_REQUEST['cid']) : '0';
-    include_once('include/cls_json.php');
+    include_once('includes/cls_json.php');
     $json = new JSON;
     $result   = array('error' => 0, 'content' => '', 'type' => $rec_type, 'cat_id' => $cat_id);
 
@@ -77,7 +118,18 @@ if (!$smarty->is_cached('index.dwt', $cache_id))
     $smarty->assign('group_buy_goods', index_get_group_buy());      // 团购商品
     $smarty->assign('auction_list',    index_get_auction());        // 拍卖活动
     $smarty->assign('shop_notice',     $_CFG['shop_notice']);       // 商店公告
+	//yyy添加start
+	$smarty->assign('wap_index_ad',get_wap_advlist('wap首页幻灯广告', 5));  //wap首页幻灯广告位
+	
+	$smarty->assign('wap_index_icon',get_wap_advlist('wap端首页8个图标', 8));  //wap首页幻灯广告位
+    $smarty->assign('wap_index_img',get_wap_advlist('手机端首页精品推荐广告', 5));  //wap首页幻灯广告位
 
+	 
+	 $smarty->assign('menu_list',get_menu());
+	
+	
+	//yyy添加end
+	
     /* 首页主广告设置 */
     $smarty->assign('index_ad',     $_CFG['index_ad']);
     if ($_CFG['index_ad'] == 'cus')
@@ -92,6 +144,12 @@ if (!$smarty->is_cached('index.dwt', $cache_id))
     $smarty->assign('img_links',       $links['img']);
     $smarty->assign('txt_links',       $links['txt']);
     $smarty->assign('data_dir',        DATA_DIR);       // 数据目录
+	
+	
+	/*jdy add 0816 添加首页幻灯插件*/	
+$smarty->assign("flash",get_flash_xml());
+$smarty->assign('flash_count',count(get_flash_xml()));
+
 
     /* 首页推荐分类 */
     $cat_recommend_res = $db->getAll("SELECT c.cat_id, c.cat_name, cr.recommend_type FROM " . $ecs->table("cat_recommend") . " AS cr INNER JOIN " . $ecs->table("category") . " AS c ON cr.cat_id=c.cat_id");
@@ -124,14 +182,14 @@ $smarty->display('index.dwt', $cache_id);
 function index_get_invoice_query()
 {
     $sql = 'SELECT o.order_sn, o.invoice_no, s.shipping_code FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS o' .
-            ' LEFT JOIN ' . $GLOBALS['ecs']->table('touch_shipping') . ' AS s ON s.shipping_id = o.shipping_id' .
+            ' LEFT JOIN ' . $GLOBALS['ecs']->table('shipping') . ' AS s ON s.shipping_id = o.shipping_id' .
             " WHERE invoice_no > '' AND shipping_status = " . SS_SHIPPED .
             ' ORDER BY shipping_time DESC LIMIT 10';
     $all = $GLOBALS['db']->getAll($sql);
 
     foreach ($all AS $key => $row)
     {
-        $plugin = ROOT_PATH . 'include/modules/shipping/' . $row['shipping_code'] . '.php';
+        $plugin = ROOT_PATH . 'includes/modules/shipping/' . $row['shipping_code'] . '.php';
 
         if (file_exists($plugin))
         {
@@ -189,11 +247,11 @@ function index_get_group_buy()
 {
     $time = gmtime();
     $limit = get_library_number('group_buy', 'index');
-
+	
     $group_buy_list = array();
     if ($limit > 0)
     {
-        $sql = 'SELECT gb.act_id AS group_buy_id, gb.goods_id, gb.ext_info, gb.goods_name, g.goods_thumb, g.goods_img ' .
+        $sql = 'SELECT gb.*,g.*,gb.act_id AS group_buy_id, gb.goods_id, gb.ext_info, gb.goods_name, g.goods_thumb, g.goods_img ' .
                 'FROM ' . $GLOBALS['ecs']->table('goods_activity') . ' AS gb, ' .
                     $GLOBALS['ecs']->table('goods') . ' AS g ' .
                 "WHERE gb.act_type = '" . GAT_GROUP_BUY . "' " .
@@ -203,6 +261,7 @@ function index_get_group_buy()
                 "AND g.is_delete = 0 " .
                 "ORDER BY gb.act_id DESC " .
                 "LIMIT $limit" ;
+				
         $res = $GLOBALS['db']->query($sql);
 
         while ($row = $GLOBALS['db']->fetchRow($res))
@@ -231,6 +290,9 @@ function index_get_group_buy()
             $row['short_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
                                            sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
             $row['short_style_name']   = add_style($row['short_name'],'');
+			
+			$stat = group_buy_stat($row['act_id'], $row['deposit']);
+			$row['valid_goods'] = $stat['valid_goods'];
             $group_buy_list[] = $row;
         }
     }
@@ -308,4 +370,65 @@ function index_get_links()
     return $links;
 }
 
+function get_flash_xml()
+{
+    $flashdb = array();
+    if (file_exists(ROOT_PATH . DATA_DIR . '/flash_data.xml'))
+    {
+
+        // 兼容v2.7.0及以前版本
+        if (!preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"\stext="([^"]*)"\ssort="([^"]*)"/', file_get_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml'), $t, PREG_SET_ORDER))
+        {
+            preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"\stext="([^"]*)"/', file_get_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml'), $t, PREG_SET_ORDER);
+        }
+
+        if (!empty($t))
+        {
+            foreach ($t as $key => $val)
+            {
+                $val[4] = isset($val[4]) ? $val[4] : 0;
+                $flashdb[] = array('src'=>$val[1],'url'=>$val[2],'text'=>$val[3],'sort'=>$val[4]);
+				
+				//print_r($flashdb);
+            }
+        }
+    }
+    return $flashdb;
+}
+
+function get_wap_advlist( $position, $num )
+{
+		$arr = array( );
+		$sql = "select ap.ad_width,ap.ad_height,ad.ad_id,ad.ad_name,ad.ad_code,ad.ad_link,ad.ad_id from ".$GLOBALS['ecs']->table( "ecsmart_ad_position" )." as ap left join ".$GLOBALS['ecs']->table( "ecsmart_ad" )." as ad on ad.position_id = ap.position_id where ap.position_name='".$position.( "' and UNIX_TIMESTAMP()>ad.start_time and UNIX_TIMESTAMP()<ad.end_time and ad.enabled=1 limit ".$num );
+		$res = $GLOBALS['db']->getAll( $sql );
+		foreach ( $res as $idx => $row )
+		{
+				$arr[$row['ad_id']]['name'] = $row['ad_name'];
+				$arr[$row['ad_id']]['url'] = "affiche.php?ad_id=".$row['ad_id']."&uri=".$row['ad_link'];
+				$arr[$row['ad_id']]['image'] = "data/afficheimg/".$row['ad_code'];
+				$arr[$row['ad_id']]['content'] = "<a href='".$arr[$row['ad_id']]['url']."' target='_blank'><img src='data/afficheimg/".$row['ad_code']."' width='".$row['ad_width']."' height='".$row['ad_height']."' /></a>";
+				$arr[$row['ad_id']]['ad_code'] = $row['ad_code'];
+		}
+		return $arr;
+}
+
+function get_is_computer(){
+$is_computer=$_REQUEST['is_computer'];
+return $is_computer;
+}
+
+function get_menu()
+{
+	$sql = "select * from ".$GLOBALS['ecs']->table('ecsmart_menu')." order by sort";
+	$list = $GLOBALS['db']->getAll($sql);
+	$arr = array();
+	foreach($list as $key => $rows)
+	{
+		$arr[$key]['id'] = $rows['id'];
+		$arr[$key]['menu_name'] = $rows['menu_name'];
+		$arr[$key]['menu_img'] = $rows['menu_img'];
+		$arr[$key]['menu_url'] = $rows['menu_url']; 
+	} 
+	return $arr;
+}
 ?>

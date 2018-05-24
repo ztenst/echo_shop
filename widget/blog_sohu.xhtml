@@ -5,19 +5,19 @@
 xmlns:widget="http://www.netvibes.com/ns/">
 <head>
 <title>ECSHOP</title>
-<link rel="icon" type="image/x-icon" href="http://www.ecshop.com/favicon.ico" />
+<link rel="icon" type="image/x-icon" href="http://bbs.hongyuvip.com/favicon.ico" />
 <meta name="author" content="ECSHOP"/>
-<meta name="website" content="http://www.ecshop.com" />
+<meta name="website" content="http://bbs.hongyuvip.com" />
 <meta name="version" content="0.2" />
-<meta name="keyword" content="ECSHOP Âô·ñ Ãâ·ÑÉÌµê Ãâ·ÑÍøµê Ãâ·Ñ¿ªµê" />
-<meta name="screenshot" content="http://widget.maifou.net/widget/images/screenshot.jpg" />
-<meta name="thumbnail" content="http://widget.maifou.net/widget/images/thumbnail.jpg" />
+<meta name="keyword" content="ECSHOP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ñ¿ï¿½ï¿½ï¿½" />
+<meta name="screenshot" content="http://widget.hongyuvip.com/widget/images/screenshot.jpg" />
+<meta name="thumbnail" content="http://widget.hongyuvip.com/widget/images/thumbnail.jpg" />
 <meta name="debugMode" content="false" />
-<meta name="description" content="ÕâÊÇECSHOPÒ»¸öÉÌÆ·Õ¹Ê¾µÄwidget.Í¨¹ýÕâ¸öwidget,ÄúÖ»ÒªÌîÐ´ÄúµÄÍøµêÓòÃû,¾Í¿ÉÒÔÇáËÉµÄÔÚÄúµÄBlogÉÏÕ¹Ê¾ÄúµÄÉÌÆ·ÁË!(×¢:×î¶àËæ»úÕ¹Ê¾10¸öÉÌÆ·)" />
+<meta name="description" content="ï¿½ï¿½ï¿½ï¿½ECSHOPÒ»ï¿½ï¿½ï¿½ï¿½Æ·Õ¹Ê¾ï¿½ï¿½widget.Í¨ï¿½ï¿½ï¿½ï¿½ï¿½widget,ï¿½ï¿½Ö»Òªï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Í¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Blogï¿½ï¿½Õ¹Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½!(×¢:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹Ê¾10ï¿½ï¿½ï¿½ï¿½Æ·)" />
 <widget:preferences>
-  <preference type="text" name="domain" label="ÍøÖ·" />
-  <preference type="text" name="title" label="±êÌâ" />
-  <preference type="text" name="number" label="ÏÔÊ¾Êý" />
+  <preference type="text" name="domain" label="ï¿½ï¿½Ö·" />
+  <preference type="text" name="title" label="ï¿½ï¿½ï¿½ï¿½" />
+  <preference type="text" name="number" label="ï¿½ï¿½Ê¾ï¿½ï¿½" />
 </widget:preferences>
 
 <style type="text/css">
@@ -60,7 +60,7 @@ xmlns:widget="http://www.netvibes.com/ns/">
     domain = 'http://' + domain;
     if (!title)
     {
-        title = "ÎÒµÄÐ¡µê";
+        title = "ï¿½Òµï¿½Ð¡ï¿½ï¿½";
     }
     if (domain)
     {
@@ -83,20 +83,20 @@ xmlns:widget="http://www.netvibes.com/ns/">
         var goods_link = obj.domain + 'goods.php?id=' + goods[i].goods_id;
         var content = '<dl>';
         content += '<dt><a href="' + goods_link + '" target="_blank"><img src="' + obj.domain + goods[i].goods_thumb + '" alt="' + goods[i].goods_name + '" /></a></dt>';
-        content += '<dd class="name">ÉÌÆ·Ãû³Æ:&nbsp;&nbsp;<a href="' + goods_link + '">' + goods[i].goods_name + '</a></dd>';
-        content += '<dd>ÉÌÆ·¼Û¸ñ:&nbsp;&nbsp;<span class="price">' + goods[i].shop_price + '</span></dd>';
+        content += '<dd class="name">ï¿½ï¿½Æ·ï¿½ï¿½ï¿½:&nbsp;&nbsp;<a href="' + goods_link + '">' + goods[i].goods_name + '</a></dd>';
+        content += '<dd>ï¿½ï¿½Æ·ï¿½Û¸ï¿½:&nbsp;&nbsp;<span class="price">' + goods[i].shop_price + '</span></dd>';
         if (goods[i].promote_price > 0)
         {
-          content += '<dd>´ÙÏú¼Û¸ñ:&nbsp;&nbsp;<span class="price">' + goods[i].shop_price + '</span></dd>';
+          content += '<dd>ï¿½ï¿½ï¿½ï¿½Û¸ï¿½:&nbsp;&nbsp;<span class="price">' + goods[i].shop_price + '</span></dd>';
         }
         if (goods[i].goods_brief)
         {
-          content += '<dd class="desc">ÉÌÆ·¼ò½é:&nbsp;&nbsp;' + goods[i].goods_brief + '</dd>';
+          content += '<dd class="desc">ï¿½ï¿½Æ·ï¿½ï¿½ï¿½:&nbsp;&nbsp;' + goods[i].goods_brief + '</dd>';
         }
         content += '</dl>';
         div.addContent(content);
       }
-      content = '<p class="more"><a href="' + obj.domain + '">&gt;&gt;¸ü¶àÉÌÆ·</a></p>';
+      content = '<p class="more"><a href="' + obj.domain + '">&gt;&gt;ï¿½ï¿½ï¿½ï¿½ï¿½Æ·</a></p>';
       div.addContent(content);
     }
   }
@@ -105,8 +105,8 @@ xmlns:widget="http://www.netvibes.com/ns/">
 </head>
 <body>
 <div id="goods_list">
-µã»÷"ÉèÖÃ",ÌîÐ´ÄúµÄÍøµêÓòÃû(º¬http://)¼°ÏÔÊ¾ÊýÁ¿,¾Í¿ÉÒÔÕ¹Ê¾ÄúµÄÍøµêÉÌÆ·À­!×î¶àÏÔÊ¾10¸öÉÌÆ·.<br />
-Èç¹ûÄú»¹Ã»ÓÐÍøµê,Çëµ½<a href="http://www.maifou.net" target="_blank">http://www.maifou.net</a>Ãâ·ÑÉêÇë×¢²áÒ»¸ö¼´¿É!
+ï¿½ï¿½ï¿½"ï¿½ï¿½ï¿½ï¿½",ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½http://)ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½,ï¿½Í¿ï¿½ï¿½ï¿½Õ¹Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½!ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾10ï¿½ï¿½ï¿½ï¿½Æ·.<br />
+ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ëµ½<a href="http://bbs.hongyuvip.com" target="_blank">http://bbs.hongyuvip.com</a>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 </div>
 </body>
 </html>

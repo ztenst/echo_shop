@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 专题前台
+ * 鸿宇多用户商城 专题前台
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * @author:     webboy <laupeng@163.com>
  * @version:    v2.1
  * ---------------------------------------------
  */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -36,7 +36,7 @@ if(empty($topic))
     exit;
 }
 
-$templates = empty($topic['template']) ? 'topic.dwt' : $topic['template'];
+$templates = 'topic.dwt';
 
 $cache_id = sprintf('%X', crc32($_SESSION['user_rank'] . '-' . $_CFG['lang'] . '-' . $topic_id));
 
@@ -60,10 +60,9 @@ if (!$smarty->is_cached($templates, $cache_id))
             $goods_id[] = $opt[1];
         }
     }
-
     $sql = 'SELECT g.goods_id, g.goods_name, g.goods_name_style, g.market_price, g.is_new, g.is_best, g.is_hot, g.shop_price AS org_price, ' .
                 "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, g.promote_price, " .
-                'g.promote_start_date, g.promote_end_date, g.goods_brief, g.goods_thumb , g.goods_img ' .
+                'g.promote_start_date, g.promote_end_date, g.goods_brief, g.goods_thumb , g.goods_img , g.original_img ' .
                 'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
                 'LEFT JOIN ' . $GLOBALS['ecs']->table('member_price') . ' AS mp ' .
                 "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' " .
@@ -98,7 +97,8 @@ if (!$smarty->is_cached($templates, $cache_id))
         $row['goods_style_name'] = add_style($row['goods_name'], $row['goods_name_style']);
         $row['short_name']       = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
                                     sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
-        $row['goods_thumb']      = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $row['goods_thumb']      =  '../'.get_image_path($row['goods_id'], $row['goods_thumb'], true);
+	$row['original_img']    	 = '../'.get_image_path($row['goods_id'], $row['original_img']);
         $row['short_style_name'] = add_style($row['short_name'], $row['goods_name_style']);
 
         foreach ($arr AS $key => $value)
@@ -127,7 +127,7 @@ if (!$smarty->is_cached($templates, $cache_id))
     $smarty->assign('title_pic',        $topic['title_pic']);      // 分类标题图片地址
     $smarty->assign('base_style',       '#' . $topic['base_style']);     // 基本风格样式颜色
 
-    $template_file = empty($topic['template']) ? 'topic.dwt' : $topic['template'];
+    $template_file = 'topic.dwt';
 }
 /* 显示模板 */
 $smarty->display($templates, $cache_id);

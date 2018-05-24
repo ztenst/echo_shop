@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 权限对照表
+ * 鸿宇多用户商城 权限对照表
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: inc_priv.php 15503 2008-12-24 09:22:45Z sunxiaodong $
+ * $Author: Shadow & 鸿宇
+ * $Id: inc_priv.php 15503 2008-12-24 09:22:45Z Shadow & 鸿宇
 */
 
-if (!defined('IN_ECTOUCH'))
+if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
@@ -149,5 +149,20 @@ if (!defined('IN_ECTOUCH'))
     $purview['email_list']           = 'email_list';
     $purview['magazine_list']        = 'magazine_list';
     $purview['view_sendlist']        = 'view_sendlist';
+
+//鸿宇多用户商城论坛管理
+    $purview['01_school']   = 'school';
+    $purview['02_school_a'] = 'school_a';
+    $purview['03_school_b'] = 'school_b';
+	$purview['04_school_c'] = 'school_c';
+
+//APP管理
+	$purview['17_app_manage']   = 'app_manage';
+	$purview['00_basic_setting']   = 'basic_setting';
+	$purview['01_push_setting']   = 'push_setting';
+	$purview['02_push_message']   = 'push_message';
+	$purview['03_guide_picture']   = 'guide_picture';
+	$purview['04_menu_setting']   = 'menu_setting';
+	$purview['05_template_setting']   = 'template_setting';
 
 ?>

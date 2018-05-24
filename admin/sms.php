@@ -1,405 +1,114 @@
 <?php
 
 /**
- * ECSHOP 短信模块 之 控制器
+ * 鸿宇多用户商城 短信模块 之 控制器
  * ============================================================================
- * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: yehuaixiao $
- * $Id: sms.php 17155 2010-05-06 06:29:05Z yehuaixiao $
+ * $Author: Shadow & 鸿宇
+ * $Id: sms.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
-
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . 'includes/cls_sms.php');
+include(ROOT_PATH . "sms/hy_config.php");
 
-$action = isset($_REQUEST['act']) ? $_REQUEST['act'] : 'display_my_info';
-$sms = new sms();
+header("content-Type: text/html; charset=Utf-8"); //设置字符的编码是utp-8
+error_reporting(0);
 
-switch ($action)
-{
-//    /* 注册短信服务。*/
-//    case 'register' :
-//        $email      = isset($_POST['email'])    ? $_POST['email']       : '';
-//        $password   = isset($_POST['password']) ? $_POST['password']    : '';
-//        $domain     = isset($_POST['domain'])   ? $_POST['domain']      : '';
-//        $phone      = isset($_POST['phone'])    ? $_POST['phone']       : '';
-//
-//        $result = $sms->register($email, $password, $domain, $phone);
-//
-//        $link[] = array('text'  =>  $_LANG['back'],
-//                        'href'  =>  'sms.php?act=display_my_info');
-//
-//        if ($result === true)//注册成功
-//        {
-//            sys_msg($_LANG['register_ok'], 0, $link);
-//        }
-//        else
-//        {
-//            @$error_detail = $_LANG['server_errors'][$sms->errors['server_errors']['error_no']]
-//                          . $_LANG['api_errors']['register'][$sms->errors['api_errors']['error_no']];
-//            sys_msg($_LANG['register_error'] . $error_detail, 1, $link);
-//        }
-//
-//        break;
-//
-//    /* 启用短信服务。 */
-//    case 'enable' :
-//        $username = isset($_POST['email'])      ? $_POST['email']       : '';
-//        //由于md5函数对空串也加密，所以要进行判空操作
-//        $password = isset($_POST['password']) && $_POST['password'] !== ''
-//                ? md5($_POST['password'])
-//                : '';
-//
-//        $result = $sms->restore($username, $password);
-//
-//        $link[] = array('text'  =>  $_LANG['back'],
-//                        'href'  =>  'sms.php?act=display_my_info');
-//
-//        if ($result === true)//启用成功
-//        {
-//            sys_msg($_LANG['enable_ok'], 0, $link);
-//        }
-//        else
-//        {
-//            @$error_detail = $_LANG['server_errors'][$sms->errors['server_errors']['error_no']]
-//                          . $_LANG['api_errors']['auth'][$sms->errors['api_errors']['error_no']];
-//            sys_msg($_LANG['enable_error'] . $error_detail, 1, $link);
-//        }
-//
-//        break;
-//
-//    /* 注销短信特服信息 */
-//    case 'disable' :
-//        $result = $sms->clear_my_info();
-//
-//        $link[] = array('text'  =>  $_LANG['back'],
-//                        'href'  =>  'sms.php?act=display_my_info');
-//
-//        if ($result === true)//注销成功
-//        {
-//            sys_msg($_LANG['disable_ok'], 0, $link);
-//        }
-//        else
-//        {
-//            sys_msg($_LANG['disable_error'], 1, $link);
-//        }
-//
-//        break;
+?>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>阿里大鱼短信管理</title>
+<style type="text/css" >
+    :focus{outline:none;}
+    .myem {font-size: 15px;color: black;font-weight: bold;}
+    .main {padding-left: 60px;}
+    .button {width: 150px;height: 35px;border-radius: 5px;border: none;background-color: #0E94D1;color: #FFF;margin-left: 66px;}
+    .button:hover {cursor: pointer;}
+    a{color: red;text-decoration: none;margin-left: 8px;}
+    a:hover {color: red;text-decoration: underline;}
+    .div1 {color: black;font-size: 14px;}
+    input {padding: 3px 5px;font:12px "sans-serif", "Arial", "Verdana";line-height: 12px;}
+    body{font:12px "sans-serif", "Arial", "Verdana";}
+    span {line-height: 25px;color: gray;font-size: 13px;}
+    h3{font-size: 18px;border-bottom: 1px solid #DCDCDC;padding: 10px 0;}
+    p{font:12px "sans-serif", "Arial", "Verdana";}
+</style>
+<body>
+<h3 align="center">阿里大鱼短信管理</h3>
+<div class="main">
+    <form method="post" action="">
+        <div class="div1">
+                <span class="myem">请填写阿里大鱼短信参数<a href="http://www.alidayu.com" target="_blank">申请账号</a></span>
+            <p>　App Key&nbsp;：<input type="text" id="appkey" name="hy_appkey" value='<?php echo $hy_appkey ?>'/>
+            <p>App Secret：<input type="text" id="secretkey" name="hy_secretkey" style="width: 228px;" value='<?php echo $hy_secretkey ?>'/><p>
+            <p style="color: #808080;">　特别注意：① 阿里大鱼短信环境必须是：PHP5.3　MySQL5.1/5.5</p>
+            <p style="color: #808080;">　　　　　　② 请前往：系统设置 -> 商店设置 -> 短信设置 填写短信模板ID和短信签名（请从阿里大鱼->配置管理中获取模板ID和短信签名）。</p>
+            <p style="color: #808080;">　　　　　　③ 如需技术支持请联系：鸿宇科技 & Shadow QQ:1527200768</p>
+            <p style="color: #808080;">　　　　　　④ 点击查看<a href="http://bbs.hongyuvip.com/?/article/125" target="_blank" style="margin: 0 5px;">鸿宇版阿里大鱼短信使用教程</a></p>
+        </div>
 
-    /* 显示短信发送界面，如果尚未注册或启用短信服务则显示注册界面。 */
-    case 'display_send_ui' :
-        /* 检查权限 */
-         admin_priv('sms_send');
+        <!-- 短信模板 -->
+        <div class="div2">
+            <span class="myem" >虚拟卡发货是否发送短信给客户</span><br/>
+            是<input type="radio" name="mobile_virtual" value="1" <?php if($mobile_virtual==1){echo 'checked';} ?>/>
+            否<input type="radio" name="mobile_virtual" value="0" <?php if($mobile_virtual==0){echo 'checked';} ?>/><br/>
+            模板编号：<input name="mobile_virtual_template" type="text" value='<?php echo $mobile_virtual_template ?>'/><br/>
+            <span>模板内容：您已获得店铺${supplier_name}的${goods_name}虚拟卡，卡号为：${card_sn}，有效期为：${vali_date}</span><p>
+        </div>
 
-        if ($sms->has_registered())
-        {
-            $smarty->assign('ur_here', $_LANG['03_sms_send']);
-            $special_ranks = get_rank_list();
-            $send_rank['1_0'] = $_LANG['user_list'];
-            foreach($special_ranks as $rank_key => $rank_value)
-            {
-                $send_rank['2_' . $rank_key] = $rank_value;
-            }
-            assign_query_info();
-            $smarty->assign('send_rank',   $send_rank);
-            $smarty->display('sms_send_ui.htm');
-        }
-        else
-        {
-            $smarty->assign('ur_here', $_LANG['register_sms']);
-            $smarty->assign('sms_site_info', $sms->get_site_info());
-            assign_query_info();
-            $smarty->display('sms_register_ui.htm');
-        }
+        <div class="div2">
+            <span class="myem" >是否开启报错提示</span><br/>
+            是<input type="radio" name="hy_showbug" value="1" <?php if($hy_showbug==1){echo 'checked';} ?>/>
+            否<input type="radio" name="hy_showbug" value="0" <?php if($hy_showbug==0){echo 'checked';} ?>/><br/>
+            <span>开启后，短信发送失败时，将提示详细错误信息。</span><p>
+        </div>
 
-        break;
+        <input class="button" type="submit" name="submit" id="submit" value="提交修改"/><br/><br/><br/>
+    </form>
+</div>
+<div style="width: 100%;line-height: 35px;font-size: 12px;color: #585858;text-align: center;position:fixed;bottom:0;border-top: 1px solid #DCDCDC;"><a href="http://hongyuvip.com" target="_blank" style="text-decoration: none;color: #585858;">Copyright © 2015 - 2016 鸿宇科技 版权所有 盗版必究 </a></div>
+</body>
+</html>
 
-    /* 发送短信 */
-    case 'send_sms' :
-        $send_num = isset($_POST['send_num'])   ? $_POST['send_num']    : '';
+<?php
+error_reporting(0);
+if (isset($_POST['submit'])) {
+    $file = "../sms/hy_config.php";
+    $files = "../mobile/sms/hy_config.php";
+    if (!is_writable($file)) {
+        echo "<script>alert('sms目录下的hy_config.php文件不可写或不存在。请检查文件或目录权限');</script>";
+    } else {
+        file_put_contents($file, "");
+        $config_str = "<?php";
+        $config_str .= "\n\n";
+        $config_str .= '$hy_appkey = "' . trim($_POST['hy_appkey']) . '";';
+        $config_str .= "\n\n";
+        $config_str .= '$hy_secretkey = "' . trim($_POST['hy_secretkey']) . '";';
 
-        if(isset($send_num))
-        {
-            $phone = $send_num.',';
-        }
+        $config_str .= "\n\n";
+        $config_str .= '$hy_showbug = "' . $_POST['hy_showbug'] . '";';
 
-        $send_rank = isset($_POST['send_rank'])     ? $_POST['send_rank'] : 0;
+        $config_str .= "\n\n";
+        $config_str .= '$mobile_virtual = "' . $_POST['mobile_virtual'] . '";';
+        $config_str .= "\n";
+        $config_str .= '$mobile_virtual_template = "' . trim($_POST['mobile_virtual_template']) . '";';
 
-        if ($send_rank != 0)
-        {
-            $rank_array = explode('_', $send_rank);
-
-            if($rank_array['0'] == 1)
-            {
-                $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' ";
-                $row = $db->query($sql);
-                while ($rank_rs = $db->fetch_array($row))
-                {
-                    $value[] = $rank_rs['mobile_phone'];
-                }
-            }
-            else
-            {
-                $rank_sql = "SELECT * FROM " . $ecs->table('user_rank') . " WHERE rank_id = '" . $rank_array['1'] . "'";
-                $rank_row = $db->getRow($rank_sql);
-                //$sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' AND rank_points > " .$rank_row['min_points']." AND rank_points < ".$rank_row['max_points']." ";
-
-                if($rank_row['special_rank']==1) 
-                {
-                    $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . " WHERE mobile_phone <>'' AND user_rank = '" . $rank_array['1'] . "'";
-                }
-                else
-                {
-                    $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' AND rank_points > " .$rank_row['min_points']." AND rank_points < ".$rank_row['max_points']." ";
-                }
-                
-                $row = $db->query($sql);
-                
-                while ($rank_rs = $db->fetch_array($row))
-                {
-                    $value[] = $rank_rs['mobile_phone'];
-                }
-            }
-            if(isset($value))
-            {
-                $phone .= implode(',',$value);
-            }
-        }       
-      
-        $msg       = isset($_POST['msg'])       ? $_POST['msg']         : '';
-        
-
-        $send_date = isset($_POST['send_date']) ? $_POST['send_date']   : '';   
-               
-        $result = $sms->send($phone, $msg, $send_date, $send_num = 13);
-
-        $link[] = array('text'  =>  $_LANG['back'] . $_LANG['03_sms_send'],
-                        'href'  =>  'sms.php?act=display_send_ui');
-
-        if ($result === true)//发送成功
-        {
-            sys_msg($_LANG['send_ok'], 0, $link);
-        }
-        else
-        {
-            @$error_detail = $_LANG['server_errors'][$sms->errors['server_errors']['error_no']]
-                          . $_LANG['api_errors']['send'][$sms->errors['api_errors']['error_no']];
-            sys_msg($_LANG['send_error'] . $error_detail, 1, $link);
-        }
-
-        break;
-
-//    /* 显示发送记录的查询界面，如果尚未注册或启用短信服务则显示注册界面。 */
-//    case 'display_send_history_ui' :
-//        /* 检查权限 */
-//         admin_priv('send_history');
-//        if ($sms->has_registered())
-//        {
-//            $smarty->assign('ur_here', $_LANG['05_sms_send_history']);
-//            assign_query_info();
-//            $smarty->display('sms_send_history_query_ui.htm');
-//        }
-//        else
-//        {
-//            $smarty->assign('ur_here', $_LANG['register_sms']);
-//            $smarty->assign('sms_site_info', $sms->get_site_info());
-//            assign_query_info();
-//            $smarty->display('sms_register_ui.htm');
-//        }
-//
-//        break;
-//
-//    /* 获得发送记录，如果客户端支持XSLT，则直接发送XML格式的文本到客户端；
-//       否则在服务器端把XML转换成XHTML后发送到客户端。
-//    */
-//    case 'get_send_history' :
-//        $start_date = isset($_POST['start_date'])   ? $_POST['start_date']  : '';
-//        $end_date   = isset($_POST['end_date'])     ? $_POST['end_date']    : '';
-//        $page_size  = isset($_POST['page_size'])    ? $_POST['page_size']   : 20;
-//        $page       = isset($_POST['page'])         ? $_POST['page']        : 1;
-//
-//        $is_xslt_supported = isset($_POST['is_xslt_supported']) ? $_POST['is_xslt_supported'] : 'no';
-//        if ($is_xslt_supported === 'yes')
-//        {
-//            $xml = $sms->get_send_history_by_xml($start_date, $end_date, $page_size, $page);
-//            header('Content-Type: application/xml; charset=utf-8');
-//            //TODO:判断错误信息，链上XSLT
-//            echo $xml;
-//        }
-//        else
-//        {
-//            $result = $sms->get_send_history($start_date, $end_date, $page_size, $page);
-//
-//            if ($result !== false)
-//            {
-//                $smarty->assign('sms_send_history', $result);
-//                $smarty->assign('ur_here', $_LANG['05_sms_send_history']);
-//
-//                /* 分页信息 */
-//                $turn_page = array( 'total_records' => $result['count'],
-//                                    'total_pages'   => intval(ceil($result['count']/$page_size)),
-//                                    'page'          => $page,
-//                                    'page_size'     => $page_size);
-//                $smarty->assign('turn_page', $turn_page);
-//                $smarty->assign('start_date', $start_date);
-//                $smarty->assign('end_date', $end_date);
-//
-//                assign_query_info();
-//
-//                $smarty->display('sms_send_history.htm');
-//            }
-//            else
-//            {
-//                $link[] = array('text'  =>  $_LANG['back_send_history'],
-//                                'href'  =>  'sms.php?act=display_send_history_ui');
-//
-//                @$error_detail = $_LANG['server_errors'][$sms->errors['server_errors']['error_no']]
-//                              . $_LANG['api_errors']['get_history'][$sms->errors['api_errors']['error_no']];
-//
-//                sys_msg($_LANG['history_query_error'] . $error_detail, 1, $link);
-//            }
-//        }
-//
-//        break;
-//
-//    /* 显示充值页面 */
-//    case 'display_charge_ui' :
-//        /* 检查权限 */
-//         admin_priv('sms_charge');
-//        if ($sms->has_registered())
-//        {
-//            $smarty->assign('ur_here', $_LANG['04_sms_charge']);
-//            assign_query_info();
-//            $sms_charge = array();
-//            $sms_charge['charge_url'] = $sms->get_url('charge');
-//            $sms_charge['login_info'] = $sms->get_login_info();
-//            $smarty->assign('sms_charge', $sms_charge);
-//            $smarty->display('sms_charge_ui.htm');
-//        }
-//        else
-//        {
-//            $smarty->assign('ur_here', $_LANG['register_sms']);
-//            $smarty->assign('sms_site_info', $sms->get_site_info());
-//            assign_query_info();
-//            $smarty->display('sms_register_ui.htm');
-//        }
-//
-//        break;
-//
-//    /* 显示充值记录的查询界面，如果尚未注册或启用短信服务则显示注册界面。 */
-//    case 'display_charge_history_ui' :
-//         /* 检查权限 */
-//         admin_priv('charge_history');
-//        if ($sms->has_registered())
-//        {
-//            $smarty->assign('ur_here', $_LANG['06_sms_charge_history']);
-//            assign_query_info();
-//            $smarty->display('sms_charge_history_query_ui.htm');
-//        }
-//        else
-//        {
-//            $smarty->assign('ur_here', $_LANG['register_sms']);
-//            $smarty->assign('sms_site_info', $sms->get_site_info());
-//            assign_query_info();
-//            $smarty->display('sms_register_ui.htm');
-//        }
-//
-//        break;
-//
-//    /* 获得充值记录，如果客户端支持XSLT，则直接发送XML格式的文本到客户端；
-//       否则在服务器端把XML转换成XHTML后发送到客户端。
-//    */
-//    case 'get_charge_history' :
-//        $start_date = isset($_POST['start_date'])   ? $_POST['start_date']  : '';
-//        $end_date   = isset($_POST['end_date'])     ? $_POST['end_date']    : '';
-//        $page_size  = isset($_POST['page_size'])    ? $_POST['page_size']   : 20;
-//        $page       = isset($_POST['page'])         ? $_POST['page']        : 1;
-//
-//        $is_xslt_supported = isset($_POST['is_xslt_supported']) ? $_POST['is_xslt_supported'] : 'no';
-//        if ($is_xslt_supported === 'yes')
-//        {
-//            $xml = $sms->get_charge_history_by_xml($start_date, $end_date, $page_size, $page);
-//            header('Content-Type: application/xml; charset=utf-8');
-//            //TODO:判断错误信息，链上XSLT
-//            echo $xml;
-//        }
-//        else
-//        {
-//            $result = $sms->get_charge_history($start_date, $end_date, $page_size, $page);
-//            if ($result !== false)
-//            {
-//                $smarty->assign('sms_charge_history', $result);
-//
-//                /* 分页信息 */
-//                $turn_page = array( 'total_records' => $result['count'],
-//                                    'total_pages'   => intval(ceil($result['count']/$page_size)),
-//                                    'page'          => $page,
-//                                    'page_size'     => $page_size);
-//                $smarty->assign('turn_page', $turn_page);
-//                $smarty->assign('start_date', $start_date);
-//                $smarty->assign('end_date', $end_date);
-//
-//                assign_query_info();
-//
-//                $smarty->display('sms_charge_history.htm');
-//            }
-//            else
-//            {
-//                $link[] = array('text'  =>  $_LANG['back_charge_history'],
-//                                'href'  =>  'sms.php?act=display_charge_history_ui');
-//
-//                @$error_detail = $_LANG['server_errors'][$sms->errors['server_errors']['error_no']]
-//                              . $_LANG['api_errors']['get_history'][$sms->errors['api_errors']['error_no']];
-//
-//                sys_msg($_LANG['history_query_error'] . $error_detail, 1, $link);
-//            }
-//        }
-//
-//        break;
-//
-//    /* 显示我的短信服务个人信息 */
-//    default :
-//        /* 检查权限 */
-//         admin_priv('my_info');
-//        $sms_my_info = $sms->get_my_info();
-//        if (!$sms_my_info)
-//        {
-//            $link[] = array('text'  =>  $_LANG['back'], 'href'  =>  './');
-//            sys_msg($_LANG['empty_info'], 1, $link);
-//        }
-//
-//        if (!$sms_my_info['sms_user_name'])//此处不用$sms->has_registered()能够减少一次数据库查询
-//        {
-//            $smarty->assign('ur_here', $_LANG['register_sms']);
-//            $smarty->assign('sms_site_info', $sms->get_site_info());
-//            assign_query_info();
-//            $smarty->display('sms_register_ui.htm');
-//        }
-//        else
-//        {
-//            /* 立即更新短信特服信息 */
-//            $sms->restore($sms_my_info['sms_user_name'], $sms_my_info['sms_password']);
-//
-//            /* 再次获取个人数据，保证显示的数据是最新的 */
-//            $sms_my_info = $sms->get_my_info();//这里不再进行判空处理，主要是因为如果前个式子不出错，这里一般不会出错
-//
-//            /* 格式化时间输出 */
-//            $sms_last_request = $sms_my_info['sms_last_request']
-//                    ? $sms_my_info['sms_last_request']
-//                    : 0;//赋0防出错
-//            $sms_my_info['sms_last_request'] = local_date('Y-m-d H:i:s O', $sms_my_info['sms_last_request']);
-//
-//            $smarty->assign('sms_my_info', $sms_my_info);
-//            $smarty->assign('ur_here', $_LANG['02_sms_my_info']);
-//            assign_query_info();
-//            $smarty->display('sms_my_info.htm');
-//        }
+        $config_str .= "\n\n";
+        $config_str .= "?>";
+        $hy = fopen($file, "w+");
+        fwrite($hy, $config_str);
+        fclose($hy);
+        file_put_contents($files, "");
+        $hy_mobile = fopen($files, "w+");
+        fwrite($hy_mobile, $config_str);
+        fclose($hy_mobile);
+    }
+    echo "<script>alert('操作成功');location.href='".$_SERVER["HTTP_REFERER"]."';</script>";
 }
-
 ?>

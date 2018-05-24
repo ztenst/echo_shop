@@ -11,7 +11,6 @@
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
 <link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
-{insert_scripts files='jquery-1.9.1.min.js,jquery.json.js'}
 {insert_scripts files='utils.js,common.js,global.js,compare.js'}
 </head>
 <body>
@@ -143,8 +142,43 @@
      <div class="box_1">
       <h3>
     <!--标题及显示方式-->
-
-          
+        <!-- {if $intromode eq 'best'} -->
+         <span>{$lang.best_goods}</span>
+         <!-- {elseif $intromode eq 'new'} -->
+         <span>{$lang.new_goods}</span>
+         <!-- {elseif $intromode eq 'hot'} -->
+         <span>{$lang.hot_goods}</span>
+         <!-- {elseif $intromode eq 'promotion'} -->
+         <span>{$lang.promotion_goods}</span>
+         <!-- {else} -->
+         <span>{$lang.search_result}</span>
+         <!-- {/if} -->
+          <!--{if $goods_list}-->
+          <form action="search.php" method="post" class="sort" name="listform" id="form">
+          {$lang.btn_display}：
+          <a href="javascript:;" onClick="javascript:display_mode('list')"><img src="images/display_mode_list<!-- {if $pager.display == 'list'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.list}"></a>
+          <a href="javascript:;" onClick="javascript:display_mode('grid')"><img src="images/display_mode_grid<!-- {if $pager.display == 'grid'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.grid}"></a>
+          <a href="javascript:;" onClick="javascript:display_mode('text')"><img src="images/display_mode_text<!-- {if $pager.display == 'text'} -->_act<!-- {/if} -->.gif" alt="{$lang.display.text}"></a>&nbsp;&nbsp;
+              <select name="sort">
+              {html_options options=$lang.sort selected=$pager.search.sort}
+              </select>
+              <select name="order">
+              {html_options options=$lang.order selected=$pager.search.order}
+              </select>
+              <input type="image" name="imageField" src="../images/bnt_go.gif" alt="go"/>
+              <input type="hidden" name="page" value="{$pager.page}" />
+              <input type="hidden" name="display" value="{$pager.display}" id="display" />
+              <!--{foreach from=$pager.search key=key item=item}-->
+              {if $key neq "sort" and $key neq "order"}
+                {if $key eq 'keywords'}
+                  <input type="hidden" name="{$key}" value="{$item|escape:decode_url}" />
+                {else}
+                  <input type="hidden" name="{$key}" value="{$item}" />
+                {/if}
+              {/if}
+              <!--{/foreach}-->
+            </form>
+          <!--{/if}-->
            </h3>
         <!--{if $goods_list}-->
 

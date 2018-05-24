@@ -1,21 +1,21 @@
 <?php
 
 /**
- * ECSHOP 积分商城
+ * 鸿宇多用户商城 积分商城
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: exchange.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: exchange.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -51,7 +51,7 @@ if ($_REQUEST['act'] == 'list')
     $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
     $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'exchange_integral' : 'last_update');
 
-    $sort    = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'exchange_integral', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
+    $sort    = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'exchange_integral', 'last_update','click_count'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
     $order   = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
     $display = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
     $display  = in_array($display, array('list', 'grid', 'text')) ? $display : 'text';
@@ -85,6 +85,8 @@ if ($_REQUEST['act'] == 'list')
         $smarty->assign('helps',            get_shop_help());              // 网店帮助
         $smarty->assign('top_goods',        get_top10());                  // 销售排行
         $smarty->assign('promotion_info',   get_promotion_info());         // 促销活动信息
+        $smarty->assign('wap_exchange_ad',  get_wap_advlist('wap积分商城幻灯广告', 5));  //wap首页幻灯广告位
+
 
         /* 调查 */
         $vote = get_vote();
@@ -100,13 +102,13 @@ if ($_REQUEST['act'] == 'list')
         //$smarty->assign('new_goods',       get_exchange_recommend_goods('new',  $children, $integral_min, $integral_max));
         $smarty->assign('hot_goods',       get_exchange_recommend_goods('hot',  $children, $integral_min, $integral_max));
 
+
         $count = get_exchange_goods_count($children, $integral_min, $integral_max);
         $max_page = ($count> 0) ? ceil($count / $size) : 1;
         if ($page > $max_page)
         {
             $page = $max_page;
         }
-         
         $goodslist = exchange_get_goods($children, $integral_min, $integral_max, $ext, $size, $page, $sort, $order);
         if($display == 'grid')
         {
@@ -128,131 +130,7 @@ if ($_REQUEST['act'] == 'list')
     $smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typeexchange.xml" : 'feed.php?type=exchange'); // RSS URL
     $smarty->display('exchange_list.dwt', $cache_id);
 }
-if ($_REQUEST['act'] == 'asynclist')
-{
-    /* 初始化分页信息 */
-    $page         = isset($_REQUEST['page'])   && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
-    $size         = isset($_CFG['page_size'])  && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
-    $cat_id       = isset($_REQUEST['cat_id']) && intval($_REQUEST['cat_id']) > 0 ? intval($_REQUEST['cat_id']) : 0;
-    $integral_max = isset($_REQUEST['integral_max']) && intval($_REQUEST['integral_max']) > 0 ? intval($_REQUEST['integral_max']) : 0;
-    $integral_min = isset($_REQUEST['integral_min']) && intval($_REQUEST['integral_min']) > 0 ? intval($_REQUEST['integral_min']) : 0;
 
-    /* 排序、显示方式以及类型 */
-    $default_display_type      = $_CFG['show_order_type'] == '0' ? 'list' : ($_CFG['show_order_type'] == '1' ? 'grid' : 'text');
-    $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
-    $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'exchange_integral' : 'last_update');
-
-    $sort    = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'exchange_integral', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
-    $order   = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
-    $display = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
-    $display  = in_array($display, array('list', 'grid', 'text')) ? $display : 'text';
-    setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
-
-    /* 页面的缓存ID */
-    $cache_id = sprintf('%X', crc32($cat_id . '-' . $display . '-' . $sort  .'-' . $order  .'-' . $page . '-' . $size . '-' . $_SESSION['user_rank'] . '-' .
-        $_CFG['lang'] . '-' . $integral_max . '-' .$integral_min));
-
-    if (!$smarty->is_cached('exchange.dwt', $cache_id))
-    {
-        /* 如果页面没有被缓存则重新获取页面的内容 */
-
-        $children = get_children($cat_id);
-
-        $cat = get_cat_info($cat_id);   // 获得分类的相关信息
-
-        if (!empty($cat))
-        {
-            $smarty->assign('keywords',    htmlspecialchars($cat['keywords']));
-            $smarty->assign('description', htmlspecialchars($cat['cat_desc']));
-        }
-
-        assign_template();
-
-        $position = assign_ur_here('exchange');
-        $smarty->assign('page_title',       $position['title']);    // 页面标题
-        $smarty->assign('ur_here',          $position['ur_here']);  // 当前位置
-
-        $smarty->assign('categories',       get_categories_tree());        // 分类树
-        $smarty->assign('helps',            get_shop_help());              // 网店帮助
-        $smarty->assign('top_goods',        get_top10());                  // 销售排行
-        $smarty->assign('promotion_info',   get_promotion_info());         // 促销活动信息
-
-        /* 调查 */
-        $vote = get_vote();
-        if (!empty($vote))
-        {
-            $smarty->assign('vote_id',     $vote['id']);
-            $smarty->assign('vote',        $vote['content']);
-        }
-
-        $ext = ''; //商品查询条件扩展
-
-        //$smarty->assign('best_goods',      get_exchange_recommend_goods('best', $children, $integral_min, $integral_max));
-        //$smarty->assign('new_goods',       get_exchange_recommend_goods('new',  $children, $integral_min, $integral_max));
-        $smarty->assign('hot_goods',       get_exchange_recommend_goods('hot',  $children, $integral_min, $integral_max));
-
-        $count = get_exchange_goods_count($children, $integral_min, $integral_max);
-        $max_page = ($count> 0) ? ceil($count / $size) : 1;
-        if ($page > $max_page)
-        {
-            $page = $max_page;
-        }
-          /*
-         * 异步显示商品列表 by wang
-         */
-        if ($_GET['act'] == 'asynclist') {
-            $asyn_last = intval($_POST['last']) + 1;
-            $size = $_POST['amount'];
-            $page = ($asyn_last > 0) ? ceil($asyn_last / $size) : 1;
-        }
-        $goodslist = exchange_get_goods($children, $integral_min, $integral_max, $ext, $size, $page, $sort, $order);
-        
-        $sayList = array();
-        if (is_array($goodslist)) {
-            foreach ($goodslist as $vo) {
-                //$shop_price = empty($vo['promote_price']) ? $vo['shop_price'] : $vo['promote_price'];
-               // $watermark_img = empty($vo['watermark_img']) ? '' : '<img width="55" height="16" src="' . 'themes/' . $_CFG['template'] . '/images/' . $vo['watermark_img'] . '.png" alt="' . $vo['goods_name'] . '" />';
-                $name = $vo['goods_style_name']? $vo['goods_style_name'] : $vo['goods_name'];
-                $sayList[] = array(
-                    'pro-inner' => '
-        <div class="proImg-wrap"> <a href="' . $vo['url'] . '" > <img src="' . $config['site_url'] . $vo['goods_thumb'] . '" alt="' . $vo['goods_name'] . '"> </a> </div>
-        <div class="proInfo-wrap">
-          <div class="proTitle"> <a href="' . $vo['url'] . '" >' . $name . '</a> </div>
-          <div class="proSKU"></div>
-          <div class="proPrice"> ' .$_LANG['exchange_integral'].'
-            <em>' . $vo['exchange_integral'] . '</em> 
-          </div>
-        </div>'
-                );
-            }
-        }
-        // print_r( $sayList  );
-        echo json_encode($sayList);
-        exit;
-        /*
-         * 异步显示商品列表 by wang end
-         */
-        $goodslist = exchange_get_goods($children, $integral_min, $integral_max, $ext, $size, $page, $sort, $order);
-        if($display == 'grid')
-        {
-            if(count($goodslist) % 2 != 0)
-            {
-                $goodslist[] = array();
-            }
-        }
-        $smarty->assign('goods_list',       $goodslist);
-        $smarty->assign('category',         $cat_id);
-        $smarty->assign('integral_max',     $integral_max);
-        $smarty->assign('integral_min',     $integral_min);
-
-
-        assign_pager('exchange',            $cat_id, $count, $size, $sort, $order, $page, '', '', $integral_min, $integral_max, $display); // 分页
-        assign_dynamic('exchange_list'); // 动态内容
-    }
-
-    $smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typeexchange.xml" : 'feed.php?type=exchange'); // RSS URL
-    $smarty->display('exchange_list.dwt', $cache_id);
-}
 /*------------------------------------------------------ */
 //-- 积分兑换商品详情
 /*------------------------------------------------------ */
@@ -430,7 +308,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $goods_attr = join(chr(13) . chr(10), $attr_list);
 
     /* 更新：清空购物车中所有团购商品 */
-    include_once(ROOT_PATH . 'include/lib_order.php');
+    include_once(ROOT_PATH . 'includes/lib_order.php');
     clear_cart(CART_EXCHANGE_GOODS);
 
     /* 更新：加入购物车 */
@@ -454,14 +332,14 @@ elseif ($_REQUEST['act'] == 'buy')
         'is_gift'        => 0
     );
     $db->autoExecute($ecs->table('cart'), $cart, 'INSERT');
-
+	$_SESSION['sel_cartgoods'] = $db->insert_id();
     /* 记录购物流程类型：团购 */
     $_SESSION['flow_type'] = CART_EXCHANGE_GOODS;
     $_SESSION['extension_code'] = 'exchange_goods';
     $_SESSION['extension_id'] = $goods_id;
 
     /* 进入收货人页面 */
-    ecs_header("Location: ./flow.php?step=consignee\n");
+    ecs_header("Location: ./flow.php?step=checkout\n");
     exit;
 }
 
@@ -551,8 +429,8 @@ function exchange_get_goods($children, $min, $max, $ext, $size, $page, $sort, $o
         $arr[$row['goods_id']]['goods_style_name']  = add_style($row['goods_name'],$row['goods_name_style']);
         $arr[$row['goods_id']]['exchange_integral'] = $row['exchange_integral'];
         $arr[$row['goods_id']]['type']              = $row['goods_type'];
-        $arr[$row['goods_id']]['goods_thumb']       = get_image_path($row['goods_id'], $row['goods_thumb'], true);
-        $arr[$row['goods_id']]['goods_img']         = get_image_path($row['goods_id'], $row['goods_img']);
+        $arr[$row['goods_id']]['goods_thumb']       = '../' . get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']         = '../' . get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['url']               = build_uri('exchange_goods', array('gid'=>$row['goods_id']), $row['goods_name']);
     }
 
@@ -646,8 +524,8 @@ function get_exchange_recommend_goods($type = '', $cats = '', $min =0,  $max = 0
         $goods[$idx]['short_name']        = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
                                                 sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
         $goods[$idx]['exchange_integral'] = $row['exchange_integral'];
-        $goods[$idx]['thumb']             = get_image_path($row['goods_id'], $row['goods_thumb'], true);
-        $goods[$idx]['goods_img']         = get_image_path($row['goods_id'], $row['goods_img']);
+        $goods[$idx]['thumb']             = '../' . get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $goods[$idx]['goods_img']         = '../' . get_image_path($row['goods_id'], $row['goods_img']);
         $goods[$idx]['url']               = build_uri('exchange_goods', array('gid' => $row['goods_id']), $row['goods_name']);
 
         $goods[$idx]['short_style_name']  = add_style($goods[$idx]['short_name'], $row['goods_name_style']);
@@ -709,8 +587,8 @@ function get_exchange_goods_info($goods_id)
         $row['add_time']      = local_date($GLOBALS['_CFG']['date_format'], $row['add_time']);
 
         /* 修正商品图片 */
-        $row['goods_img']   = get_image_path($goods_id, $row['goods_img']);
-        $row['goods_thumb'] = get_image_path($goods_id, $row['goods_thumb'], true);
+        $row['goods_img']   = '../' . get_image_path($goods_id, $row['goods_img']);
+        $row['goods_thumb'] = '../' . get_image_path($goods_id, $row['goods_thumb'], true);
 
         return $row;
     }
@@ -720,5 +598,19 @@ function get_exchange_goods_info($goods_id)
     }
 }
 
-
+function get_wap_advlist( $position, $num )
+{
+		$arr = array( );
+		$sql = "select ap.ad_width,ap.ad_height,ad.ad_id,ad.ad_name,ad.ad_code,ad.ad_link,ad.ad_id from ".$GLOBALS['ecs']->table( "ecsmart_ad_position" )." as ap left join ".$GLOBALS['ecs']->table( "ecsmart_ad" )." as ad on ad.position_id = ap.position_id where ap.position_name='".$position.( "' and UNIX_TIMESTAMP()>ad.start_time and UNIX_TIMESTAMP()<ad.end_time and ad.enabled=1 limit ".$num );
+		$res = $GLOBALS['db']->getAll( $sql );
+		foreach ( $res as $idx => $row )
+		{
+				$arr[$row['ad_id']]['name'] = $row['ad_name'];
+				$arr[$row['ad_id']]['url'] = "affiche.php?ad_id=".$row['ad_id']."&uri=".$row['ad_link'];
+				$arr[$row['ad_id']]['image'] = "data/afficheimg/".$row['ad_code'];
+				$arr[$row['ad_id']]['content'] = "<a href='".$arr[$row['ad_id']]['url']."' target='_blank'><img src='data/afficheimg/".$row['ad_code']."' width='".$row['ad_width']."' height='".$row['ad_height']."' /></a>";
+				$arr[$row['ad_id']]['ad_code'] = $row['ad_code'];
+		}
+		return $arr;
+}
 ?>

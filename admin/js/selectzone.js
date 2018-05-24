@@ -1,3 +1,10 @@
+if(!jQuery){
+	alert("缺少jquery.js文件");
+}
+if(!$.isFunction($.toJSON)){
+	alert("缺少jquery.json.js文件");
+}
+
 /* $Id : selectzone.js 4824 2007-01-31 08:23:56Z paulgao $ */
 
 /* *
@@ -140,8 +147,7 @@ function SelectZone()
       {
         args[args.length] = arguments[i];
       }
-
-      Ajax.call(this.filename + "&act="+act+"&add_ids=" +selOpt.toJSONString(), args, this.addRemoveItemResponse, "GET", "JSON");
+      Ajax.call(this.filename + "&act="+act+"&add_ids=" +$.toJSON(selOpt), args, this.addRemoveItemResponse, "GET", "JSON");
     }
   }
 
@@ -176,7 +182,7 @@ function SelectZone()
         args[args.length] = arguments[i];
       }
 
-      Ajax.call(this.filename + "&act="+act+"&drop_ids=" + arr.toJSONString(), args, this.addRemoveItemResponse, 'GET', 'JSON');
+      Ajax.call(this.filename + "&act="+act+"&drop_ids=" + $.toJSON(arr), args, this.addRemoveItemResponse, 'GET', 'JSON');
     }
   }
 

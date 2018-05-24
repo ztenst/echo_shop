@@ -64,7 +64,7 @@ function showtime()
 
   if (dateLeft > 0)
   {
-    Temp = dateLeft + _day + hourZero + hourLeft + _hour + minuteZero + minuteLeft + _minute + secondZero + secondLeft + _second;
+    Temp = dateLeft + ":" + hourZero + hourLeft + ":" + minuteZero + minuteLeft + ":" + secondZero + secondLeft;
   }
   else
   {
@@ -94,7 +94,7 @@ function showtime()
 
   if (auctionDate <= 0 || Temp == '')
   {
-    Temp = "<strong>" + _end + "</strong>";
+    Temp = "<strong>" + _end + "（请刷新页面查看结果）</strong>";
     stopclock();
   }
 
@@ -148,7 +148,7 @@ function onload_leftTime(now_time)
     }
     else
     {
-      var tmp_val = parseInt(_GMTEndTime) - now_time;
+      var tmp_val = parseInt(_GMTEndTime) - parseInt((new Date()).valueOf()/1000);
     }
     if (tmp_val > 0)
     {

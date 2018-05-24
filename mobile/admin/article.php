@@ -1,26 +1,26 @@
 <?php
 
 /**
- * ECSHOP 管理中心文章处理程序文件
+ * 鸿宇多用户商城 管理中心文章处理程序文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: article.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: article.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . 'include/fckeditor/fckeditor.php');
-require_once(ROOT_PATH . 'include/cls_image.php');
+require_once(ROOT_PATH . "includes/fckeditor/fckeditor.php");
+require_once(ROOT_PATH . 'includes/cls_image.php');
 
 /*初始化数据交换对象 */
-$exc   = new exchange($ecs->table("article"), $db, 'article_id', 'title');
+$exc   = new exchange($ecs->table("ecsmart_article"), $db, 'article_id', 'title');
 //$image = new cls_image();
 
 /* 允许上传的文件类型 */
@@ -166,7 +166,7 @@ if ($_REQUEST['act'] == 'insert')
     {
         $_POST['cat_id'] = 0;
     }
-    $sql = "INSERT INTO ".$ecs->table('article')."(title, cat_id, article_type, is_open, author, ".
+    $sql = "INSERT INTO ".$ecs->table('ecsmart_article')."(title, cat_id, article_type, is_open, author, ".
                 "author_email, keywords, content, add_time, file_url, open_type, link, description) ".
             "VALUES ('$_POST[title]', '$_POST[article_cat]', '$_POST[article_type]', '$_POST[is_open]', ".
                 "'$_POST[author]', '$_POST[author_email]', '$_POST[keywords]', '$_POST[FCKeditor1]', ".
@@ -200,7 +200,7 @@ if ($_REQUEST['act'] == 'edit')
     admin_priv('article_manage');
 
     /* 取文章数据 */
-    $sql = "SELECT * FROM " .$ecs->table('article'). " WHERE article_id='$_REQUEST[id]'";
+    $sql = "SELECT * FROM " .$ecs->table('ecsmart_article'). " WHERE article_id='$_REQUEST[id]'";
     $article = $db->GetRow($sql);
 
     /* 创建 html editor */
@@ -277,7 +277,7 @@ if ($_REQUEST['act'] =='update')
     }
 
     /* 如果 file_url 跟以前不一样，且原来的文件是本地文件，删除原来的文件 */
-    $sql = "SELECT file_url FROM " . $ecs->table('article') . " WHERE article_id = '$_POST[id]'";
+    $sql = "SELECT file_url FROM " . $ecs->table('ecsmart_article') . " WHERE article_id = '$_POST[id]'";
     $old_url = $db->getOne($sql);
     if ($old_url != '' && $old_url != $file_url && strpos($old_url, 'http://') === false && strpos($old_url, 'https://') === false)
     {
@@ -376,7 +376,7 @@ elseif ($_REQUEST['act'] == 'remove')
     $id = intval($_GET['id']);
 
     /* 删除原来的文件 */
-    $sql = "SELECT file_url FROM " . $ecs->table('article') . " WHERE article_id = '$id'";
+    $sql = "SELECT file_url FROM " . $ecs->table('ecsmart_article') . " WHERE article_id = '$id'";
     $old_url = $db->getOne($sql);
     if ($old_url != '' && strpos($old_url, 'http://') === false && strpos($old_url, 'https://') === false)
     {
@@ -403,7 +403,7 @@ elseif ($_REQUEST['act'] == 'remove')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'add_link_goods')
 {
-    include_once(ROOT_PATH . 'include/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('article_manage');
@@ -414,7 +414,7 @@ elseif ($_REQUEST['act'] == 'add_link_goods')
 
     if ($article_id == 0)
     {
-        $article_id = $db->getOne('SELECT MAX(article_id)+1 AS article_id FROM ' .$ecs->table('article'));
+        $article_id = $db->getOne('SELECT MAX(article_id)+1 AS article_id FROM ' .$ecs->table('ecsmart_article'));
     }
 
     foreach ($add_ids AS $key => $val)
@@ -443,7 +443,7 @@ elseif ($_REQUEST['act'] == 'add_link_goods')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'drop_link_goods')
 {
-    include_once(ROOT_PATH . 'include/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('article_manage');
@@ -454,7 +454,7 @@ elseif ($_REQUEST['act'] == 'drop_link_goods')
 
     if ($article_id == 0)
     {
-        $article_id = $db->getOne('SELECT MAX(article_id)+1 AS article_id FROM ' .$ecs->table('article'));
+        $article_id = $db->getOne('SELECT MAX(article_id)+1 AS article_id FROM ' .$ecs->table('ecsmart_article'));
     }
 
     $sql = "DELETE FROM " . $ecs->table('goods_article').
@@ -480,7 +480,7 @@ elseif ($_REQUEST['act'] == 'drop_link_goods')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'get_goods_list')
 {
-    include_once(ROOT_PATH . 'include/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $filters = $json->decode($_GET['JSON']);
@@ -516,7 +516,7 @@ elseif ($_REQUEST['act'] == 'batch')
             }
 
             /* 删除原来的文件 */
-            $sql = "SELECT file_url FROM " . $ecs->table('article') .
+            $sql = "SELECT file_url FROM " . $ecs->table('ecsmart_article') .
                     " WHERE article_id " . db_create_in(join(',', $_POST['checkboxes'])) .
                     " AND file_url <> ''";
 
@@ -647,8 +647,8 @@ function get_articleslist()
         }
 
         /* 文章总数 */
-        $sql = 'SELECT COUNT(*) FROM ' .$GLOBALS['ecs']->table('article'). ' AS a '.
-               'LEFT JOIN ' .$GLOBALS['ecs']->table('article_cat'). ' AS ac ON ac.cat_id = a.cat_id '.
+        $sql = 'SELECT COUNT(*) FROM ' .$GLOBALS['ecs']->table('ecsmart_article'). ' AS a '.
+               'LEFT JOIN ' .$GLOBALS['ecs']->table('ecsmart_article_cat'). ' AS ac ON ac.cat_id = a.cat_id '.
                'WHERE 1 ' .$where;
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
@@ -656,8 +656,8 @@ function get_articleslist()
 
         /* 获取文章数据 */
         $sql = 'SELECT a.* , ac.cat_name '.
-               'FROM ' .$GLOBALS['ecs']->table('article'). ' AS a '.
-               'LEFT JOIN ' .$GLOBALS['ecs']->table('article_cat'). ' AS ac ON ac.cat_id = a.cat_id '.
+               'FROM ' .$GLOBALS['ecs']->table('ecsmart_article'). ' AS a '.
+               'LEFT JOIN ' .$GLOBALS['ecs']->table('ecsmart_article_cat'). ' AS ac ON ac.cat_id = a.cat_id '.
                'WHERE 1 ' .$where. ' ORDER by '.$filter['sort_by'].' '.$filter['sort_order'];
 
         $filter['keyword'] = stripslashes($filter['keyword']);

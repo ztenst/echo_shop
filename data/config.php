@@ -1,20 +1,20 @@
 <?php
 // database host
-$db_host   = "localhost";
+$db_host   = "localhost:3306";
 
 // database name
-$db_name   = "mi";
+$db_name   = "shop";
 
 // database username
 $db_user   = "root";
 
 // database password
-$db_pass   = "admin";
+$db_pass   = "root";
 
-// table prefix
+// HongYuJD-V7.2 bbs.hongyuvip.com
 $prefix    = "ecs_";
 
-$timezone    = "UTC";
+$timezone    = "PRC";
 
 $cookie_path    = "/";
 
@@ -24,12 +24,18 @@ $session = "1440";
 
 define('EC_CHARSET','utf-8');
 
+if(!defined('ADMIN_PATH'));
+{
 define('ADMIN_PATH','admin');
-
+}
+if(!defined('ADMIN_PATH_M'));
+{
+define('ADMIN_PATH_M','admin');
+}
 define('AUTH_KEY', 'this is a key');
 
 define('OLD_AUTH_KEY', '');
 
-define('API_TIME', '2016-06-08 05:40:19');
+define('API_TIME', '2018-05-24 11:09:15');
 
 ?>

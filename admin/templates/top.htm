@@ -8,185 +8,255 @@
 {literal}
 <style type="text/css">
 #header-div {
-	background: #1b9ad5;
-	border-bottom: 1px solid #118ec9; height:83px;
+  background:url(images/top_bg.gif) repeat-x;
+
 }
+a{ font-family:"微软雅黑";}
 #logo-div {
-	margin-left: 8px;
-	margin-top: 21px;
-	width: 262px;
-	height: 45px;
-	float: left;
+  height: 68px; width:275px;   float: left;
 }
+
+#admininfo-div{height:68px; line-height:68px; width:250px; float:left;}
+#admininfo-div span.left{ float:left;height:68px; line-height:58px;background:url(images/ui_04.png) no-repeat 10px 12px; text-indent:30px; color:#d2d4d1;}
+#admininfo-div span.right{ float:left;height:68px; line-height:58px;background:url(images/ui_17.png) no-repeat 5px 13px; text-indent:20px; color:#e9e9e9;}
+#admininfo-div span.right a{color:#e9e9e9;}
+
 #license-div {
-	height: 50px;
-	float: left;
-	text-align: center;
-	vertical-align: middle;
-	line-height: 50px;
+  height: 68px;
+  float: left;
+  text-align:left;
+  vertical-align:middle;
+  line-height:58px;
 }
+#license1-div {
+  height: 68px;
+  float: left; text-align:left;
+  vertical-align:middle;
+  line-height:68px;
+}
+
 #license-div a:visited, #license-div a:link {
-	color: #EB8A3D;
+  color: #EB8A3D;
 }
+
 #license-div a:hover {
-	text-decoration: none;
-	color: #EB8A3D;
+  text-decoration: none;
+  color: #EB8A3D;
+}
+
+#submenu-div {
+  height: 68px;
+}
+
+#submenu-div ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+#submenu-div li {
+float: right;
+ width:77px;  text-align:center; height:68px; background:url(images/top_line.gif) no-repeat left top;
+}
+#submenu-div li a{
+display:block; background:url(images/top_header.png) no-repeat left top; padding-top:30px; height:38px; line-height:38px;
+}
+
+#submenu-div li.show_1 a{
+	background-position: 8px -3px;
+}
+#submenu-div li.show_2 a{
+	background-position: -66px -3px;
+}
+#submenu-div li.show_3 a{
+	background-position: -135px -3px;
+}
+#submenu-div li.show_4 a{
+	background-position: -206px -3px;
+}
+#submenu-div li.show_5 a{
+	background-position: -281px -3px;
+}
+#submenu-div li.show_6 a{
+	background-position: -352px -3px;
+}
+#submenu-div li.show_7 a{
+	background-position: -420px -3px;
+}
+#submenu-div li.show_8 a{
+	background-position: -488px -3px;
+}
+#submenu-div li.show_9 a{
+	background-position: -562px -3px;
+}
+#submenu-div li.show_11 a{
+	background-position: -636px -3px;
+}
+#submenu-div a:visited, #submenu-div a:link {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+#submenu-div li a:hover {
+background:url(images/top_header_hover.png) no-repeat; 
+}
+#submenu-div li.show_1 a:hover{
+	background-position: -2px -1px;
+}
+#submenu-div li.show_2 a:hover{
+	background-position: -76px -1px;
+}
+#submenu-div li.show_3 a:hover{
+	background-position: -145px -1px;
+}
+#submenu-div li.show_4 a:hover{
+	background-position: -216px -1px;
+}
+#submenu-div li.show_5 a:hover{
+	background-position: -291px -1px;
+}
+#submenu-div li.show_6 a:hover{
+	background-position: -362px -1px;
+}
+#submenu-div li.show_7 a:hover{
+	background-position: -430px -1px;
+}
+#submenu-div li.show_8 a:hover{
+	background-position: -498px -1px;
+}
+#submenu-div li.show_9 a:hover{
+	background-position: -572px -1px;
+}
+#submenu-div li.show_11 a:hover{
+	background-position: -646px -1px;
 }
 #loading-div {
-	clear: right;
-	text-align: right;
-	display: block;
+  clear: right;
+  text-align: right;
+  display: block;
 }
-#submenu-div {
-	text-align: center;
-	width: 1000px;
-	position: absolute;
-	right: 0px;
-	height: 84px;
-}
-#submenu-div ul {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-}
-#submenu-div li {
-	float: right;
-	width: 82px;
-	height: 82px;
-	border-left: 1px solid #27aae7;
-	border-right: 1px solid #0779ba;
-}
-#submenu-div li a {
-	text-align: center;
-	height: 74px;
-	width: 82px;
-	padding-top: 8px;
-	display: block;
-	text-decoration: none;
-	color: #FFF;
-}
-#submenu-div li a:hover {
-	background: url(images/muneBG.JPG) repeat-x top center;
-}
-#submenu-div li span {
-	margin-top: 6px;
-	display: block;
-}
-#submenu-div li img {
-	margin: auto;
-	display: block;
-}
+
 #menu-div {
-	background: #0e92d0;
-	height: 42px;
+  height: 45px;
+  line-height:45px;
 }
+
 #menu-div ul {
-	margin: 0px 0px 0px 15px;
-	padding: 0;
-	list-style-type: none;
+  margin: 0;
+  padding: 0;
+  list-style-type: none; 
 }
-#menu-div ul li {
-	float: left;
-	display: block;
-	height: 42px;
-	line-height: 42px;
-	position: relative;
+
+#menu-div li {
+  float: left; 
 }
-.muneFG {
-	height: 13px;
-	width: 0px;
-	border-right: 1px solid #15aae3;
-	margin-top: 15px;
-*margin-top:-18px;
-	_margin-top: 0px;
-	border-left: 1px solid #08679f;
-	display: inline-block;
+#menu-div li.midd_21 {
+	background:url(images/midd.png) no-repeat;background-position:10px 13px; border-left:4px #0e94d1 solid; text-indent:12px;
+
 }
-#menu-div ul li a {
-	float: LEFT;
-	color: #FFF;
-	padding: 0px 12px;
-	display: block;
-	text-decoration: none;
-	_margin-top: 14px;
+#menu-div li.midd_22 {
+		background:url(images/midd.png) no-repeat;background-position:0px -18px;
+
 }
-#menu-div ul li a:hover {
-	background: #1887bb
+#menu-div li.midd_23 {
+	background:url(images/midd.png) no-repeat;background-position:0px -54px;
+
 }
-#menu-div ul li a span {
-	margin-left: 10px;
+#menu-div li.midd_1 {
+	background:url(images/midd.png) no-repeat;background-position:0px -93px;
 }
-#menu-div ul li div.drop_menu{
-	height:180px; width:160px;border:1px solid #e5e5e5; background:#f4f4f4; position:absolute;left:0;top:42px; z-index:1000;
+#menu-div li.midd_2 {
+	background:url(images/midd.png) no-repeat;background-position:0px -133px;
 }
-.num {
-	width: 32px;
-	height: 16px;
-	background: url(images/index-11_22.png) no-repeat scroll;
-	display: inline-block;
-	line-height: 16px;
-	vertical-align: middle;
-	text-align: center;
+#menu-div li.midd_3 {
+	background:url(images/midd.png) no-repeat;background-position:0px -172px;
 }
-#menu-div ul li a img {
-	border: none;
+#menu-div li.midd_4 {
+	background:url(images/midd.png) no-repeat;background-position:0px -208px;
 }
-#menu-div ul li ul {
-	display: none;
+#menu-div li.midd_5 {
+	background:url(images/midd.png) no-repeat;background-position:0px -245px;
 }
-#menu-div ul li:hover a {
-	color: #fff;
-	background: #1887bb;
+#menu-div li#xinjian_div {
+	background:url(images/midd.png) no-repeat;background-position:0px -274px;
 }
-#menu-div ul li:hover ul {
-	display: block;
-	position: absolute;
-	top: 42px;
-	left: -15px;
+
+#menu-div li span{
+background:url(images/numberico.png) no-repeat right bottom; display:inline-block; color:#FFF; font-size:12px; height:18px; padding:0px; text-align:center; line-height:18px; padding-right:8px; margin-left:5px;}
+#menu-div li span em{
+background:url(images/numberico.png) no-repeat left top; width:8px;display:inline-block;font-size:12px;  height:18px; vertical-align:top;}
+#menu-div a:visited, #menu-div a:link {
+  display:block;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #5f5f5f;
 }
-#menu-div ul li:hover ul li {
-	border-bottom: 1px solid #11689c;
-	border-top: #1f9dd1 1px solid;
+
+#menu-div a:hover {
+  color: #5f5f5f;
 }
-#menu-div ul li:hover ul li a {
-	width: 133px;
-	display: block;
+
+#submenu-div a.fix-submenu{ clear:both; margin-left:5px; padding:1px 5px; *padding:3px 5px 5px; background:#DDEEF2; color:#FA841E; }
+#submenu-div a.fix-submenu:hover{ padding:1px 5px; *padding:3px 5px 5px; background:#FFF; color:#FA841E; }
+#menu-div li.fix-spacel{ background:none;}
+#menu-div li.fix-spacer{ background:none; }
+#tabbar-div {
+  background:#0e94d1; font-family:"微软雅黑";
+width:196px; height:45px; float:left; line-height:45px; color:#ffffff; font-size:14px; font-weight:bold; text-indent:18px;
 }
-#menu-div ul li:hover ul li a:hover {
-	width: 133px;
-	display: block;
-	background: #1480b3;
+
+.top_mune{ height:45px; line-height:45px; background:#e6e6e6;}
+
+
+#mask {
+	BACKGROUND: #000; WIDTH: 100%; POSITION: absolute; HEIGHT: 100%; opacity: .5
 }
-#menu-div ul li:hover ul li a.hide {
-	background: #6a3;
-	color: #fff;
+#popupmenu {
+	DISPLAY: none; Z-INDEX: 900; WIDTH: 100%; POSITION: absolute; TOP: 50px; HEIGHT: 100%
 }
-#menu-div ul li:hover ul li:hover a.hide {
-	background: #6fc;
-	color: #fff;
+.shwobox1 {
+	BORDER-RIGHT: #c8d2d5 2px solid; Z-INDEX: 9; RIGHT: 3px; WIDTH: 485px; BORDER-BOTTOM: #c8d2d5 2px solid; ZOOM: 1; POSITION: absolute; TOP: 0px; BACKGROUND-COLOR: #f5fafe
 }
-#menu-div li.fix-spacer {
-	border: none;
+.shwobox1 .box {
+	BORDER-RIGHT: #4294ce 1px solid; PADDING-RIGHT: 20px; BORDER-TOP: #4294ce 1px solid; PADDING-LEFT: 20px; PADDING-BOTTOM: 58px; BORDER-LEFT: #4294ce 1px solid; PADDING-TOP: 10px; BORDER-BOTTOM: #4294ce 1px solid; ZOOM: 1
 }
-.menuSerach {
-	width: 237px;
-	height: 15px;
-	float: right;
-	margin-right: 18px;
-	margin-top: -35px;
-	_width: 240px;
+.shwobox1 .box DL {
+	PADDING-LEFT: 10px; FLOAT: left; WIDTH: 100px; PADDING-TOP: 10px
+}
+.shwobox1 .box DL DT {
+	FONT-WEIGHT: bold; FONT-SIZE: 16px; LINE-HEIGHT: 30px; HEIGHT: 30px
+}
+.shwobox1 .box DL DT A {
+	COLOR: #069
+}
+.shwobox1 .box DD {
+
+
+	FONT-SIZE: 14px; LINE-HEIGHT: 1.8
+}
+.shwobox1 .box DD A {
+	COLOR: #333
+}
+.shwobox1 .box DD A:hover {
+	COLOR: #f00
+}
+.shwobox1 .box EM {
+	Z-INDEX: 99; RIGHT: 10px; WIDTH: 17px; CURSOR: pointer; BOTTOM: 10px; POSITION: absolute; HEIGHT: 17px
 }
 </style>
-{insert_scripts files="../js/transport.js"}
+{insert_scripts files="../js/transport.org.js"}
 <script type="text/javascript">
-// onload = function()
-// {
-//   Ajax.call('index.php?is_ajax=1&act=license','', start_sendmail_Response, 'GET', 'JSON');
-// }
 /**
  * 帮助系统调用
  */
-
+function web_address()
+{
+  var ne_add = parent.document.getElementById('main-frame');
+  var ne_list = ne_add.contentWindow.document.getElementById('search_id').innerHTML;
+  ne_list.replace('-', '');
+  var arr = ne_list.split('-');
+  window.open('help.php?al='+arr[arr.length - 1],'_blank');
+}
 
 
 /**
@@ -240,7 +310,7 @@ function ShowToDoList()
 {
   try
   {
-    var mainFrame = window.top.frames['main-frame'];
+    var mainFrame = window.top.frames['main_frame'];
     mainFrame.window.showTodoList(adminId);
   }
   catch (ex)
@@ -251,36 +321,52 @@ function ShowToDoList()
 
 var adminId = "{$admin_id}"; 
 </script>
+<script>
+function toggleMenu_top(){
+frmBody1 = parent.document.getElementById('frame-all');
+ if (frmBody1.rows == "113,*")
+  {
+frmBody1.rows="40,*";
+	document.getElementById("header-div").style.display="none";
+document.getElementById("midd_show").innerHTML="显示";
+	}
+  else
+  {
+frmBody1.rows="113,*";
+		document.getElementById("header-div").style.display="block";
+	document.getElementById("midd_show").innerHTML="隐藏";
+}
+}
+</script>
 </head>
 <body>
-<div id="header-div">
-  <div id="logo-div" style="bgcolor:#000000;"><img src="images/topLogo.jpg" alt="ECSHOP - power for e-commerce" /></div>
-  <div id="license-div" style="bgcolor:#000000;"></div>
-  <div id="submenu-div">
-    <ul>
-    <li><a href="privilege.php?act=logout" target="main-frame"><img src="images/topmune_08.png" style="border:none;"/><span>{$lang.signout}</span></a></li>
-     <li><a href="index.php?act=clear_cache" target="main-frame" class="fix-submenu"><img src="images/qingchu.png" style="border:none;"/><span>{$lang.clear_cache}</span></a></li>
-      <li><a href="http://www.oeob.net/" target="main-frame"><img src="images/topmune_07.png" style="border:none;"/><span>{$lang.about}</span></a></li>
-      
-    
-      <li><a href="../" target="_blank"><img src="images/topmune_06.png" style="border:none;"/><span>{$lang.preview}</span></a></li>
-      <li><a href="message.php?act=list" target="main-frame"><img src="images/topmune_05.png" style="border:none;"/><span>{$lang.view_message}</span></a></li>
-      <li><a href="privilege.php?act=modif" target="main-frame"><img src="images/topmune_04.png" style="border:none;"/><span>{$lang.profile}</span></a></li>
-      <li><a href="javascript:window.top.frames['main-frame'].document.location.reload();window.top.frames['header-frame'].document.location.reload()"><img src="images/topmune_03.png" style="border:none;"/><span>{$lang.refresh}</span></a></li>
-      <li><a href="#"  onclick="ShowToDoList()"><img src="images/topmune_02.png" style="border:none;"/><span>{$lang.todolist}</span></a></li>
-      
-      <li style=""><a href="index.php?act=first" target="main-frame"><img src="images/topmune_01.png" style="border:none;"/><span>{$lang.shop_guide}</span></a></li>
-   
-    </ul>
-    <div id="send_info" style="padding: 5px 10px 0 0; clear:right;text-align: right; color: #FF9900;width:40%;float: right;  display:none;">
-      {if $send_mail_on eq 'on'}
-      <span id="send_msg"><img src="images/top_loader.gif" width="16" height="16" alt="{$lang.loading}" style="vertical-align: middle" /> {$lang.email_sending}</span>
-      <a href="javascript:;" onClick="Javascript:switcher()" id="lnkSwitch" style="margin-right:10px;color: #FF9900;text-decoration: underline">{$lang.pause}</a>
-      {/if}
-      <a href="index.php?act=clear_cache" target="main-frame" class="fix-submenu">{$lang.clear_cache}</a>
-      <a href="privilege.php?act=logout" target="_top" class="fix-submenu">{$lang.signout}</a>
-    </div>
+<div id="header-div" style="display:block;">
+<div id="logo-div"><img src="images/ecshop_logo.png" alt="68ECSHOP" /></div>
+
+<div id="license-div" style="bgcolor:#000000;"></div>
+  <div id="license1-div" style="bgcolor:#000000;">
     {if $send_mail_on eq 'on'}
+      <span id="send_msg"><img src="images/top_loader.gif" width="16" height="16" alt="{$lang.loading}" style="vertical-align: middle" /> {$lang.email_sending}</span>
+      <a href="javascript:;" onClick="Javascript:switcher()" id="lnkSwitch" style="margin-right:0px;color: #FF9900;text-decoration: underline">{$lang.pause}</a>
+      {/if}
+     </div> 
+<div id="submenu-div">
+<ul>
+<li class="show_9"><a href="privilege.php?act=logout" target="_top">{$lang.signout}</a></li>
+<!--<li class="show_8"><a href="javascript:web_address();">{$lang.help}</a></li>-->
+<li class="show_8"><a href="http://bbs.hongyuvip.com/" target="_blank">{$lang.help}</a></li>
+<li class="show_7"><a href="http://bbs.hongyuvip.com/"  target="_blank">{$lang.about}</a></li>
+<li class="show_6"><a href="privilege.php?act=modif" target="main_frame">{$lang.profile}</a></li>
+
+<li class="show_3" ><a href="index.php?act=first" target="main_frame">{$lang.shop_guide}</a></li> 
+<li class="show_5"><a href="message.php?act=list" target="main_frame">{$lang.view_message}</a></li>
+<li class="show_2"><a href="#"  onclick="ShowToDoList()">{$lang.todolist}</a></li>
+<li class="show_11"><a href="index.php?act=clear_cache_mobile" class="qinghc" target="main_frame">手机缓存</a></li>
+<li class="show_4"> <a href="index.php?act=clear_cache" class="qinghc" target="main_frame">{$lang.clear_cache}</a></li>
+<li class="show_4"><a href="index.php?act=clear_html"  target="main_frame">更新全部静态</a></li>
+<li class="show_4"><a href="index.php?act=clear_index"  target="main_frame">更新首页静态</a></li>
+<li class="show_1"><a href="../" target="_blank">{$lang.preview}</a></li></ul>
+   {if $send_mail_on eq 'on'}
     <script type="text/javascript" charset="gb2312">
     var sm = window.setInterval("start_sendmail()", 5000);
     var finished = 0;
@@ -292,7 +378,7 @@ var adminId = "{$admin_id}";
     {literal}
     function start_sendmail()
     {
-      Ajax.call('index.php?is_ajax=1&act=send_mail','', start_sendmail_Response, 'GET', 'JSON');
+//      Ajax.call('index.php?is_ajax=1&act=send_mail','', start_sendmail_Response, 'GET', 'JSON');
     }
     function start_sendmail_Response(result)
     {
@@ -465,26 +551,61 @@ var adminId = "{$admin_id}";
     {/literal}
     </script>
     {/if}
-    <div id="load-div" style="padding: 5px 10px 0 0; text-align: right; color: #FF9900; display: none;width:40%;float:right;"><img src="images/top_loader.gif" width="16" height="16" alt="{$lang.loading}" style="vertical-align: middle" /> {$lang.loading}</div>
+    <div id="load-div" style="padding: 5px 0px 0 0; text-align: right; color: #FF9900; display: none;width:20%;float:right; height:68px; line-height:58px;"> {$lang.loading}</div>
   </div>
 </div>
+<div class="top_mune">
+<div id="tabbar-div">
+{$lang.menu}
+</div>
+<script>
+function show_popup(){
+frmBody = parent.document.getElementById('frame-body');
+if (frmBody.cols == "37, 12, *")
+{
+parent.main_frame.document.getElementById('menu_list').style.left = '195px';
+}
+else
+{
+parent.main_frame.document.getElementById('menu_list').style.left = '40px';
+}
+if(parent.main_frame.document.getElementById('menu_list').style.display == 'none')
+{
+setTimeout("parent.main_frame.document.getElementById('menu_list').style.display = 'block';",1);
+}
+else{
+setTimeout("parent.main_frame.document.getElementById('menu_list').style.display = 'none';",1);
+}
+}
+function hide_popup(){
+
+setTimeout("parent.main_frame.document.getElementById('menu_list').style.display = 'none';",1);
+}
+</script>
+ 
 <div id="menu-div">
-  <ul>
-    <li class="fix-spacel">&nbsp;</li>
-    <li style="border-left:none;"><a href="index.php?act=main" target="main-frame"><img src="images/index-11_07.png" width="17" height="18" style="border:none;" align="absmiddle"/><span>{$lang.admin_home}</span></a><span class="muneFG"></span></li>
+<ul>
+<li class="midd_21"><a href="javascript:void(0)" onclick="toggleMenu_top();" id="midd_show">隐藏</a></li>
+<!--<li id="xinjian_div">
+<a href="javascript:void(0)" onmouseover="show_popup()" style="display:block;">{$lang.button_new}</a>
+</li>
     
-    <li><a href="privilege.php?act=modif" target="main-frame"><img src="images/index-11_41.png" width="17" height="18" align="absmiddle"/><span>{$lang.set_navigator}</span></a><span class="muneFG"></span></li>
-    <li><a href="goods.php?act=list" target="main-frame"><img src="images/index-11_09.png" width="17" height="18" align="absmiddle"/><span>商品管理</span><span class="num">{$goods_sum}</span></a><span class="muneFG"></span></li>
-     <li><a href="order.php?act=list" target="main-frame"><img src="images/dd.png" width="15" height="18" align="absmiddle"/><span>订单管理</span><span class="num">{$order_sum}</span></a><span class="muneFG"></span></li>
-     <li><a href="ads.php?act=list" target="main-frame"><img src="images/index-11_13.png" width="17" height="20" align="absmiddle"/><span>广告管理</span><span class="num">{$ad_sum}</span></a><span class="muneFG"></span></li>
-     <li><a href="comment_manage.php?act=list" target="main-frame"><img src="images/index-11_19.png" width="17" height="18" align="absmiddle"/><span>用户评论</span><span class="num">{$comment_sum}</span></a><span class="muneFG"></span></li>
-    {foreach from=$nav_list item=item key=key}
-    <li><a href="{$key}" target="main-frame">{$item}</a></li>
+-->    <li class="midd_22"><a href="index.php?act=main" target="main_frame">起始页</a></li>
+    <li class="midd_23"><a href="privilege.php?act=modif" target="main_frame">设置导航栏</a></li>
+    <li class="midd_1"><a href="goods.php?act=list" target="main_frame">商品列表<span><em></em>{$datainfo.goods}</span></a></li>
+    <li class="midd_2"><a href="order.php?act=list" target="main_frame">订单列表<span><em></em>{$datainfo.order}</span></a></li>
+    <li class="midd_3"><a href="comment_manage.php?act=list" target="main_frame">用户评论<span><em></em>{$datainfo.comment}</span></a></li>
+    <li class="midd_4"><a href="users.php?act=list" target="main_frame">会员列表</a></li>
+    <li class="midd_5"><a href="shop_config.php?act=list_edit" target="main_frame">商店设置</a></li>
+    <li class="fix-spacer"></li>
+    {foreach from=$nav_list item=item key=key name=name}
+    <li><a href="{$key}" target="main_frame">{$item}</a></li>
     {/foreach}
-    <li class="fix-spacer">&nbsp;</li>
-  </ul>
- <br class="clear"/>
   
+  </ul>
+    
+  <br class="clear" />
+</div>
 </div>
 </body>
 </html>

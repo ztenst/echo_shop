@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 会员帐目管理(包括预付款，余额)
+ * 鸿宇多用户商城 会员帐目管理(包括预付款，余额)
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: user_account.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: user_account.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -358,6 +358,20 @@ elseif ($_REQUEST['act'] == 'action')
 
             //更新会员余额数量
             log_account_change($account['user_id'], $amount, 0, 0, 0, $_LANG['surplus_type_1'], ACT_DRAWING);
+			//是否开启余额变动给客户发短信 -提现
+			if($_CFG['sms_user_money_change'] == 1)
+			{
+				$sql = "SELECT user_money,mobile_phone FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_id = '" . $account['user_id'] . "'";
+				$users = $GLOBALS['db']->getRow($sql);
+                $time = date('Y-m-d H:i:s');
+                $user_money = $users['user_money'];
+                $content = array($_CFG['sms_deposit_balance_reduce_tpl'],"{\"time\":\"$time\",\"amount\":\"$amount\",\"user_money\":\"$user_money\"}",$_CFG['sms_sign']);
+				if($users['mobile_phone'])
+				{
+					include_once('../sms/sms.php');
+					sendSMS($users['mobile_phone'],$content);
+				}
+			}
         }
         elseif ($is_paid == '1' && $account['process_type'] == '0')
         {

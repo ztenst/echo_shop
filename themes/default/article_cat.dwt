@@ -31,7 +31,7 @@
     <!-- TemplateBeginEditable name="左边区域" -->
 <!-- #BeginLibraryItem "/library/cart.lbi" -->
 
-{insert_scripts files='transport_jquery.js'}
+{insert_scripts files='transport.js'}
 <div class="cart" id="ECS_CARTINFO">
  {insert name='cart_info'}
 </div>

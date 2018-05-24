@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心商品相关函数
+ * 鸿宇多用户商城 管理中心商品相关函数
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_goods.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: lib_goods.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 if (!defined('IN_ECS'))
@@ -376,12 +376,7 @@ function handle_gallery_image($goods_id, $image_files, $image_descs, $image_urls
 
             //定义原图路径
             $down_img = ROOT_PATH . 'temp/' . basename($image_url);
-			
-			if(is_array($group_goods_list)){ //by mike add
-				foreach($group_goods_list as $k=>$val){
-					$group_goods_list[$k]['goods_name'] = '[套餐'.$val['group_id'].']'.$val['goods_name'];	
-				}
-			}
+
             // 生成缩略图
             if ($proc_thumb)
             {
@@ -488,6 +483,7 @@ function delete_goods($goods_id)
             "FROM " . $GLOBALS['ecs']->table('goods_gallery') .
             " WHERE goods_id " . db_create_in($goods_id);
     $res = $GLOBALS['db']->query($sql);
+	
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
         if (!empty($row['img_url']))
@@ -625,12 +621,18 @@ function get_attr_list($cat_id, $goods_id = 0)
     }
 
     // 查询属性值及商品的属性值
-    $sql = "SELECT a.attr_id, a.attr_name, a.attr_input_type, a.attr_type, a.attr_values, v.img_id,v.attr_value, v.attr_price ".
+     $sql = "SELECT a.attr_id, a.attr_name, a.attr_input_type, a.attr_type,a.attr_txm, a.attr_values, v.attr_value, v.attr_price ".
             "FROM " .$GLOBALS['ecs']->table('attribute'). " AS a ".
             "LEFT JOIN " .$GLOBALS['ecs']->table('goods_attr'). " AS v ".
             "ON v.attr_id = a.attr_id AND v.goods_id = '$goods_id' ".
             "WHERE a.cat_id = " . intval($cat_id) ." OR a.cat_id = 0 ".
             "ORDER BY a.sort_order, a.attr_type, a.attr_id, v.attr_price, v.goods_attr_id";
+	   /* $sql = "SELECT a.attr_id, a.attr_name, a.attr_input_type, a.attr_type, a.attr_values, v.attr_value, v.attr_price ".
+            "FROM " .$GLOBALS['ecs']->table('attribute'). " AS a ".
+            "LEFT JOIN " .$GLOBALS['ecs']->table('goods_attr'). " AS v ".
+            "ON v.attr_id = a.attr_id AND v.goods_id = '$goods_id' ".
+            "WHERE a.cat_id = " . intval($cat_id) ." OR a.cat_id = 0 ".
+            "ORDER BY a.sort_order, a.attr_type, a.attr_id, v.attr_price, v.goods_attr_id";*/
 
     $row = $GLOBALS['db']->GetAll($sql);
 
@@ -670,10 +672,9 @@ function get_goods_type_specifications()
  * @param   int     $goods_id   商品编号
  * @return  string
  */
-function build_attr_html($cat_id, $goods_id = 0)
+function build_attr_html($cat_id, $goods_id = 0 , $bar_code = 0)
 {
     $attr = get_attr_list($cat_id, $goods_id);
-	
     $html = '<table width="100%" id="attrTable">';
     $spec = 0;
 
@@ -687,9 +688,8 @@ function build_attr_html($cat_id, $goods_id = 0)
                 "<a href='javascript:;' onclick='removeSpec(this)'>[-]</a>";
             $spec = $val['attr_id'];
         }
-		/*模板堂修改 start by zhouH*/
-        $html .= "$val[attr_name]</td><td><input type='hidden' name='attr_id_list[]' value='$val[attr_id]' /><input type='hidden' name='attr_img_id[]' value='".($val['img_id'])."' />";
-		/*模板堂修改 end by zhouH*/
+
+        $html .= "$val[attr_name]</td><td><input type='hidden' name='attr_id_list[]' value='$val[attr_id]' txm='$val[attr_txm]' class='ctxm_$val[attr_txm]' />";
 
         if ($val['attr_input_type'] == 0)
         {
@@ -701,7 +701,11 @@ function build_attr_html($cat_id, $goods_id = 0)
         }
         else
         {
-            $html .= '<select name="attr_value_list[]">';
+			if($val[attr_txm] > 0){
+				$html .= '<select class=attr_num_'.$val[attr_id].' name="attr_value_list[]" onchange="getType('.$val[attr_txm].','.$cat_id.','. $this.value.','.$goods_id.')">';
+			}else{
+				$html .= '<select class=attr_num_'.$val[attr_id].' name="attr_value_list[]" >';
+			}
             $html .= '<option value="">' .$GLOBALS['_LANG']['select_please']. '</option>';
 
             $attr_values = explode("\n", $val['attr_values']);
@@ -716,32 +720,28 @@ function build_attr_html($cat_id, $goods_id = 0)
             }
             $html .= '</select> ';
         }
-		/*模板堂修改 start by zhouH*/
-		
-		$sql = 'SELECT is_show_img FROM '.$GLOBALS['ecs']->table('attribute').' WHERE attr_id = '.$val['attr_id'];
-		$is_show_img = $GLOBALS['db']->getOne($sql);
-	
-		if($is_show_img == 1)
-		{
-		
-			$html .= ($val['attr_type'] == 1 || $val['attr_type'] == 2) ?
-				$GLOBALS['_LANG']['spec_price'].' <input type="text" name="attr_price_list[]" value="' . $val['attr_price'] . '" size="5" maxlength="10" /> <input type="button" value="选择属性图片" class="button"onclick="show_goods_gallery('.$goods_id.',this);">' :
-			
-				' <input type="hidden" name="attr_price_list[]" value="0" />';
-				
-		}
-		else
-		{
-			$html .= ($val['attr_type'] == 1 || $val['attr_type'] == 2) ?
-				$GLOBALS['_LANG']['spec_price'].' <input type="text" name="attr_price_list[]" value="' . $val['attr_price'] . '" size="5" maxlength="10" />' : ' <input type="hidden" name="attr_price_list[]" value="0" />';
-		}
-		/*模板堂修改 end by zhouH*/
+
+        $html .= ($val['attr_type'] == 1 || $val['attr_type'] == 2) ?
+            $GLOBALS['_LANG']['spec_price'].' <input type="text" name="attr_price_list[]" value="' . $val['attr_price'] . '" size="5" maxlength="10" />' :
+            ' <input type="hidden" name="attr_price_list[]" value="0" />';
+
         $html .= '</td></tr>';
-	
     }
+	 $html .= '</table>';
+	
+	if($bar_code){
+		$html .= '<div id="input_txm"><table  width="100%"  >';
+		foreach($bar_code as $value){
+			$html .='<tr><td class="label">条形码</td><td><input type="hidden" name="txm_shu[]" value='.$value['taypes'].'>'.$value['taypes'].'<td/><td><input type="text" name="tiaoxingm[]" value='.$value['bar_code'].'></td></tr>';
+			
+		}	
+		$html .='</table ></div>';
+	}else{
+		$html .= '<div id="input_txm"></div>';
+	}
 
-    $html .= '</table>';
-
+	   
+	   
     return $html;
 }
 
@@ -786,7 +786,7 @@ function get_linked_goods($goods_id)
  */
 function get_group_goods($goods_id)
 {
-    $sql = "SELECT gg.goods_id, gg.group_id, CONCAT(g.goods_name, ' -- [', gg.goods_price, ']') AS goods_name " .
+    $sql = "SELECT gg.goods_id, CONCAT(g.goods_name, ' -- [', gg.goods_price, ']') AS goods_name " .
             "FROM " . $GLOBALS['ecs']->table('group_goods') . " AS gg, " .
                 $GLOBALS['ecs']->table('goods') . " AS g " .
             "WHERE gg.parent_id = '$goods_id' " .
@@ -795,7 +795,6 @@ function get_group_goods($goods_id)
     {
         $sql .= " AND gg.admin_id = '$_SESSION[admin_id]'";
     }
-	$sql .= " order by gg.group_id asc, g.goods_id asc"; //by mike add
     $row = $GLOBALS['db']->getAll($sql);
 
     return $row;
@@ -860,6 +859,8 @@ function goods_list($is_delete, $real_goods=1, $conditions = '')
         $filter['extension_code']   = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
         $filter['is_delete']        = $is_delete;
         $filter['real_goods']       = $real_goods;
+        
+        $filter['supp'] = (isset($_REQUEST['supp']) && !empty($_REQUEST['supp']) && intval($_REQUEST['supp'])>0) ? intval($_REQUEST['supp']) : 0;
 
         $where = $filter['cat_id'] > 0 ? " AND " . get_children($filter['cat_id']) : '';
 
@@ -906,7 +907,7 @@ function goods_list($is_delete, $real_goods=1, $conditions = '')
             $where .= " AND (goods_sn LIKE '%" . mysql_like_quote($filter['keyword']) . "%' OR goods_name LIKE '%" . mysql_like_quote($filter['keyword']) . "%')";
         }
 
-        if ($real_goods > -1)
+       if ($real_goods > -1)
         {
             $where .= " AND is_real='$real_goods'";
         }
@@ -916,28 +917,230 @@ function goods_list($is_delete, $real_goods=1, $conditions = '')
         {
             $where .= " AND (is_on_sale = '" . $filter['is_on_sale'] . "')";
         }
-
+        
+        $where_supp = ($filter['supp']>0) ? 'AND g.supplier_id > 0' : 'AND g.supplier_id = 0';
+        
         /* 供货商 */
-        if (!empty($filter['suppliers_id']))
-        {
-            $where .= " AND (suppliers_id = '" . $filter['suppliers_id'] . "')";
+        if(intval($_REQUEST['supp'])>0){
+        	
+			/* 代码修改_start  By  bbs.hongyuvip.com */
+	        if (!empty($filter['suppliers_id']))
+	        {
+	            //$where .= " AND (supplier_id = '" . $filter['suppliers_id'] . "')";
+	            $where_supp = " AND (g.supplier_id = '" . $filter['suppliers_id'] . "')";
+	        }
+			$filter['supplier_status'] = $_REQUEST['supplier_status']!='' ? trim($_REQUEST['supplier_status']) : '';
+			if (isset($filter['supplier_status']) && $filter['supplier_status']!='')
+	        {
+	            //$where .= " AND (supplier_status = '" . $filter['supplier_status'] . "')";
+	            $where_supp .= " AND (supplier_status = '" . $filter['supplier_status'] . "')";
+	        }
+			/* 代码修改_end  By  bbs.hongyuvip.com */
         }
+        
+        $where .= $where_supp;
 
         $where .= $conditions;
 
         /* 记录总数 */
         $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('goods'). " AS g WHERE is_delete='$is_delete' $where";
+		
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
         /* 分页大小 */
         $filter = page_and_size($filter);
-
-        $sql = "SELECT goods_id, goods_name, goods_type, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
-                    " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ".
+        
+        if(intval($_REQUEST['supp'])>0){
+        	$sql = "SELECT goods_id, goods_name, goods_type, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
+                    " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ". 
+					", supplier_status, g.supplier_id,supplier_name ".
+                    " FROM " . $GLOBALS['ecs']->table('goods') . " AS g ".
+        			" LEFT JOIN " . $GLOBALS['ecs']->table('supplier') . " AS s ON s.supplier_id = g.supplier_id ".
+                    " WHERE is_delete='$is_delete' $where" .
+                    " ORDER BY $filter[sort_by] $filter[sort_order] ".
+                    " LIMIT " . $filter['start'] . ",$filter[page_size]";
+        }else{
+        	$sql = "SELECT goods_id, goods_name, goods_type, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
+                    " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ". 
+					", supplier_status, supplier_id ".	//代码增加   By  bbs.hongyuvip.com
                     " FROM " . $GLOBALS['ecs']->table('goods') . " AS g WHERE is_delete='$is_delete' $where" .
                     " ORDER BY $filter[sort_by] $filter[sort_order] ".
                     " LIMIT " . $filter['start'] . ",$filter[page_size]";
+        }
+        $filter['keyword'] = stripslashes($filter['keyword']);
+        set_filter($filter, $sql, $param_str);
+    }
+    else
+    {
+        $sql    = $result['sql'];
+        $filter = $result['filter'];
+    }
+    $row = $GLOBALS['db']->getAll($sql);
 
+    return array('goods' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+}
+
+/**
+ * 获得虚拟商品列表
+ * @param type $is_delete
+ * @param type $real_goods
+ * @param type $conditions
+ * @return type
+ */
+function virtual_goods_list($is_delete, $real_goods=1, $conditions = '')
+{
+    /* 过滤条件 */
+    $param_str = '-' . $is_delete . '-' . $real_goods;
+    $result = get_filter($param_str);
+    if ($result === false)
+    {
+        $day = getdate();
+        $today = local_mktime(23, 59, 59, $day['mon'], $day['mday'], $day['year']);
+        $filter['city']  = empty($_REQUEST['city'])? 0 : intval($_REQUEST['city']);
+        $filter['county']  = empty($_REQUEST['county'])? 0 : intval($_REQUEST['county']);
+        $filter['district_id']  = empty($_REQUEST['district_id'])? 0 : intval($_REQUEST['district_id']);
+        $filter['cat_id']           = empty($_REQUEST['cat_id']) ? 0 : intval($_REQUEST['cat_id']);
+        $filter['intro_type']       = empty($_REQUEST['intro_type']) ? '' : trim($_REQUEST['intro_type']);
+        $filter['is_promote']       = empty($_REQUEST['is_promote']) ? 0 : intval($_REQUEST['is_promote']);
+        $filter['stock_warning']    = empty($_REQUEST['stock_warning']) ? 0 : intval($_REQUEST['stock_warning']);
+        $filter['brand_id']         = empty($_REQUEST['brand_id']) ? 0 : intval($_REQUEST['brand_id']);
+        $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
+        $filter['suppliers_id'] = isset($_REQUEST['suppliers_id']) ? (empty($_REQUEST['suppliers_id']) ? '' : trim($_REQUEST['suppliers_id'])) : '';
+        $filter['is_on_sale'] = isset($_REQUEST['is_on_sale']) ? ((empty($_REQUEST['is_on_sale']) && $_REQUEST['is_on_sale'] === 0) ? '' : trim($_REQUEST['is_on_sale'])) : '';
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
+        {
+            $filter['keyword'] = json_str_iconv($filter['keyword']);
+        }
+        $filter['sort_by']          = empty($_REQUEST['sort_by']) ? 'goods_id' : trim($_REQUEST['sort_by']);
+        $filter['sort_order']       = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
+        $filter['extension_code']   = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
+        $filter['is_delete']        = $is_delete;
+        $filter['real_goods']       = $real_goods;
+        
+        $filter['supp'] = (isset($_REQUEST['supp']) && !empty($_REQUEST['supp']) && intval($_REQUEST['supp'])>0) ? intval($_REQUEST['supp']) : 0;
+
+        $where = $filter['cat_id'] > 0 ? " AND " . get_children($filter['cat_id']) : '';
+
+        /* 推荐类型 */
+        switch ($filter['intro_type'])
+        {
+            case 'is_best':
+                $where .= " AND is_best=1";
+                break;
+            case 'is_hot':
+                $where .= ' AND is_hot=1';
+                break;
+            case 'is_new':
+                $where .= ' AND is_new=1';
+                break;
+            case 'is_promote':
+                $where .= " AND is_promote = 1 AND promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today'";
+                break;
+            case 'all_type';
+                $where .= " AND (is_best=1 OR is_hot=1 OR is_new=1 OR (is_promote = 1 AND promote_price > 0 AND promote_start_date <= '" . $today . "' AND promote_end_date >= '" . $today . "'))";
+        }
+
+        /* 库存警告 */
+        if ($filter['stock_warning'])
+        {
+            $where .= ' AND goods_number <= warn_number ';
+        }
+
+        /* 品牌 */
+        if ($filter['brand_id'])
+        {
+            $where .= " AND brand_id='$filter[brand_id]'";
+        }
+
+        /* 扩展 */
+        if ($filter['extension_code'])
+        {
+            $where .= " AND extension_code='$filter[extension_code]'";
+        }
+	if($filter['city']){
+             $where .= " AND dig.city='$filter[city]'";
+        }
+        if($filter['county']){
+            $where .= " AND dig.county='$filter[county]'";
+        }
+        if($filter['district_id']){
+                $where .= " AND dig.district_id=$filter[district_id]";
+        }
+        
+        /* 关键字 */
+        if (!empty($filter['keyword']))
+        {
+            $where .= " AND (goods_sn LIKE '%" . mysql_like_quote($filter['keyword']) . "%' OR goods_name LIKE '%" . mysql_like_quote($filter['keyword']) . "%')";
+        }
+
+       if ($real_goods > -1)
+        {
+            $where .= " AND is_real='$real_goods'";
+        }
+
+        /* 上架 */
+        if ($filter['is_on_sale'] !== '')
+        {
+            $where .= " AND (is_on_sale = '" . $filter['is_on_sale'] . "')";
+        }
+        
+        $where_supp = ($filter['supp']>0) ? 'AND g.supplier_id > 0' : 'AND g.supplier_id = 0';
+        
+        /* 供货商 */
+        if(intval($_REQUEST['supp'])>0){
+        	
+			/* 代码修改_start  By  bbs.hongyuvip.com */
+	        if (!empty($filter['suppliers_id']))
+	        {
+	            //$where .= " AND (supplier_id = '" . $filter['suppliers_id'] . "')";
+	            $where_supp = " AND (g.supplier_id = '" . $filter['suppliers_id'] . "')";
+	        }
+			$filter['supplier_status'] = $_REQUEST['supplier_status']!='' ? trim($_REQUEST['supplier_status']) : '';
+			if (isset($filter['supplier_status']) && $filter['supplier_status']!='')
+	        {
+	            //$where .= " AND (supplier_status = '" . $filter['supplier_status'] . "')";
+	            $where_supp .= " AND (supplier_status = '" . $filter['supplier_status'] . "')";
+	        }
+			/* 代码修改_end  By  bbs.hongyuvip.com */
+        }
+        
+        $where .= $where_supp;
+
+        $where .= $conditions;
+
+        /* 记录总数 */
+        $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('goods'). " AS g, "
+                   .$GLOBALS['ecs']->table('virtual_district')." as dis, ".
+                        $GLOBALS['ecs']->table('virtual_goods_district')." as dig"
+                . " WHERE dis.goods_id = g.goods_id and dis.district_id = dig.district_id AND is_delete='$is_delete' $where";
+		
+        $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+
+        /* 分页大小 */
+        $filter = page_and_size($filter);
+        
+        if(intval($_REQUEST['supp'])>0){
+        	$sql = "SELECT distinct(g.goods_id), goods_name, goods_type, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
+                    " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ". 
+					", supplier_status, g.supplier_id,supplier_name ".
+                    " FROM " . $GLOBALS['ecs']->table('goods') . " AS g ".
+                    " LEFT JOIN " . $GLOBALS['ecs']->table('supplier') . " AS s ON s.supplier_id = g.supplier_id ".
+                     "left join ". $GLOBALS['ecs']->table('virtual_district') ." as dis on dis.goods_id=g.goods_id ".
+                   "left join ".$GLOBALS['ecs']->table('virtual_goods_district')."  as dig on dis.district_id = dig.district_id".
+                    " WHERE is_delete='$is_delete' $where" .
+                    " ORDER BY $filter[sort_by] $filter[sort_order] ".
+                    " LIMIT " . $filter['start'] . ",$filter[page_size]";
+        }else{
+        	$sql = "SELECT distinct(g.goods_id), goods_name, goods_type, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
+                    " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ". 
+					", supplier_status, g.supplier_id ".	//代码增加   By  bbs.hongyuvip.com
+                    " FROM " . $GLOBALS['ecs']->table('goods') . " AS g ".
+                    "left join ". $GLOBALS['ecs']->table('virtual_district') ." as dis on dis.goods_id=g.goods_id ".
+                   "left join ".$GLOBALS['ecs']->table('virtual_goods_district')."  as dig on dis.district_id = dig.district_id ".
+                     " WHERE is_delete='$is_delete' $where" .
+                    " ORDER BY $filter[sort_by] $filter[sort_order] ".
+                    " LIMIT " . $filter['start'] . ",$filter[page_size]";
+        }
         $filter['keyword'] = stripslashes($filter['keyword']);
         set_filter($filter, $sql, $param_str);
     }
@@ -1365,5 +1568,39 @@ function move_image_file($source, $dest)
     }
     return false;
 }
+/**
+ * 获得指定的规格的价格
+ *
+ * @access  public
+ * @param   mix     $spec   规格ID的数组或者逗号分隔的字符串
+ * @return  void
+ */
+function spec_price($spec)
+{
+    if (!empty($spec))
+    {
+        if(is_array($spec))
+        {
+            foreach($spec as $key=>$val)
+            {
+                $spec[$key]=addslashes($val);
+            }
+        }
+        else
+        {
+            $spec=addslashes($spec);
+        }
 
+        $where = db_create_in($spec, 'goods_attr_id');
+
+        $sql = 'SELECT SUM(attr_price) AS attr_price FROM ' . $GLOBALS['ecs']->table('goods_attr') . " WHERE $where";
+        $price = floatval($GLOBALS['db']->getOne($sql));
+    }
+    else
+    {
+        $price = 0;
+    }
+
+    return $price;
+}
 ?>

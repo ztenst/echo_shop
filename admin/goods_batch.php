@@ -1,15 +1,15 @@
 <?php
 /**
- * ECSHOP 商品批量上传、修改
+ * 鸿宇多用户商城 商品批量上传、修改
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: goods_batch.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: goods_batch.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
@@ -414,7 +414,7 @@ elseif ($_REQUEST['act'] == 'insert')
         {
             // 合并
             $field_arr = array(
-                'cat_id'        => $_POST['cat'],
+                'cat_id'        => $_POST['cat_id'],
                 'add_time'      => gmtime(),
                 'last_update'   => gmtime(),
             );
@@ -918,12 +918,13 @@ elseif ($_REQUEST['act'] == 'download')
 
 elseif ($_REQUEST['act'] == 'get_goods')
 {
-    $filter = new stdclass;
+    $filter = new stdclass;   //代码修改  By   bbs.hongyuvip.com   将 & 删掉
 
     $filter->cat_id = intval($_GET['cat_id']);
     $filter->brand_id = intval($_GET['brand_id']);
     $filter->real_goods = -1;
     $arr = get_goods_list($filter);
+
     make_json_result($arr);
 }
 

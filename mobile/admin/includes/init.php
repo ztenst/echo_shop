@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理中心公用文件
+ * 鸿宇多用户商城 管理中心公用文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: init.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: init.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-if (!defined('IN_ECTOUCH'))
+if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
@@ -33,7 +33,7 @@ if (__FILE__ == '')
 @ini_set('session.use_trans_sid', 0);
 @ini_set('session.use_cookies',   1);
 @ini_set('session.auto_start',    0);
-@ini_set('display_errors',        1);
+@ini_set('display_errors',        0);
 
 if (DIRECTORY_SEPARATOR == '\\')
 {
@@ -43,22 +43,22 @@ else
 {
     @ini_set('include_path',      '.:' . ROOT_PATH);
 }
-ob_start();
-if (file_exists('../data/config.php'))
+
+if (file_exists('../../data/config.php'))
 {
-    include('../data/config.php');
+    include('../../data/config.php');
 }
 else
 {
-    include('../include/config.php');
+    include('../../includes/config.php');
 }
 
 /* 取得当前ecshop所在的根目录 */
-if(!defined('ADMIN_PATH'))
+if(!defined('ADMIN_PATH_M'))
 {
-    define('ADMIN_PATH','admin');
+    define('ADMIN_PATH_M','admin');
 }
-//define('ROOT_PATH', str_replace(ADMIN_PATH . '/includes/init.php', '', str_replace('\\', '/', __FILE__)));
+define('ROOT_PATH', str_replace(ADMIN_PATH_M . '/includes/init.php', '', str_replace('\\', '/', __FILE__)));
 
 if (defined('DEBUG_MODE') == false)
 {
@@ -79,14 +79,14 @@ else
     define('PHP_SELF', $_SERVER['SCRIPT_NAME']);
 }
 
-require(ROOT_PATH . 'include/inc_constant.php');
-require(ROOT_PATH . 'include/cls_ecshop.php');
-require(ROOT_PATH . 'include/cls_error.php');
-require(ROOT_PATH . 'include/lib_time.php');
-require(ROOT_PATH . 'include/lib_base.php');
-require(ROOT_PATH . 'include/lib_common.php');
-require(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
-require(ROOT_PATH . ADMIN_PATH . '/includes/cls_exchange.php');
+require(ROOT_PATH . 'includes/inc_constant.php');
+require(ROOT_PATH . 'includes/cls_ecshop.php');
+require(ROOT_PATH . 'includes/cls_error.php');
+require(ROOT_PATH . 'includes/lib_time.php');
+require(ROOT_PATH . 'includes/lib_base.php');
+require(ROOT_PATH . 'includes/lib_common.php');
+require(ROOT_PATH . ADMIN_PATH_M . '/includes/lib_main.php');
+require(ROOT_PATH . ADMIN_PATH_M . '/includes/cls_exchange.php');
 
 /* 对用户传入的变量进行转义操作。*/
 if (!get_magic_quotes_gpc())
@@ -117,7 +117,7 @@ define('DATA_DIR', $ecs->data_dir());
 define('IMAGE_DIR', $ecs->image_dir());
 
 /* 初始化数据库类 */
-require(ROOT_PATH . 'include/cls_mysql.php');
+require(ROOT_PATH . 'includes/cls_mysql.php');
 $db = new cls_mysql($db_host, $db_user, $db_pass, $db_name);
 $db_host = $db_user = $db_pass = $db_name = NULL;
 
@@ -125,7 +125,7 @@ $db_host = $db_user = $db_pass = $db_name = NULL;
 $err = new ecs_error('message.htm');
 
 /* 初始化session */
-require(ROOT_PATH . 'include/cls_session.php');
+require(ROOT_PATH . 'includes/cls_session.php');
 $sess = new cls_session($db, $ecs->table('sessions'), $ecs->table('sessions_data'), 'ECSCP_ID');
 
 /* 初始化 action */
@@ -150,7 +150,7 @@ $_CFG = load_config();
 // TODO : 登录部分准备拿出去做，到时候把以下操作一起挪过去
 if ($_REQUEST['act'] == 'captcha')
 {
-    include(ROOT_PATH . 'include/cls_captcha.php');
+    include(ROOT_PATH . 'includes/cls_captcha.php');
 
     $img = new captcha('../data/captcha/');
     @ob_end_clean(); //清除之前出现的多余输入
@@ -159,24 +159,24 @@ if ($_REQUEST['act'] == 'captcha')
     exit;
 }
 
-require(ROOT_PATH . 'lang/' .$_CFG['lang']. '/admin/common.php');
-require(ROOT_PATH . 'lang/' .$_CFG['lang']. '/admin/log_action.php');
+require(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/common.php');
+require(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/log_action.php');
 
-if (file_exists(ROOT_PATH . 'lang/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF)))
+if (file_exists(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF)))
 {
-    include(ROOT_PATH . 'lang/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF));
+    include(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF));
 }
 
-if (!file_exists('../data/caches'))
+if (!file_exists('../temp/caches'))
 {
-    @mkdir('../data/caches', 0777);
-    @chmod('../data/caches', 0777);
+    @mkdir('../temp/caches', 0777);
+    @chmod('../temp/caches', 0777);
 }
 
-if (!file_exists('../data/compiled/admin'))
+if (!file_exists('../temp/compiled/admin'))
 {
-    @mkdir('../data/compiled/admin', 0777);
-    @chmod('../data/compiled/admin', 0777);
+    @mkdir('../temp/compiled/admin', 0777);
+    @chmod('../temp/compiled/admin', 0777);
 }
 
 clearstatcache();
@@ -197,11 +197,11 @@ if (preg_replace('/(?:\.|\s+)[a-z]*$/i', '', $_CFG['ecs_version']) != preg_repla
 }
 
 /* 创建 Smarty 对象。*/
-require(ROOT_PATH . 'include/cls_template.php');
+require(ROOT_PATH . 'includes/cls_template.php');
 $smarty = new cls_template;
 
-$smarty->template_dir  = ROOT_PATH . ADMIN_PATH . '/templates';
-$smarty->compile_dir   = ROOT_PATH . 'data/compiled/admin';
+$smarty->template_dir  = ROOT_PATH . ADMIN_PATH_M . '/templates';
+$smarty->compile_dir   = ROOT_PATH . 'temp/compiled/admin';
 if ((DEBUG_MODE & 2) == 2)
 {
     $smarty->force_compile = true;
@@ -230,17 +230,17 @@ if(isset($_GET['ent_id']) && isset($_GET['ent_ac']) &&  isset($_GET['ent_sign'])
     $certificate_id = trim($_CFG['certificate_id']);
     $domain_url = $ecs->url();
     $token=$_GET['token'];
-    if($token==md5(md5($_CFG['token']).$domain_url.ADMIN_PATH))
+    if($token==md5(md5($_CFG['token']).$domain_url.ADMIN_PATH_M))
     {
-        require(ROOT_PATH . 'include/cls_transport.php');
+        require(ROOT_PATH . 'includes/cls_transport.php');
         $t = new transport('-1',5);
         $apiget = "act=ent_sign&ent_id= $ent_id & certificate_id=$certificate_id";
 
-        $t->request('http://cloud.ecshop.com/api.php', $apiget);
-        $db->query('UPDATE '.$ecs->table('touch_shop_config') . ' SET value = "'. $ent_id .'" WHERE code = "ent_id"');
-        $db->query('UPDATE '.$ecs->table('touch_shop_config') . ' SET value = "'. $ent_ac .'" WHERE code = "ent_ac"');
-        $db->query('UPDATE '.$ecs->table('touch_shop_config') . ' SET value = "'. $ent_sign .'" WHERE code = "ent_sign"');
-        $db->query('UPDATE '.$ecs->table('touch_shop_config') . ' SET value = "'. $ent_email .'" WHERE code = "ent_email"');
+        $t->request('http://cloud.hongyuvip.com/api.php', $apiget);
+        $db->query('UPDATE '.$ecs->table('ecsmart_shop_config',1) . ' SET value = "'. $ent_id .'" WHERE code = "ent_id"');
+        $db->query('UPDATE '.$ecs->table('ecsmart_shop_config',1) . ' SET value = "'. $ent_ac .'" WHERE code = "ent_ac"');
+        $db->query('UPDATE '.$ecs->table('ecsmart_shop_config',1) . ' SET value = "'. $ent_sign .'" WHERE code = "ent_sign"');
+        $db->query('UPDATE '.$ecs->table('ecsmart_shop_config',1) . ' SET value = "'. $ent_email .'" WHERE code = "ent_email"');
         clear_cache_files();
         ecs_header("Location: ./index.php\n");
     }
@@ -328,9 +328,9 @@ $smarty->assign('token', $_CFG['token']);
 if ($_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
     $_REQUEST['act'] != 'forget_pwd' && $_REQUEST['act'] != 'reset_pwd' && $_REQUEST['act'] != 'check_order')
 {
-    $admin_path = preg_replace('/:\d+/', '', $ecs->url()) . ADMIN_PATH;
+    $ADMIN_PATH = preg_replace('/:\d+/', '', $ecs->url()) . ADMIN_PATH_M;
     if (!empty($_SERVER['HTTP_REFERER']) &&
-        strpos(preg_replace('/:\d+/', '', $_SERVER['HTTP_REFERER']), $admin_path) === false)
+        strpos(preg_replace('/:\d+/', '', $_SERVER['HTTP_REFERER']), $ADMIN_PATH) === false)
     {
         if (!empty($_REQUEST['is_ajax']))
         {
@@ -346,13 +346,13 @@ if ($_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
 }
 
 /* 管理员登录后可在任何页面使用 act=phpinfo 显示 phpinfo() 信息 */
-if ($_REQUEST['act'] == 'phpinfo' && function_exists('phpinfo'))
+/*if ($_REQUEST['act'] == 'phpinfo' && function_exists('phpinfo'))
 {
     phpinfo();
 
     exit;
-}
-
+}*/
+// safety_20150626 del_end
 //header('Cache-control: private');
 header('content-type: text/html; charset=' . EC_CHARSET);
 header('Expires: Fri, 14 Mar 1980 20:53:00 GMT');
@@ -370,7 +370,7 @@ else
 }
 if ((DEBUG_MODE & 4) == 4)
 {
-    include(ROOT_PATH . 'include/lib.debug.php');
+    include(ROOT_PATH . 'includes/lib.debug.php');
 }
 
 /* 判断是否支持gzip模式 */

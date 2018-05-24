@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理中心模版管理程序
+ * 鸿宇多用户商城 管理中心模版管理程序
  * ============================================================================
- * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * $Author: liuhui $
  * $Id: mail_template.php 17063 2010-03-25 06:35:46Z liuhui $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 
@@ -24,7 +24,7 @@ admin_priv('mail_template');
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'list')
 {
-    include_once(ROOT_PATH . 'include/fckeditor/fckeditor.php'); // 包含 html editor 类文件
+    include_once(ROOT_PATH . 'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
 
     /* 包含插件语言项 */
     $sql = "SELECT code FROM ".$ecs->table('plugins');
@@ -32,9 +32,9 @@ if ($_REQUEST['act'] == 'list')
     while ($row = $db->FetchRow($rs))
     {
         /* 取得语言项 */
-        if (file_exists('../plugins/'.$row['code'].'/lang/common_'.$_CFG['lang'].'.php'))
+        if (file_exists('../plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php'))
         {
-            include_once(ROOT_PATH.'plugins/'.$row['code'].'/lang/common_'.$_CFG['lang'].'.php');
+            include_once(ROOT_PATH.'plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php');
         }
 
     }
@@ -63,7 +63,7 @@ if ($_REQUEST['act'] == 'list')
 
     /* 创建 html editor */
     $editor = new FCKeditor('content');
-    $editor->BasePath   = '../include/fckeditor/';
+    $editor->BasePath   = '../includes/fckeditor/';
     $editor->ToolbarSet = 'Normal';
     $editor->Width      = '100%';
     $editor->Height     = '320';
@@ -84,7 +84,7 @@ if ($_REQUEST['act'] == 'list')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'loat_template')
 {
-    include_once(ROOT_PATH . 'include/fckeditor/fckeditor.php'); // 包含 html editor 类文件
+    include_once(ROOT_PATH . 'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
 
     $tpl = intval($_GET['tpl']);
     $mail_type = isset($_GET['mail_type']) ? $_GET['mail_type'] : -1;
@@ -95,9 +95,9 @@ elseif ($_REQUEST['act'] == 'loat_template')
     while ($row = $db->FetchRow($rs))
     {
         /* 取得语言项 */
-        if (file_exists('../plugins/'.$row['code'].'/lang/common_'.$_CFG['lang'].'.php'))
+        if (file_exists('../plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php'))
         {
-            include_once(ROOT_PATH.'plugins/'.$row['code'].'/lang/common_'.$_CFG['lang'].'.php');
+            include_once(ROOT_PATH.'plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php');
         }
 
     }
@@ -120,7 +120,7 @@ elseif ($_REQUEST['act'] == 'loat_template')
     {
         /* 创建 html editor */
         $editor = new FCKeditor('content');
-        $editor->BasePath   = '../include/fckeditor/';
+        $editor->BasePath   = '../includes/fckeditor/';
         $editor->ToolbarSet = 'Normal';
         $editor->Width      = '100%';
         $editor->Height     = '320';

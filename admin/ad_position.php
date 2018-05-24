@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 广告位置管理程序
+ * 鸿宇多用户商城 广告位置管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: ad_position.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: ad_position.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -233,7 +233,7 @@ elseif ($_REQUEST['act'] == 'edit_ad_width')
     }
 
     /* 广告位宽度应在1-1024之间 */
-    if ($ad_width < 1)
+    if ($ad_width > 12100 || $ad_width < 1)
     {
         make_json_error($_LANG['width_value']);
     }
@@ -267,7 +267,7 @@ elseif ($_REQUEST['act'] == 'edit_ad_height')
     }
 
     /* 广告位宽度应在1-1024之间 */
-    if ($ad_height < 1)
+    if ($ad_height > 12100 || $ad_height < 1)
     {
         make_json_error($_LANG['height_value']);
     }
@@ -314,18 +314,79 @@ elseif ($_REQUEST['act'] == 'remove')
 
 /* 获取广告位置列表 */
 function ad_position_list()
-{
-    $filter = array();
+{	 
+    $result = get_filter();
+    if ($result === false)
+    {
+    	$filter = array();
+		
+        /* 分页大小 */
+        
 
-    /* 记录总数以及页数 */
-    $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS['ecs']->table('ad_position');
-    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+        /* 记录总数以及页数 */
+        if (isset($_POST['keyword']))
+        {
+			if(isset($_POST['select']) && $_POST['select'] == "按名称查询")
+            {
+				$sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('ad_position') . " WHERE position_name like '%" . $_POST['keyword'] . "%' ";
+			}
+			else
+			{
+				$sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('ad_position') . " WHERE position_id like '%" . $_POST['keyword'] . "%' ";
+			}
+        }
+        else
+        {
+            $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('ad_position');
+        }
 
-    $filter = page_and_size($filter);
+        $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+
+        $filter = page_and_size($filter);
+
+        /* 查询记录 */
+        if (isset($_POST['keyword']))
+        {
+			if(isset($_POST['select']) && $_POST['select'] == "按广告位名称")
+			{
+            	if(strtoupper(EC_CHARSET) == 'GBK')
+            	{
+                	$keyword = iconv("UTF-8", "gb2312", $_POST['keyword']);
+            	}
+            	else
+            	{
+                	$keyword = $_POST['keyword'];
+            	}
+            	$sql = "SELECT * FROM ".$GLOBALS['ecs']->table('ad_position')." WHERE position_name like '%". $keyword ."%' ORDER BY position_id ASC";
+			}
+			else
+			{
+				if(strtoupper(EC_CHARSET) == 'GBK')
+            	{
+                	$keyword = iconv("UTF-8", "gb2312", $_POST['keyword']);
+            	}
+            	else
+            	{
+                	$keyword = $_POST['keyword'];
+            	}
+            	$sql = "SELECT * FROM ".$GLOBALS['ecs']->table('ad_position')." WHERE position_id like '%". $keyword ."%' ORDER BY position_id ASC";
+			}
+        }
+        else
+        {
+            $sql = "SELECT * FROM ".$GLOBALS['ecs']->table('ad_position')." ORDER BY position_id ASC";
+        }
+
+        set_filter($filter, $sql);
+    }
+    else
+    {
+        $sql    = $result['sql'];
+        $filter = $result['filter'];
+    }
 
     /* 查询数据 */
     $arr = array();
-    $sql = 'SELECT * FROM ' .$GLOBALS['ecs']->table('ad_position'). ' ORDER BY position_id DESC';
     $res = $GLOBALS['db']->selectLimit($sql, $filter['page_size'], $filter['start']);
     while ($rows = $GLOBALS['db']->fetchRow($res))
     {
@@ -337,5 +398,4 @@ function ad_position_list()
 
     return array('position' => $arr, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 }
-
 ?>

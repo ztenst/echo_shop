@@ -6,6 +6,7 @@
 <!-- start reg_fiedls list -->
 <div class="list-div" id="listDiv">
 {/if}
+
 <table cellspacing='1' id="list-table">
   <tr>
     <th>{$lang.field_name}</th>
@@ -20,7 +21,7 @@
     <td align="center"><span onclick="listTable.edit(this,'edit_order', {$field.id})">{$field.dis_order}</span></td>
     <td align="center"><img src="images/{if $field.display}yes{else}no{/if}.gif" onclick="listTable.toggle(this, 'toggle_dis', {$field.id})" /></td>
     <td align="center"><img src="images/{if $field.is_need}yes{else}no{/if}.gif" onclick="listTable.toggle(this, 'toggle_need', {$field.id})" /></td>
-    <td align="right"><a href="?act=edit&id={$field.id}">{$lang.edit}</a>{if $field.type eq 0} | <a href="javascript:;" onclick="listTable.remove({$field.id}, '{$lang.drop_confirm}')" title="{$lang.remove}">{$lang.remove}</a>{/if}</td>
+    <td align="center"><a href="?act=edit&id={$field.id}">{$lang.edit}</a>{if $field.type eq 0} | <a href="javascript:;" onclick="listTable.remove({$field.id}, '{$lang.drop_confirm}')" title="{$lang.remove}">{$lang.remove}</a>{/if}</td>
   </tr>
   {/foreach}
   </table>

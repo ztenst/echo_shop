@@ -11,7 +11,7 @@
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
 <link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
-{insert_scripts files='common.js,user.js,transport_jquery.js'}
+{insert_scripts files='common.js,user.js,transport.js'}
 
 <body>
 <!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem -->
@@ -25,7 +25,6 @@
 <div class="blank"></div>
 <!--#登录界面 start-->
 <!-- {if $action eq 'login'} -->
-
 <div class="usBox clearfix">
   <div class="usBox_1 f_l">
    <div class="logtitle"></div>
@@ -143,7 +142,10 @@
         <tr>
           <td align="right">{$lang.passwd_question}</td>
           <td>
-     
+          <select name='sel_question'>
+	  <option value='0'>{$lang.sel_question}</option>
+	  {html_options options=$passwd_questions}
+	  </select>
           </td>
         </tr>
         <tr>

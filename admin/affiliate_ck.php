@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 程序说明
+ * 鸿宇多用户商城 程序说明
  * ===========================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ==========================================================
- * $Author: liubo $
- * $Id: affiliate_ck.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: affiliate_ck.php 17217 2016-01-19 06:29:08Z derek $
  */
 
 define('IN_ECS', true);
@@ -114,18 +114,45 @@ elseif ($_REQUEST['act'] == 'separate')
     $affiliate = unserialize($GLOBALS['_CFG']['affiliate']);
     empty($affiliate) && $affiliate = array();
 
-    $separate_by = $affiliate['config']['separate_by'];
+    $separate_by = $affiliate['config']['separate_by'];			
 
     $oid = (int)$_REQUEST['oid'];
-
-    $row = $db->getRow("SELECT o.order_sn, o.is_separate, (o.goods_amount - o.discount) AS goods_amount, o.user_id FROM " . $GLOBALS['ecs']->table('order_info') . " o".
+//代码增加--cb--增加u.parent_id
+    $row = $db->getRow("SELECT o.order_sn,u.parent_id, o.is_separate, (o.goods_amount - o.discount) AS goods_amount, o.user_id FROM " . $GLOBALS['ecs']->table('order_info') . " o".
                     " LEFT JOIN " . $GLOBALS['ecs']->table('users') . " u ON o.user_id = u.user_id".
             " WHERE order_id = '$oid'");
-
+			
+//代码增加--cb--推荐分成
+	if($separate_by==0)
+	{
+		$pid = $row['parent_id'];
+	}
+	else
+	{
+		$pid = $db->getOne("SELECT parent_id FROM " . $GLOBALS['ecs']->table('order_info')." WHERE order_id = '$oid'");
+	}
+	
+	$row1=$db->getAll("SELECT order_id,goods_number,goods_price,cost_price,promote_price FROM " . $GLOBALS['ecs']->table('order_goods')." WHERE order_id = '$oid'");
+			
+	$f_rank = $db->getOne("SELECT is_recomm FROM " . $GLOBALS['ecs']->table('user_rank') . " r" .
+                          " LEFT JOIN" . $GLOBALS['ecs']->table('users') . " u ON r.rank_id = u.user_rank".
+                        " WHERE u.user_id = '$pid'");
+	$user_rank_point = $db->getOne("SELECT rank_points FROM " . $ecs->table('users') . " WHERE user_id = '$pid'");
+    $sql = "SELECT is_recomm FROM " . $ecs->table('user_rank') . " WHERE min_points < '$user_rank' AND max_points > '$user_rank' ORDER BY min_points ASC LIMIT 1";
+	$rt  = $db->getOne($sql);
+	if($f_rank > 0 || $rt > 0 )					
+	{
+		$f_rank =1;
+	}
+	else
+	{
+		$f_rank =0;
+	}
+				
     $order_sn = $row['order_sn'];
 
     if (empty($row['is_separate']))
-    {
+    {  
         $affiliate['config']['level_point_all'] = (float)$affiliate['config']['level_point_all'];
         $affiliate['config']['level_money_all'] = (float)$affiliate['config']['level_money_all'];
         if ($affiliate['config']['level_point_all'])
@@ -136,7 +163,27 @@ elseif ($_REQUEST['act'] == 'separate')
         {
             $affiliate['config']['level_money_all'] /= 100;
         }
-        $money = round($affiliate['config']['level_money_all'] * $row['goods_amount'],2);
+		//代码增加--cb--推荐分成-start
+		if($affiliate['config']['level_money_all']==1)
+		{
+			for($i=0;$i<count($row1);$i++)
+        	  {		  
+        	  	if($row1[$i]['promote_price']==$row1[$i]['cost_price'] || $row1[$i]['cost_price']==0 || $f_rank == 0)
+        	  	{
+        	  		$all_cost_price  = 0;
+        	  	}
+        	  	else
+        	  	{
+					$all_cost_price   = $row1[$i]['cost_price']  * $row1[$i]['goods_number'];
+        	    }
+				$money +=round($all_cost_price,2);
+        	  }
+		}
+		else
+		{
+			$money = round($affiliate['config']['level_money_all'] * $row['goods_amount'],2);
+		}
+		//代码增加--cb--推荐分成-end
         $integral = integral_to_give(array('order_id' => $oid, 'extension_code' => ''));
         $point = round($affiliate['config']['level_point_all'] * intval($integral['rank_points']), 0);
 
@@ -162,18 +209,27 @@ elseif ($_REQUEST['act'] == 'separate')
                         " LEFT JOIN" . $GLOBALS['ecs']->table('users') . " u ON o.parent_id = u.user_id".
                         " WHERE o.user_id = '$row[user_id]'"
                     );
+				//代码增加--cb--推荐分成-start
                 $up_uid = $row['user_id'];
-                if (empty($up_uid) || empty($row['user_name']))
-                {
-                    break;
-                }
-                else
-                {
-                    $info = sprintf($_LANG['separate_info'], $order_sn, $setmoney, $setpoint);
-                    log_account_change($up_uid, $setmoney, 0, $setpoint, 0, $info);
-                    write_affiliate_log($oid, $up_uid, $row['user_name'], $setmoney, $setpoint, $separate_by);
-                }
-            }
+				
+				$f_rank = $db->getOne("SELECT is_recomm FROM " . $GLOBALS['ecs']->table('user_rank') . " r" .
+                          " LEFT JOIN" . $GLOBALS['ecs']->table('users') . " u ON r.rank_id = u.user_rank".
+                        " WHERE u.user_id = '$up_uid'");
+				if(!empty($f_rank))
+				{
+					if (empty($up_uid) || empty($row['user_name']))
+					{
+						break;
+					}
+					else
+					{
+						$info = sprintf($_LANG['separate_info'], $order_sn, $setmoney, $setpoint);
+						log_account_change($up_uid, $setmoney, 0, $setpoint, 0, $info);
+						write_affiliate_log($oid, $up_uid, $row['user_name'], $setmoney, $setpoint, $separate_by);
+					}
+				}
+					//代码增加--cb--推荐分成-end
+			}
         }
         else
         {

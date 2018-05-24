@@ -2,7 +2,7 @@
 
 {if $full_page}
 {include file="pageheader.htm"}
-{insert_scripts files="../data/static/js/utils.js,./js/listtable.js"}
+{insert_scripts files="../js/utils.js,listtable.js"}
 <div class="form-div">
   <form action="javascript:searchArticle()" name="searchForm" >
     <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
@@ -44,7 +44,8 @@
     <td align="center" nowrap="true"><span>
       <a href="../article.php?id={$list.article_id}" target="_blank" title="{$lang.view}"><img src="images/icon_view.gif" border="0" height="16" width="16" /></a>&nbsp;
       <a href="article.php?act=edit&id={$list.article_id}" title="{$lang.edit}"><img src="images/icon_edit.gif" border="0" height="16" width="16" /></a>&nbsp;
-     <!-- {if $list.cat_id > 0} --><a href="javascript:;" onclick="listTable.remove({$list.article_id}, '{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16"></a><!-- {/if} --></span>
+      <!--yyy修改start-->
+     <a href="javascript:;" onclick="listTable.remove({$list.article_id}, '{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16"></a><!--yyy修改end--></span>
     </td>
    </tr>
    {foreachelse}

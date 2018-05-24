@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心权限管理模块语言文件
+ * 鸿宇多用户商城 管理中心权限管理模块语言文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: privilege.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: privilege.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 /* 字段信息 */
@@ -62,7 +62,7 @@ $_LANG['js_languages']['email_error'] = 'Email地址格式不正确!';
 $_LANG['js_languages']['password_error'] = '两次输入的密码不一致!';
 $_LANG['js_languages']['captcha_empty'] = '您没有输入验证码!';
 $_LANG['action_succeed'] = '操作成功!';
-$_LANG['edit_profile_succeed'] = '您已经成功的修改了个人帐号信息!';
+$_LANG['edit_profile_succeed'] = '您已经成功的修改了信息!';
 $_LANG['edit_password_succeed'] = '您已经成功的修改了密码，因此您必须重新登录!';
 $_LANG['user_name_exist'] = '该管理员已经存在!';
 $_LANG['email_exist'] = 'Email地址已经存在!';
@@ -87,10 +87,10 @@ $_LANG['email_notic'] = '输入管理员的Email邮箱,必须为Email格式';
 $_LANG['confirm_notic'] = '输入管理员的确认密码,两次输入必须一致';
 
 /* 登录表单 */
-$_LANG['label_username'] = '管理员姓名：';
-$_LANG['label_password'] = '管理员密码：';
-$_LANG['label_captcha'] = '验证码：';
+$_LANG['label_username'] = '用户名';
+$_LANG['label_password'] = '密　码';
+$_LANG['label_captcha'] = '验证码';
 $_LANG['click_for_another'] = '看不清？点击更换另一个验证码。';
 $_LANG['signin_now'] = '进入管理中心';
-$_LANG['remember'] = '请保存我这次的登录信息。';
+$_LANG['remember'] = '保存登录信息。';
 ?>

@@ -88,7 +88,12 @@ if (!empty($_SESSION['admin_id']))
 }
 else
 {
-    $enable = false;
+	//添加入驻商上传图片的权限
+	if(empty($_SESSION['supplier_id'])){
+		$enable = false;
+	}else{
+		$enable = true;
+	}
 }
 
 /* 载入系统参数 */

@@ -1,21 +1,21 @@
 <?php
 /**
- * ECSHOP 控制台首页
+ * 鸿宇多用户商城 控制台首页
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: index.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . '/include/lib_order.php');
+require_once(ROOT_PATH . '/includes/lib_order.php');
 
 /*------------------------------------------------------ */
 //-- 框架
@@ -159,16 +159,6 @@ elseif ($_REQUEST['act'] == 'clear_cache')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'main')
 {
-    //开店向导第一步
-    if(isset($_SESSION['shop_guide']) && $_SESSION['shop_guide'] === true)
-    {
-        unset($_SESSION['shop_guide']);//销毁session
-
-        ecs_header("Location: ./index.php?act=first\n");
-
-        exit();
-    }
-
     $gd = gd_version();
 
     /* 检查文件目录属性 */
@@ -220,12 +210,80 @@ elseif ($_REQUEST['act'] == 'main')
         }
     }
 
+    $result = file_mode_info('../cert');
+    if ($result < 2)
+    {
+        $warning[] = sprintf($_LANG['not_writable'], 'cert', $_LANG['cert_cannt_write']);
+    }
+
     $result = file_mode_info('../' . DATA_DIR);
     if ($result < 2)
     {
         $warning[] = sprintf($_LANG['not_writable'], 'data', $_LANG['data_cannt_write']);
     }
+    else
+    {
+        $result = file_mode_info('../' . DATA_DIR . '/afficheimg');
+        if ($result < 2)
+        {
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/afficheimg', $_LANG['afficheimg_cannt_write']);
+        }
 
+        $result = file_mode_info('../' . DATA_DIR . '/brandlogo');
+        if ($result < 2)
+        {
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/brandlogo', $_LANG['brandlogo_cannt_write']);
+        }
+
+        $result = file_mode_info('../' . DATA_DIR . '/cardimg');
+        if ($result < 2)
+        {
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/cardimg', $_LANG['cardimg_cannt_write']);
+        }
+
+        $result = file_mode_info('../' . DATA_DIR . '/feedbackimg');
+        if ($result < 2)
+        {
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/feedbackimg', $_LANG['feedbackimg_cannt_write']);
+        }
+
+        $result = file_mode_info('../' . DATA_DIR . '/packimg');
+        if ($result < 2)
+        {
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/packimg', $_LANG['packimg_cannt_write']);
+        }
+    }
+
+    $result = file_mode_info('../images');
+    if ($result < 2)
+    {
+        $warning[] = sprintf($_LANG['not_writable'], 'images', $_LANG['images_cannt_write']);
+    }
+    else
+    {
+        $result = file_mode_info('../' . IMAGE_DIR . '/upload');
+        if ($result < 2)
+        {
+            $warning[] = sprintf($_LANG['not_writable'], IMAGE_DIR . '/upload', $_LANG['imagesupload_cannt_write']);
+        }
+    }
+
+    $result = file_mode_info('../temp');
+    if ($result < 2)
+    {
+        $warning[] = sprintf($_LANG['not_writable'], 'images', $_LANG['tpl_cannt_write']);
+    }
+
+    $result = file_mode_info('../temp/backup');
+    if ($result < 2)
+    {
+        $warning[] = sprintf($_LANG['not_writable'], 'images', $_LANG['tpl_backup_cannt_write']);
+    }
+
+    if (!is_writeable('../' . DATA_DIR . '/order_print.html'))
+    {
+        $warning[] = $_LANG['order_print_canntwrite'];
+    }
     clearstatcache();
 
     $smarty->assign('warning_arr', $warning);
@@ -420,12 +478,12 @@ elseif ($_REQUEST['act'] == 'main')
 }
 elseif ($_REQUEST['act'] == 'main_api')
 {
-    require_once(ROOT_PATH . '/include/lib_base.php');
+    require_once(ROOT_PATH . '/includes/lib_base.php');
     $data = read_static_cache('api_str');
 
     if($data === false || API_TIME < date('Y-m-d H:i:s',time()-43200))
     {
-        include_once(ROOT_PATH . 'include/cls_transport.php');
+        include_once(ROOT_PATH . 'includes/cls_transport.php');
         $ecs_version = VERSION;
         $ecs_lang = $_CFG['lang'];
         $ecs_release = RELEASE;
@@ -440,8 +498,8 @@ elseif ($_REQUEST['act'] == 'main_api')
         $gcount = $goods['total'];
         $ecs_charset = strtoupper(EC_CHARSET);
         $ecs_user = $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('users'));
-        $ecs_template = $db->getOne('SELECT value FROM ' . $ecs->table('touch_shop_config') . ' WHERE code = \'template\'');
-        $style = $db->getOne('SELECT value FROM ' . $ecs->table('touch_shop_config') . ' WHERE code = \'stylename\'');
+        $ecs_template = $db->getOne('SELECT value FROM ' . $ecs->table('ecsmart_shop_config') . ' WHERE code = \'template\'');
+        $style = $db->getOne('SELECT value FROM ' . $ecs->table('ecsmart_shop_config') . ' WHERE code = \'stylename\'');
         if($style == '')
         {
             $style = '0';
@@ -449,16 +507,16 @@ elseif ($_REQUEST['act'] == 'main_api')
         $ecs_style = $style;
         $shop_url = urlencode($ecs->url());
 
-        $patch_file = file_get_contents(ROOT_PATH.ADMIN_PATH."/patch_num");
+        $patch_file = file_get_contents(ROOT_PATH.ADMIN_PATH_M."/patch_num");
 
         $apiget = "ver= $ecs_version &lang= $ecs_lang &release= $ecs_release &php_ver= $php_ver &mysql_ver= $mysql_ver &ocount= $ocount &oamount= $oamount &gcount= $gcount &charset= $ecs_charset &usecount= $ecs_user &template= $ecs_template &style= $ecs_style &url= $shop_url &patch= $patch_file ";
 
         $t = new transport;
-        $api_comment = $t->request('http://api.ecshop.com/checkver.php', $apiget);
+        $api_comment = $t->request('http://api.hongyuvip.com/checkver.php', $apiget);
         $api_str = $api_comment["body"];
         echo $api_str;
         
-        $f=ROOT_PATH . 'data/config.php'; 
+        $f=ROOT_PATH . '../../data/config.php'; 
         file_put_contents($f,str_replace("'API_TIME', '".API_TIME."'","'API_TIME', '".date('Y-m-d H:i:s',time())."'",file_get_contents($f)));
         
         write_static_cache('api_str', $api_str);
@@ -468,515 +526,6 @@ elseif ($_REQUEST['act'] == 'main_api')
         echo $data;
     }
 
-}
-
-
-/*------------------------------------------------------ */
-//-- 开店向导第一步
-/*------------------------------------------------------ */
-
-elseif ($_REQUEST['act'] == 'first')
-{
-    $smarty->assign('countries',    get_regions());
-    $smarty->assign('provinces',    get_regions(1, 1));
-    $smarty->assign('cities',    get_regions(2, 2));
-
-    $sql = 'SELECT value from ' . $ecs->table('touch_shop_config') . " WHERE code='shop_name'";
-    $shop_name = $db->getOne($sql);
-
-    $smarty->assign('shop_name', $shop_name);
-
-    $sql = 'SELECT value from ' . $ecs->table('touch_shop_config') . " WHERE code='shop_title'";
-    $shop_title = $db->getOne($sql);
-
-    $smarty->assign('shop_title', $shop_title);
-
-    //获取配送方式
-//    $modules = read_modules('../include/modules/shipping');
-    $directory = ROOT_PATH . 'include/modules/shipping';
-    $dir         = @opendir($directory);
-    $set_modules = true;
-    $modules     = array();
-
-    while (false !== ($file = @readdir($dir)))
-    {
-        if (preg_match("/^.*?\.php$/", $file))
-        {
-            if ($file != 'express.php')
-            {
-                include_once($directory. '/' .$file);
-            }
-        }
-    }
-    @closedir($dir);
-    unset($set_modules);
-
-    foreach ($modules AS $key => $value)
-    {
-        ksort($modules[$key]);
-    }
-    ksort($modules);
-
-    for ($i = 0; $i < count($modules); $i++)
-    {
-        $lang_file = ROOT_PATH.'lang/' .$_CFG['lang']. '/shipping/' .$modules[$i]['code']. '.php';
-
-        if (file_exists($lang_file))
-        {
-            include_once($lang_file);
-        }
-
-        $modules[$i]['name']    = $_LANG[$modules[$i]['code']];
-        $modules[$i]['desc']    = $_LANG[$modules[$i]['desc']];
-        $modules[$i]['insure_fee']  = empty($modules[$i]['insure'])? 0 : $modules[$i]['insure'];
-        $modules[$i]['cod']     = $modules[$i]['cod'];
-        $modules[$i]['install'] = 0;
-    }
-    $smarty->assign('modules', $modules);
-
-    unset($modules);
-
-    //获取支付方式
-    $modules = read_modules('../include/modules/payment');
-
-    for ($i = 0; $i < count($modules); $i++)
-    {
-        $code = $modules[$i]['code'];
-        $modules[$i]['name'] = $_LANG[$modules[$i]['code']];
-        if (!isset($modules[$i]['pay_fee']))
-        {
-            $modules[$i]['pay_fee'] = 0;
-        }
-        $modules[$i]['desc'] = $_LANG[$modules[$i]['desc']];
-    }
-    //        $modules[$i]['install'] = '0';
-    $smarty->assign('modules_payment', $modules);
-
-    assign_query_info();
-
-    $smarty->assign('ur_here', $_LANG['ur_config']);
-    $smarty->display('setting_first.htm');
-}
-
-/*------------------------------------------------------ */
-//-- 开店向导第二步
-/*------------------------------------------------------ */
-
-elseif ($_REQUEST['act'] == 'second')
-{
-    admin_priv('shop_config');
-
-    $shop_name = empty($_POST['shop_name']) ? '' : $_POST['shop_name'] ;
-    $shop_title = empty($_POST['shop_title']) ? '' : $_POST['shop_title'] ;
-    $shop_country = empty($_POST['shop_country']) ? '' : intval($_POST['shop_country']);
-    $shop_province = empty($_POST['shop_province']) ? '' : intval($_POST['shop_province']);
-    $shop_city = empty($_POST['shop_city']) ? '' : intval($_POST['shop_city']);
-    $shop_address = empty($_POST['shop_address']) ? '' : $_POST['shop_address'] ;
-    $shipping = empty($_POST['shipping']) ? '' : $_POST['shipping'];
-    $payment = empty($_POST['payment']) ? '' : $_POST['payment'];
-
-    if(!empty($shop_name))
-    {
-        $sql = 'UPDATE ' . $ecs->table('touch_shop_config') . " SET value = '$shop_name' WHERE code = 'shop_name'";
-        $db->query($sql);
-    }
-
-    if(!empty($shop_title))
-    {
-        $sql = 'UPDATE ' . $ecs->table('touch_shop_config') . " SET value = '$shop_title' WHERE code = 'shop_title'";
-        $db->query($sql);
-    }
-
-    if(!empty($shop_address))
-    {
-        $sql = 'UPDATE ' . $ecs->table('touch_shop_config') . " SET value = '$shop_address' WHERE code = 'shop_address'";
-        $db->query($sql);
-    }
-
-    if(!empty($shop_country))
-    {
-        $sql = 'UPDATE ' . $ecs->table('touch_shop_config') . "SET value = '$shop_country' WHERE code='shop_country'";
-        $db->query($sql);
-    }
-
-    if(!empty($shop_province))
-    {
-        $sql = 'UPDATE ' . $ecs->table('touch_shop_config') . "SET value = '$shop_province' WHERE code='shop_province'";
-        $db->query($sql);
-    }
-
-    if(!empty($shop_city))
-    {
-        $sql = 'UPDATE ' . $ecs->table('touch_shop_config') . "SET value = '$shop_city' WHERE code='shop_city'";
-        $db->query($sql);
-    }
-
-    //设置配送方式
-    if(!empty($shipping))
-    {
-        $shop_add = read_modules('../include/modules/shipping');
-        
-        foreach ($shop_add as $val)
-        {
-            $mod_shop[] = $val['code'];
-        }
-        $mod_shop = implode(',',$mod_shop);
-
-        $set_modules = true;
-        if(strpos($mod_shop,$shipping) === false)
-        {
-            exit;   
-        }
-        else 
-        {
-            include_once(ROOT_PATH . 'include/modules/shipping/' . $shipping . '.php');
-        }
-        $sql = "SELECT shipping_id FROM " .$ecs->table('touch_shipping'). " WHERE shipping_code = '$shipping'";
-        $shipping_id = $db->GetOne($sql);
-
-        if($shipping_id <= 0)
-        {
-            $insure = empty($modules[0]['insure']) ? 0 : $modules[0]['insure'];
-            $sql = "INSERT INTO " . $ecs->table('touch_shipping') . " (" .
-            "shipping_code, shipping_name, shipping_desc, insure, support_cod, enabled" .
-            ") VALUES (" .
-            "'" . addslashes($modules[0]['code']). "', '" . addslashes($_LANG[$modules[0]['code']]) . "', '" .
-            addslashes($_LANG[$modules[0]['desc']]) . "', '$insure', '" . intval($modules[0]['cod']) . "', 1)";
-            $db->query($sql);
-            $shipping_id = $db->insert_Id();
-        }
-
-        //设置配送区域
-        $area_name = empty($_POST['area_name']) ? '' : $_POST['area_name'];
-        if(!empty($area_name))
-        {
-            $sql = "SELECT shipping_area_id FROM " .$ecs->table("touch_shipping_area").
-            " WHERE shipping_id='$shipping_id' AND shipping_area_name='$area_name'";
-            $area_id = $db->getOne($sql);
-
-            if($area_id <= 0)
-            {
-                $config = array();
-                foreach ($modules[0]['configure'] AS $key => $val)
-                {
-                    $config[$key]['name']   = $val['name'];
-                    $config[$key]['value']  = $val['value'];
-                }
-
-                $count = count($config);
-                $config[$count]['name']     = 'free_money';
-                $config[$count]['value']    = 0;
-
-                /* 如果支持货到付款，则允许设置货到付款支付费用 */
-                if ($modules[0]['cod'])
-                {
-                    $count++;
-                    $config[$count]['name']     = 'pay_fee';
-                    $config[$count]['value']    = make_semiangle(0);
-                }
-
-                $sql = "INSERT INTO " .$ecs->table('touch_shipping_area').
-                " (shipping_area_name, shipping_id, configure) ".
-                "VALUES" . " ('$area_name', '$shipping_id', '" .serialize($config). "')";
-                $db->query($sql);
-                $area_id = $db->insert_Id();
-            }
-
-            $region_id = empty($_POST['shipping_country']) ? 1 : intval($_POST['shipping_country']);
-            $region_id = empty($_POST['shipping_province']) ? $region_id : intval($_POST['shipping_province']);
-            $region_id = empty($_POST['shipping_city']) ? $region_id : intval($_POST['shipping_city']);
-            $region_id = empty($_POST['shipping_district']) ? $region_id : intval($_POST['shipping_district']);
-
-            /* 添加选定的城市和地区 */
-            $sql = "REPLACE INTO ".$ecs->table('area_region')." (shipping_area_id, region_id) VALUES ('$area_id', '$region_id')";
-            $db->query($sql);
-        }
-    }
-
-    unset($modules);
-
-    if(!empty($payment))
-    {
-        /* 取相应插件信息 */
-        $set_modules = true;
-        include_once(ROOT_PATH . 'include/modules/payment/' . $payment . '.php');
-
-        $pay_config = array();
-        if (isset($_REQUEST['cfg_value']) && is_array($_REQUEST['cfg_value']))
-        {
-            for ($i = 0; $i < count($_POST['cfg_value']); $i++)
-            {
-                $pay_config[] = array('name'  => trim($_POST['cfg_name'][$i]),
-                                  'type'  => trim($_POST['cfg_type'][$i]),
-                                  'value' => trim($_POST['cfg_value'][$i])
-                );
-            }
-        }
-
-        $pay_config = serialize($pay_config);
-        /* 安装，检查该支付方式是否曾经安装过 */
-        $sql = "SELECT COUNT(*) FROM " . $ecs->table('touch_payment') . " WHERE pay_code = '$payment'";
-        if ($db->GetOne($sql) > 0)
-        {
-            $sql = "UPDATE " . $ecs->table('touch_payment') .
-                   " SET pay_config = '$pay_config'," .
-                   " enabled = '1' " .
-                   "WHERE pay_code = '$payment' LIMIT 1";
-            $db->query($sql);
-        }
-        else
-        {
-//            $modules = read_modules('../include/modules/payment');
-
-            $payment_info = array();
-            $payment_info['name'] = $_LANG[$modules[0]['code']];
-            $payment_info['pay_fee'] = empty($modules[0]['pay_fee']) ? 0 : $modules[0]['pay_fee'];
-            $payment_info['desc'] = $_LANG[$modules[0]['desc']];
-
-            $sql = "INSERT INTO " . $ecs->table('touch_payment') . " (pay_code, pay_name, pay_desc, pay_config, is_cod, pay_fee, enabled, is_online)" .
-            "VALUES ('$payment', '$payment_info[name]', '$payment_info[desc]', '$pay_config', '0', '$payment_info[pay_fee]', '1', '1')";
-            $db->query($sql);
-        }
-    }
-
-    clear_all_files();
-
-    assign_query_info();
-
-    $smarty->assign('ur_here', $_LANG['ur_add']);
-    $smarty->display('setting_second.htm');
-}
-
-/*------------------------------------------------------ */
-//-- 开店向导第三步
-/*------------------------------------------------------ */
-
-elseif ($_REQUEST['act'] == 'third')
-{
-    admin_priv('goods_manage');
-
-    $good_name = empty($_POST['good_name']) ? '' : $_POST['good_name'];
-    $good_number = empty($_POST['good_number']) ? '' : $_POST['good_number'];
-    $good_category = empty($_POST['good_category']) ? '' : $_POST['good_category'];
-    $good_brand = empty($_POST['good_brand']) ? '' : $_POST['good_brand'];
-    $good_price = empty($_POST['good_price']) ? 0 : $_POST['good_price'];
-    $good_name = empty($_POST['good_name']) ? '' : $_POST['good_name'];
-    $is_best = empty($_POST['is_best']) ? 0 : 1;
-    $is_new = empty($_POST['is_new']) ? 0 : 1;
-    $is_hot = empty($_POST['is_hot']) ? 0 :1;
-    $good_brief = empty($_POST['good_brief']) ? '' : $_POST['good_brief'];
-    $market_price = $good_price * 1.2;
-
-    if(!empty($good_category))
-    {
-        if (cat_exists($good_category, 0))
-        {
-            /* 同级别下不能有重复的分类名称 */
-            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
-            sys_msg($_LANG['catname_exist'], 0, $link);
-        }
-    }
-
-    if(!empty($good_brand))
-    {
-        if (brand_exists($good_brand))
-        {
-            /* 同级别下不能有重复的品牌名称 */
-            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
-            sys_msg($_LANG['brand_name_exist'], 0, $link);
-        }
-    }
-
-    $brand_id = 0;
-    if(!empty($good_brand))
-    {
-        $sql = 'INSERT INTO ' . $ecs->table('brand') . " (brand_name, is_show)" .
-        " values('" . $good_brand . "', '1')";
-        $db->query($sql);
-
-        $brand_id = $db->insert_Id();
-    }
-
-    if(!empty($good_category))
-    {
-        $sql = 'INSERT INTO ' . $ecs->table('category') . " (cat_name, parent_id, is_show)" .
-        " values('" . $good_category . "', '0', '1')";
-        $db->query($sql);
-
-        $cat_id = $db->insert_Id();
-
-        //货号
-        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_goods.php');
-        $max_id     = $db->getOne("SELECT MAX(goods_id) + 1 FROM ".$ecs->table('goods'));
-        $goods_sn   = generate_goods_sn($max_id);
-
-        include_once(ROOT_PATH . 'include/cls_image.php');
-        $image = new cls_image($_CFG['bgcolor']);
-
-        if(!empty($good_name))
-        {
-            /* 检查图片：如果有错误，检查尺寸是否超过最大值；否则，检查文件类型 */
-            if (isset($_FILES['goods_img']['error'])) // php 4.2 版本才支持 error
-            {
-                // 最大上传文件大小
-                $php_maxsize = ini_get('upload_max_filesize');
-                $htm_maxsize = '2M';
-
-                // 商品图片
-                if ($_FILES['goods_img']['error'] == 0)
-                {
-                    if (!$image->check_img_type($_FILES['goods_img']['type']))
-                    {
-                        sys_msg($_LANG['invalid_goods_img'], 1, array(), false);
-                    }
-                }
-                elseif ($_FILES['goods_img']['error'] == 1)
-                {
-                    sys_msg(sprintf($_LANG['goods_img_too_big'], $php_maxsize), 1, array(), false);
-                }
-                elseif ($_FILES['goods_img']['error'] == 2)
-                {
-                    sys_msg(sprintf($_LANG['goods_img_too_big'], $htm_maxsize), 1, array(), false);
-                }
-            }
-            /* 4。1版本 */
-            else
-            {
-                // 商品图片
-                if ($_FILES['goods_img']['tmp_name'] != 'none')
-                {
-                    if (!$image->check_img_type($_FILES['goods_img']['type']))
-                    {
-                        sys_msg($_LANG['invalid_goods_img'], 1, array(), false);
-                    }
-                }
-
-
-            }
-            $goods_img        = '';  // 初始化商品图片
-            $goods_thumb      = '';  // 初始化商品缩略图
-            $original_img     = '';  // 初始化原始图片
-            $old_original_img = '';  // 初始化原始图片旧图
-            // 如果上传了商品图片，相应处理
-            if ($_FILES['goods_img']['tmp_name'] != '' && $_FILES['goods_img']['tmp_name'] != 'none')
-            {
-
-                $original_img   = $image->upload_image($_FILES['goods_img']); // 原始图片
-                if ($original_img === false)
-                {
-                    sys_msg($image->error_msg(), 1, array(), false);
-                }
-                $goods_img      = $original_img;   // 商品图片
-
-                /* 复制一份相册图片 */
-                $img        = $original_img;   // 相册图片
-                $pos        = strpos(basename($img), '.');
-                $newname    = dirname($img) . '/' . $image->random_filename() . substr(basename($img), $pos);
-                if (!copy('../' . $img, '../' . $newname))
-                {
-                    sys_msg('fail to copy file: ' . realpath('../' . $img), 1, array(), false);
-                }
-                $img        = $newname;
-
-                $gallery_img    = $img;
-                $gallery_thumb  = $img;
-
-                // 如果系统支持GD，缩放商品图片，且给商品图片和相册图片加水印
-                if ($image->gd_version() > 0 && $image->check_img_function($_FILES['goods_img']['type']))
-                {
-                    // 如果设置大小不为0，缩放图片
-                    if ($_CFG['image_width'] != 0 || $_CFG['image_height'] != 0)
-                    {
-                        $goods_img = $image->make_thumb('../'. $goods_img , $GLOBALS['_CFG']['image_width'],  $GLOBALS['_CFG']['image_height']);
-                        if ($goods_img === false)
-                        {
-                            sys_msg($image->error_msg(), 1, array(), false);
-                        }
-                    }
-
-                    $newname    = dirname($img) . '/' . $image->random_filename() . substr(basename($img), $pos);
-                    if (!copy('../' . $img, '../' . $newname))
-                    {
-                        sys_msg('fail to copy file: ' . realpath('../' . $img), 1, array(), false);
-                    }
-                    $gallery_img        = $newname;
-
-                    // 加水印
-                    if (intval($_CFG['watermark_place']) > 0 && !empty($GLOBALS['_CFG']['watermark']))
-                    {
-                        if ($image->add_watermark('../'.$goods_img,'',$GLOBALS['_CFG']['watermark'], $GLOBALS['_CFG']['watermark_place'], $GLOBALS['_CFG']['watermark_alpha']) === false)
-                        {
-                            sys_msg($image->error_msg(), 1, array(), false);
-                        }
-
-                        if ($image->add_watermark('../'. $gallery_img,'',$GLOBALS['_CFG']['watermark'], $GLOBALS['_CFG']['watermark_place'], $GLOBALS['_CFG']['watermark_alpha']) === false)
-                        {
-                            sys_msg($image->error_msg(), 1, array(), false);
-                        }
-                    }
-
-                    // 相册缩略图
-                    if ($_CFG['thumb_width'] != 0 || $_CFG['thumb_height'] != 0)
-                    {
-                        $gallery_thumb = $image->make_thumb('../' . $img, $GLOBALS['_CFG']['thumb_width'],  $GLOBALS['_CFG']['thumb_height']);
-                        if ($gallery_thumb === false)
-                        {
-                            sys_msg($image->error_msg(), 1, array(), false);
-                        }
-                    }
-                }
-                else
-                {
-                    /* 复制一份原图 */
-                    $pos        = strpos(basename($img), '.');
-                    $gallery_img = dirname($img) . '/' . $image->random_filename() . substr(basename($img), $pos);
-                    if (!copy('../' . $img, '../' . $gallery_img))
-                    {
-                        sys_msg('fail to copy file: ' . realpath('../' . $img), 1, array(), false);
-                    }
-                    $gallery_thumb = '';
-                }
-            }
-            // 未上传，如果自动选择生成，且上传了商品图片，生成所略图
-            if (!empty($original_img))
-            {
-                // 如果设置缩略图大小不为0，生成缩略图
-                if ($_CFG['thumb_width'] != 0 || $_CFG['thumb_height'] != 0)
-                {
-                    $goods_thumb = $image->make_thumb('../' . $original_img, $GLOBALS['_CFG']['thumb_width'],  $GLOBALS['_CFG']['thumb_height']);
-                    if ($goods_thumb === false)
-                    {
-                        sys_msg($image->error_msg(), 1, array(), false);
-                    }
-                }
-                else
-                {
-                    $goods_thumb = $original_img;
-                }
-            }
-
-
-            $sql = 'INSERT INTO ' . $ecs->table('goods') . "(goods_name, goods_sn, goods_number, cat_id, brand_id, goods_brief, shop_price, market_price, goods_img, goods_thumb, original_img,add_time, last_update,
-                   is_best, is_new, is_hot)" .
-                   "VALUES('$good_name', '$goods_sn', '$good_number', '$cat_id', '$brand_id', '$good_brief', '$good_price'," .
-                   " '$market_price', '$goods_img', '$goods_thumb', '$original_img','" . gmtime() . "', '". gmtime() . "', '$is_best', '$is_new', '$is_hot')";
-
-                   $db->query($sql);
-                   $good_id = $db->insert_id();
-                   /* 如果有图片，把商品图片加入图片相册 */
-                   if (isset($img))
-                   {
-                       $sql = "INSERT INTO " . $ecs->table('goods_gallery') . " (goods_id, img_url, img_desc, thumb_url, img_original) " .
-                       "VALUES ('$good_id', '$gallery_img', '', '$gallery_thumb', '$img')";
-                       $db->query($sql);
-                   }
-
-        }
-    }
-
-    assign_query_info();
-    //    $smarty->assign('ur_here', '开店向导－添加商品');
-    $smarty->display('setting_third.htm');
 }
 
 /*------------------------------------------------------ */
@@ -1148,10 +697,10 @@ elseif ($_REQUEST['act'] == 'license')
     if (isset($is_ajax) && $is_ajax)
     {
         // license 检查
-        include_once(ROOT_PATH . 'include/cls_transport.php');
-        include_once(ROOT_PATH . 'include/cls_json.php');
-        include_once(ROOT_PATH . 'include/lib_main.php');
-        include_once(ROOT_PATH . 'include/lib_license.php');
+        include_once(ROOT_PATH . 'includes/cls_transport.php');
+        include_once(ROOT_PATH . 'includes/cls_json.php');
+        include_once(ROOT_PATH . 'includes/lib_main.php');
+        include_once(ROOT_PATH . 'includes/lib_license.php');
 
         $license = license_check();
         switch ($license['flag'])

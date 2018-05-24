@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 鍚庡彴鏍囩?绠＄悊
+ * 鸿宇多用户商城 鍚庡彴鏍囩?绠＄悊
  * ============================================================================
  * * 鐗堟潈鎵€鏈 2005-2012 涓婃捣鍟嗘淳缃戠粶绉戞妧鏈夐檺鍏?徃锛屽苟淇濈暀鎵€鏈夋潈鍒┿€
- * 缃戠珯鍦板潃: http://www.ecshop.com锛
+ * 缃戠珯鍦板潃: http://bbs.hongyuvip.com锛
  * ----------------------------------------------------------------------------
  * 杩欎笉鏄?竴涓?嚜鐢辫蒋浠讹紒鎮ㄥ彧鑳藉湪涓嶇敤浜庡晢涓氱洰鐨勭殑鍓嶆彁涓嬪?绋嬪簭浠ｇ爜杩涜?淇?敼鍜
  * 浣跨敤锛涗笉鍏佽?瀵圭▼搴忎唬鐮佷互浠讳綍褰㈠紡浠讳綍鐩?殑鐨勫啀鍙戝竷銆
  * ============================================================================
- * $Author: liubo $
- * $Id: tag_manage.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: tag_manage.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 
@@ -169,7 +169,7 @@ elseif ($_REQUEST['act'] == 'search_goods')
 {
     check_authz_json('tag_manage');
 
-    include_once(ROOT_PATH . 'include/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
 
     $json   = new JSON;
     $filter = $json->decode($_GET['JSON']);
@@ -224,7 +224,7 @@ elseif ($_REQUEST['act'] == 'remove')
 {
     check_authz_json('tag_manage');
 
-    include_once(ROOT_PATH . 'include/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $id = intval($_GET['id']);

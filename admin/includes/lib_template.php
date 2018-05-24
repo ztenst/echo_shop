@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心模版相关公用函数库
+ * 鸿宇多用户商城 管理中心模版相关公用函数库
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_template.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: lib_template.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -46,11 +46,20 @@ $template_files = array(
     'auction_list.dwt',
     'auction.dwt',
     'message_board.dwt',
+	'takegoods',   //代码增加   By  bbs.hongyuvip.com
     'exchange_list.dwt',
 );
 
 /* 每个模板允许设置的库项目 */
 $page_libs = array(
+	/* 代码增加_start  By  bbs.hongyuvip.com */
+   'takegoods' => array(
+        '/library/ur_here.lbi' => 0,
+        '/library/cart.lbi' => 0,
+        '/library/category_tree.lbi' => 0,
+        '/library/history.lbi' => 0,
+    ),
+	/* 代码增加_end  By  bbs.hongyuvip.com */
     'article' => array(
         '/library/ur_here.lbi' => 0,
         '/library/search_form.lbi' => 0,
@@ -151,7 +160,7 @@ $page_libs = array(
         '/library/goods_gallery.lbi' => 0,
         '/library/goods_tags.lbi' => 0,
         '/library/comments.lbi' => 0,
-        '/library/bought_goods.lbi' => 5,
+        '/library/bought_goods.lbi' => 0,
         '/library/bought_note_guide.lbi' => 0,
         '/library/goods_related.lbi' => 0,
         '/library/goods_article.lbi' => 0,
@@ -185,7 +194,6 @@ $page_libs = array(
         '/library/recommend_promotion.lbi' => 3,
     ),
     'group_buy_goods' => array(
-		'/library/recommend_hot.lbi' => 3,
         '/library/ur_here.lbi' => 0,
         '/library/search_form.lbi' => 0,
         '/library/member.lbi' => 0,

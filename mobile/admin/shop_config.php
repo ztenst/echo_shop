@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理中心商店设置
+ * 鸿宇多用户商城 管理中心商店设置
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: shop_config.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: shop_config.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 /* 代码 */
 require(dirname(__FILE__) . '/includes/init.php');
@@ -29,7 +29,7 @@ else
 
 $sess_id = $GLOBALS['sess']->get_session_id();
 
-$auth = time();
+$auth = mktime();
 $ac = md5($certi_id.'SHOPEX_SMS'.$auth);
 $url = 'http://service.shopex.cn/sms/index.php?certificate_id='.$certi_id.'&sess_id='.$sess_id.'&auth='.$auth.'&ac='.$ac;
 
@@ -42,11 +42,11 @@ if ($_REQUEST['act'] == 'list_edit')
     admin_priv('shop_config');
 
     /* 可选语言 */
-    $dir = opendir('../lang');
+    $dir = opendir('../languages');
     $lang_list = array();
     while (@$file = readdir($dir))
     {
-        if ($file != '.' && $file != '..' &&  $file != '.svn' && $file != '_svn' && is_dir('../lang/' .$file))
+        if ($file != '.' && $file != '..' &&  $file != '.svn' && $file != '_svn' && is_dir('../languages/' .$file))
         {
             $lang_list[] = $file;
         }
@@ -55,7 +55,7 @@ if ($_REQUEST['act'] == 'list_edit')
 
     $smarty->assign('lang_list',    $lang_list);
     $smarty->assign('ur_here',      $_LANG['01_shop_config']);
-    $smarty->assign('group_list',   get_settings(null, array('5')));
+    $smarty->assign('group_list',   get_settings());
     $smarty->assign('countries',    get_regions());
 
     if (strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'iis') !== false)
@@ -76,6 +76,28 @@ if ($_REQUEST['act'] == 'list_edit')
             $smarty->assign('cities', get_regions(2, $_CFG['shop_province']));
         }
     }
+	
+	//dqy add start 2015-7-7
+	/* 取得用户等级 */
+	$sql = "SELECT value FROM " . $ecs->table('ecsmart_shop_config') . " WHERE code = 'distrib_rank'";
+	$ranks = $db->getOne($sql);
+    $user_rank_list = array();
+    $sql = "SELECT rank_id, rank_name FROM " . $ecs->table('user_rank');
+    $res = $db->query($sql);
+
+    while ($row = $db->fetchRow($res))
+    {
+        $row['checked'] = strpos(',' . $ranks . ',', ',' . $row['rank_id']. ',') !== false;
+		
+        $user_rank_list[] = $row;
+    }
+	if($ranks == '-1')
+	{
+		$smarty->assign('ranks',$ranks);
+	}
+    $smarty->assign('user_rank_list', $user_rank_list);
+	//dqy add end 2015-7-7
+	
     $smarty->assign('cfg', $_CFG);
 
     assign_query_info();
@@ -116,7 +138,7 @@ elseif ($_REQUEST['act'] == 'post')
     $count = count($_POST['value']);
 
     $arr = array();
-    $sql = 'SELECT id, value FROM ' . $ecs->table('touch_shop_config');
+    $sql = 'SELECT id, value FROM ' . $ecs->table('ecsmart_shop_config',1);
     $res= $db->query($sql);
     while($row = $db->fetchRow($res))
     {
@@ -126,14 +148,14 @@ elseif ($_REQUEST['act'] == 'post')
     {
         if($arr[$key] != $val)
         {
-            $sql = "UPDATE " . $ecs->table('touch_shop_config') . " SET value = '" . trim($val) . "' WHERE id = '" . $key . "'";
+            $sql = "UPDATE " . $ecs->table('ecsmart_shop_config',1) . " SET value = '" . trim($val) . "' WHERE id = '" . $key . "'";
             $db->query($sql);
         }
     }
 
     /* 处理上传文件 */
     $file_var_list = array();
-    $sql = "SELECT * FROM " . $ecs->table('touch_shop_config') . " WHERE parent_id > 0 AND type = 'file'";
+    $sql = "SELECT * FROM " . $ecs->table('ecsmart_shop_config',1) . " WHERE parent_id > 0 AND type = 'file'";
     $res = $db->query($sql);
     while ($row = $db->fetchRow($res))
     {
@@ -185,7 +207,7 @@ elseif ($_REQUEST['act'] == 'post')
                 /* 判断是否上传成功 */
                 if (move_upload_file($file['tmp_name'], $file_name))
                 {
-                    $sql = "UPDATE " . $ecs->table('touch_shop_config') . " SET value = '$file_name' WHERE code = '$code'";
+                    $sql = "UPDATE " . $ecs->table('ecsmart_shop_config',1) . " SET value = '$file_name' WHERE code = '$code'";
                     $db->query($sql);
                 }
                 else
@@ -195,6 +217,29 @@ elseif ($_REQUEST['act'] == 'post')
             }
         }
     }
+	//dqy add start 2015-7-7
+	/* 处理分销商的会员等级 */
+	if(!empty($_POST['all_rank']))
+	{
+		$sql = "UPDATE " . $ecs->table('ecsmart_shop_config',1) . " SET value = '" . $_POST['all_rank'][0] . "' WHERE code = 'distrib_rank'";
+        $db->query($sql);
+	}
+	else
+	{
+		if(!empty($_POST['user_rank']))
+		{
+			$user_ranks = $_POST['user_rank'];
+			$user_rank = '';
+			for($i = 0;$i < count($user_ranks); $i++) 
+			{
+				 $user_rank .= $user_ranks[$i].',';
+			}
+			$user_rank = rtrim($user_rank,",");
+			$sql = "UPDATE " . $ecs->table('ecsmart_shop_config',1) . " SET value = '" . $user_rank . "' WHERE code = 'distrib_rank'";
+			$db->query($sql);
+		}
+	}
+	//dqy add end 2015-7-7
 
     /* 处理发票类型及税率 */
     if (!empty($_POST['invoice_rate']))
@@ -212,7 +257,7 @@ elseif ($_REQUEST['act'] == 'post')
             'type' => $_POST['invoice_type'],
             'rate' => $_POST['invoice_rate']
         );
-        $sql = "UPDATE " . $ecs->table('touch_shop_config') . " SET value = '" . serialize($invoice) . "' WHERE code = 'invoice_type'";
+        $sql = "UPDATE " . $ecs->table('ecsmart_shop_config',1) . " SET value = '" . serialize($invoice) . "' WHERE code = 'invoice_type'";
         $db->query($sql);
     }
 
@@ -228,7 +273,7 @@ elseif ($_REQUEST['act'] == 'post')
     $shop_province  = $db->getOne("SELECT region_name FROM ".$ecs->table('region')." WHERE region_id='$_CFG[shop_province]'");
     $shop_city      = $db->getOne("SELECT region_name FROM ".$ecs->table('region')." WHERE region_id='$_CFG[shop_city]'");
 
-    $spt = '<script type="text/javascript" src="http://api.ecshop.com/record.php?';
+    $spt = '<script type="text/javascript" src="http://api.hongyuvip.com/record.php?';
     $spt .= "url=" .urlencode($ecs->url());
     $spt .= "&shop_name=" .urlencode($_CFG['shop_name']);
     $spt .= "&shop_title=".urlencode($_CFG['shop_title']);
@@ -325,7 +370,7 @@ function update_configure($key, $val='')
 {
     if (!empty($key))
     {
-        $sql = "UPDATE " . $GLOBALS['ecs']->table('touch_shop_config') . " SET value='$val' WHERE code='$key'";
+        $sql = "UPDATE " . $GLOBALS['ecs']->table('ecsmart_shop_config',1) . " SET value='$val' WHERE code='$key'";
 
         return $GLOBALS['db']->query($sql);
     }
@@ -365,7 +410,7 @@ function get_settings($groups=null, $excludes=null)
     }
 
     /* 取出全部数据：分组和变量 */
-    $sql = "SELECT * FROM " . $ecs->table('touch_shop_config') .
+    $sql = "SELECT * FROM " . $ecs->table('ecsmart_shop_config',1) .
             " WHERE type<>'hidden' $config_groups $excludes_groups ORDER BY parent_id, sort_order, id";
     $item_list = $db->getAll($sql);
 

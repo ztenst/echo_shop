@@ -1,6 +1,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- {if $vote} -->
-{insert_scripts files='transport_jquery.js'}
+{insert_scripts files='transport.js'}
 
 <div id="ECS_VOTE">
 <div  class="box">

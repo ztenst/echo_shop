@@ -103,7 +103,7 @@ Compare = {
       li.appendChild(span);
       li.style.listStyle = "none";
       var delBtn = document.createElement("IMG");
-      delBtn.src = "themes/default/images/drop.gif";
+      delBtn.src = "themesmobile/default/images/drop.gif";
       delBtn.className = key;
       delBtn.onclick = function(){
         document.getElementById("compareList").removeChild(this.parentNode);

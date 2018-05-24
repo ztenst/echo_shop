@@ -85,3 +85,14 @@ function change_tab_style(item, elem, obj)
     }
     _o.className = '';
 }
+
+
+function guanzhu(sid){
+    $.ajax({
+        url:'supplier.php?go=other&act=add_guanzhu&suppId=' + sid,
+        dataType: 'json', 
+        success:function(data){
+            alert(data.info); 
+        }
+    })
+}

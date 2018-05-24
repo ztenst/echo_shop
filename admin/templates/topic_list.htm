@@ -20,12 +20,12 @@
     </tr>
     {foreach from=$topic_list item=topic}
     <tr>
-      <td><span><input value="{$topic.topic_id}" name="checkboxs[]" type="checkbox">{$topic.topic_id}</span></td>
+      <td align="center"><span><input value="{$topic.topic_id}" name="checkboxs[]" type="checkbox">{$topic.topic_id}</span></td>
       
       <td>{$topic.title}</td>
       
-      <td>{$topic.start_time}</td>
-      <td>{$topic.end_time}</td>
+      <td align="center">{$topic.start_time}</td>
+      <td align="center">{$topic.end_time}</td>
       <td align="center"><a href="../topic.php?topic_id={$topic.topic_id}" title="{$lang.view}" target="_blank">{$lang.view}</a>    <a href="topic.php?act=edit&topic_id={$topic.topic_id}" title="{$lang.edit}">{$lang.edit}</a>
       <a href="javascript:;" on title="{$lang.drop}" onclick="listTable.remove({$topic.topic_id},delete_topic_confirm,'delete');">{$lang.drop}</a>
       <a href="ads.php?act=add&ad_name={$topic.title}&ad_link={$topic.url}" >{$lang.publish_to_ads}</a>

@@ -3,14 +3,11 @@
 <head>
 <title>{$lang.cp_home}{if $ur_here} - {$ur_here}{/if}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta name="renderer" content="webkit" />
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
 <link href="styles/main.css" rel="stylesheet" type="text/css" />
 {literal}
-<style type="text/css">
-body {
-  color: white;
-}
-</style>
 {/literal}
 {insert_scripts files="../js/utils.js,validator.js"}
 <script language="JavaScript">
@@ -27,88 +24,45 @@ if (window.parent != window)
 {/literal}
 //-->
 </script>
-<style type="text/css">
-/* css 重置 */
-
-* {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-body {
-	background: #fff;
-	font: normal 12px/22px 宋体;
-}
-img {
-	border: 0;
-}
-a {
-	text-decoration: none;
-	color: #333;
-}
-/* 本例子css */
-.slideBox {
-	width: 521px;
-	height: 70px;
-	overflow: hidden;
-	margin:0px auto;
-	margin-top:20px;
-	position: relative; background:url(images/qq.png) no-repeat;
-}
-.slideBox p{ position:absolute; right:12px; top:5px; height:55px; line-height:55px; color:#eb8918; width:150px; text-align:left; font-size:20px; }
-</style>
 </head>
-<body style="background:url(images/bg.jpg) repeat-x top center #ededed;" >
+<body style="background:url(images/login_bg.png) repeat-x;padding:0px;">
+<div style="width:1210px;height:768px;margin:0 auto;background:url(images/login_dl.jpg) no-repeat; " >
 <form method="post" action="privilege.php" name='theForm' onsubmit="return validate()">
-  <table cellspacing="0" cellpadding="0" style="width:521px; height:327px;background:url(images/loginbg.png); color:#727272; font-size:#727272; margin:auto; margin-top:212px;" align="center">
-    <tr>
-      <td height="99" align="center" valign="middle"><img src="images/logo.jpg" style="border:none; display:block; margin-top:15px; text-align:center;"/></td>
-    </tr>
-    <tr>
-      <td height="201" align="center" ><table width="328" height="180">
-          <tr>
-            <td width="131">{$lang.label_username}</td>
-            <td colspan="2"><input type="text" name="username" style=" width:216px; height:24px; padding:0; line-height:24px; background:url(images/txtbg.png) no-repeat; border:none; padding:0px 3px;" /></td>
-          </tr>
-          <tr>
-            <td>{$lang.label_password}</td>
-            <td colspan="2"><input type="password" name="password" style=" width:216px; line-height:24px; padding:0; height:24px; background:url(images/txtbg.png) no-repeat; border:none; padding:0px 3px;" /></td>
-          </tr>
-            {if $gd_version > 0}
+  <table cellspacing="0" cellpadding="0" style=" padding-top:295px; " align="center" class="login_dl">
+  <tr>
+<td class="dl">
+      <table cellspacing="0" cellpadding="0" width="100%">
       <tr>
-        <td  width="131">{$lang.label_captcha}</td>
-        <td><input type="text" name="captcha" class="capital"  style=" width:216px; height:24px; padding:0; line-height:24px; background:url(images/txtbg.png) no-repeat; border:none; padding:0px 3px;"  /></td>
+        <td class="dl_1" width="22%">{$lang.label_username}</td>
+        <td><input type="text" name="username" class="text_input1"/></td>
       </tr>
       <tr>
-      <td  width="131">&nbsp;&nbsp;&nbsp;</td>
-      <td colspan="2" align="center"><img src="index.php?act=captcha&{$random}" width="" height="" alt="CAPTCHA" border="1" onclick= this.src="index.php?act=captcha&"+Math.random() style="cursor: pointer;" title="{$lang.click_for_another}" />
-      </td>
+        <td class="dl_2">{$lang.label_password}</td>
+        <td><input type="password" name="password"  class="text_input1"/></td>
       </tr>
+      {if $gd_version > 0}
+      <tr>
+        <td class="dl_1">{$lang.label_captcha}</td>
+        <td><input type="text" name="captcha" class="capital text_input1" style="width:70px; margin-right:5px; float:left; "/><img src="index.php?act=captcha&{$random}" width="126" height="36" alt="CAPTCHA" border="0" onclick= this.src="index.php?act=captcha&"+Math.random() style="cursor: pointer; float:left " title="{$lang.click_for_another}" /></td>
+      </tr>
+      
       {/if}
-         
-          <tr>
-            <td align="right">&nbsp;</td>
-            <td colspan="2" align="left"><input type="checkbox" value="1" name="remember" id="remember"/>
-              <label for="remember">{$lang.remember}</label></td>
-          </tr>
-          <tr>
-            <td colspan="3"></td>
-          </tr>
-          <tr>
-            <td height="34">&nbsp;</td>
-            <td colspan="2" align="left"><input type="submit" value="{$lang.signin_now}" class="button" style="background:url(images/btn.jpg); width:118px; height:28px; padding:0; color:#FFF; line-height:28px; border:none;" /></td>
-          </tr>
-          <tr>
-            <td colspan="3" align="center" >&raquo; <a href="../" style="color:#727272">{$lang.back_home}</a> &nbsp;&nbsp;&raquo; <a href="get_password.php?act=forget_pwd" style="color:#727272">{$lang.forget_pwd}</a></td>
-          </tr>
-        </table></td>
-    </tr>
-    <tr>
-      <td align="center" style="padding-left: 50px">&nbsp;</td>
-    </tr>
+     <tr class="low_height">
+        <td>&nbsp;</td>
+        <td><input type="checkbox" value="1" name="remember" id="remember" /><label for="remember" >{$lang.remember}</label></td></tr>
+      <tr>
+      	<td colspan="2" align="center"><input type="submit" value="登&nbsp;录" class="button2" /></td>
+      </tr>
+      <tr class="low_height1">
+        <td colspan="2" align="right">&raquo; <a href="../" >{$lang.back_home}</a> &raquo; <a href="get_password.php?act=forget_pwd">{$lang.forget_pwd}</a></td>
+      </tr>
+      </table>
+    </td>
+  </tr>
   </table>
   <input type="hidden" name="act" value="signin" />
 </form>
+</div>
 <script language="JavaScript">
 <!--
   document.forms['theForm'].elements['username'].focus();

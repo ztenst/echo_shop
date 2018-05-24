@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 积分商城
+ * 鸿宇多用户商城 积分商城
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: exchange.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: exchange.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -51,7 +51,7 @@ if ($_REQUEST['act'] == 'list')
     $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
     $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'exchange_integral' : 'last_update');
 
-    $sort    = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'exchange_integral', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
+    $sort    = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'exchange_integral', 'last_update','click_count'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
     $order   = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
     $display = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
     $display  = in_array($display, array('list', 'grid', 'text')) ? $display : 'text';
@@ -61,7 +61,7 @@ if ($_REQUEST['act'] == 'list')
     $cache_id = sprintf('%X', crc32($cat_id . '-' . $display . '-' . $sort  .'-' . $order  .'-' . $page . '-' . $size . '-' . $_SESSION['user_rank'] . '-' .
         $_CFG['lang'] . '-' . $integral_max . '-' .$integral_min));
 
-    if (!$smarty->is_cached('exchange.dwt', $cache_id))
+    if (!$smarty->is_cached('exchange_list.dwt', $cache_id))
     {
         /* 如果页面没有被缓存则重新获取页面的内容 */
 
@@ -85,10 +85,7 @@ if ($_REQUEST['act'] == 'list')
         $smarty->assign('helps',            get_shop_help());              // 网店帮助
         $smarty->assign('top_goods',        get_top10());                  // 销售排行
         $smarty->assign('promotion_info',   get_promotion_info());         // 促销活动信息
-		/* links */
-		$links = index_get_links();
-		$smarty->assign('img_links',       $links['img']);
-		$smarty->assign('txt_links',       $links['txt']);
+		
 
         /* 调查 */
         $vote = get_vote();
@@ -151,7 +148,55 @@ elseif ($_REQUEST['act'] == 'view')
         $smarty->assign('id',           $goods_id);
         $smarty->assign('type',         0);
         $smarty->assign('cfg',          $_CFG);
-        $smarty->assign('top_goods',        get_top10());                  // 销售排行
+		$sql_attr_www_ecshop68_com="SELECT a.attr_id, ga.goods_attr_id FROM ". $GLOBALS['ecs']->table('attribute') . " AS a left join ". $GLOBALS['ecs']->table('goods_attr') . "  AS ga on a.attr_id=ga.attr_id  WHERE a.is_attr_gallery=1 and ga.goods_id='" . $goods_id. "' order by ga.goods_attr_id ";
+$goods_attr=$GLOBALS['db']->getRow($sql_attr_www_ecshop68_com);
+$goods_attr_id=$goods_attr['goods_attr_id'];
+$smarty->assign('attr_id', $goods_attr['attr_id']);
+
+if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_gallery_attr')
+{
+	include('includes/cls_json.php');
+	$json = new JSON;
+
+	$goods_attr_id=$_REQUEST['goods_attr_id'];
+	$gallery_list_www_ecshop68_com=get_goods_gallery_attr_www_ecshop68_com($goods_id, $goods_attr_id);
+	$gallery_content=array();
+	$gallery_content['thumblist'] ='<ul>';
+	foreach($gallery_list_www_ecshop68_com as $gkey=>$gval)
+	{
+		$gallery_content['thumblist'] .= '<li>';
+		$gallery_content['thumblist'] .= '<a  href="'. $gval['img_original'] . '" rel="zoom-id: zoom; zoom-height: 360px;zoom-width:400px;"  rev="'.$gval['img_url'].'" name="'.$gval['img_url'].'" rev="'. $gval['img_original'] . '" ';
+
+		$gallery_content['thumblist'] .= '><img src="'. ($gval['thumb_url'] ? $gval['thumb_url'] : $gval['img_url']) . '" class="B_blue" ';
+		$gallery_content['thumblist'] .= '  /></a></li>';
+		if ($gkey==0)
+		{
+			$gallery_content['bigimg'] = $gval['img_original'] ;
+			$gallery_content['middimg'] .= $gval['img_url'] ;
+		}
+	}
+	$gallery_content['thumblist'] .='</ul>';
+
+	die ($json->encode($gallery_content));
+
+}
+
+
+if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_products_info')
+{
+include('includes/cls_json.php');
+
+$json = new JSON;
+// $res = array('err_msg' => '', 'result' => '', 'qty' => 1);
+
+$spce_id = $_GET['id'];
+$goods_id = $_GET['goods_id'];
+$row = get_products_info($goods_id,explode(",",$spce_id));
+//$res = array('err_msg'=>$goods_id,'id'=>$spce_id);
+die($json->encode($row));
+
+}
+
         /* 获得商品的信息 */
         $goods = get_exchange_goods_info($goods_id);
 
@@ -177,6 +222,20 @@ elseif ($_REQUEST['act'] == 'view')
             /* meta */
             $smarty->assign('keywords',           htmlspecialchars($goods['keywords']));
             $smarty->assign('description',        htmlspecialchars($goods['goods_brief']));
+
+			$count1 = $GLOBALS['db']->getOne("SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('comment') . " where comment_type=0 and id_value ='$goods_id' and status=1");
+			$smarty->assign('review_count',       $count1); 
+
+			//评价晒单 增加 by bbs.hongyuvip.com
+			$rank_num['rank_a'] = $db->getOne("SELECT COUNT(*) AS num FROM ".$ecs->table('comment')." WHERE id_value = '$goods_id' AND status = 1 AND comment_rank in (5,4)");
+			$rank_num['rank_b'] = $db->getOne("SELECT COUNT(*) AS num FROM ".$ecs->table('comment')." WHERE id_value = '$goods_id' AND status = 1 AND comment_rank in (3,2)");
+			$rank_num['rank_c'] = $db->getOne("SELECT COUNT(*) AS num FROM ".$ecs->table('comment')." WHERE id_value = '$goods_id' AND status = 1 AND comment_rank = 1");
+			$rank_num['rank_total'] = $rank_num['rank_a'] + $rank_num['rank_b'] + $rank_num['rank_c'];
+			$rank_num['rank_pa'] = ($rank_num['rank_a'] > 0) ? round(($rank_num['rank_a'] / $rank_num['rank_total']) * 100,1) : 0;
+			$rank_num['rank_pb'] = ($rank_num['rank_b'] > 0) ? round(($rank_num['rank_b'] / $rank_num['rank_total']) * 100,1) : 0;
+			$rank_num['rank_pc'] = ($rank_num['rank_c'] > 0) ? round(($rank_num['rank_c'] / $rank_num['rank_total']) * 100,1) : 0;
+			$rank_num['shaidan_num'] = $db->getOne("SELECT COUNT(*) AS num FROM ".$ecs->table('shaidan')." WHERE goods_id = '$goods_id' AND status = 1");
+			$smarty->assign('rank_num',$rank_num);
 
             assign_template();
 
@@ -204,12 +263,75 @@ elseif ($_REQUEST['act'] == 'view')
 
             $properties = get_goods_properties($goods_id);  // 获得商品的规格和属性
             $smarty->assign('properties',          $properties['pro']);                              // 商品属性
+			$goodstype = "select goods_type from ".$ecs->table('goods')." where goods_id='". $goods_id ."'";
+		$goodstype_one = $db->getOne($goodstype);
+		
+				/* 代码增加_start  By  bbs.hongyuvip.com */
+		$sql_zhyh_qq2211707 = "select attr_id from ".$ecs->table('attribute')." where cat_id='". $goodstype_one ."' and is_attr_gallery='1' ";
+		$attr_id_gallery = $db->getOne($sql_zhyh_qq2211707);
+		
+		$sql = "SELECT goods_attr_id, attr_value FROM " . $GLOBALS['ecs']->table('goods_attr') . " WHERE goods_id = '$goods_id'";
+		$results_www_ecshop68_com = $GLOBALS['db']->getAll($sql);
+		$return_arr = array();
+		foreach ($results_www_ecshop68_com as $value_ecshop68)
+		{
+			$return_arr[$value_ecshop68['goods_attr_id']] = $value_ecshop68['attr_value'];
+		}
+		$prod_options_arr=array();
+		
+		$prod_exist_arr = array();
+		$sql_prod  = "select goods_attr from ". $GLOBALS['ecs']->table('products') ." where product_number>0 and goods_id='$goods_id' order by goods_attr";
+		$res_prod = $db->query($sql_prod);
+		while ($row_prod = $GLOBALS['db']->fetchRow($res_prod))
+		{
+			$prod_exist_arr[] = "|". $row_prod['goods_attr'] ."|";			
+		}
+		$GLOBALS['smarty']->assign('prod_exist_arr', $prod_exist_arr);
+
+		$selected_first = array();
+
+		foreach ($properties['spe'] AS $skey_ecshop68=>$sval_ecshop68)
+		{
+			$hahaha_zhyh = 0;
+			$sskey_www_ecshop68_com = '-1';
+			foreach ($sval_ecshop68['values'] AS $sskey_ecshop68=>$ssval_ecshop68)
+			{				
+				if ( is_exist_prod($selected_first, $ssval_ecshop68['id'], $prod_exist_arr))
+				{ 
+					$hahaha_zhyh = $hahaha_zhyh ? $hahaha_zhyh : $ssval_ecshop68['id'];
+					$sskey_www_ecshop68_com = ($sskey_www_ecshop68_com != '-1') ? $sskey_www_ecshop68_com : $sskey_ecshop68;
+				}
+				else
+				{
+					$properties['spe'][$skey_ecshop68]['values'][$sskey_ecshop68]['disabled'] = "disabled";
+				}
+
+				if ($skey_ecshop68==$attr_id_gallery)
+				{
+					$goods_attr_id_qq2211707 = $ssval_ecshop68['id'] ;
+					$sql_qq2211707_qq87139667 = "select  thumb_url from ". $ecs->table('goods_gallery'). " where goods_id='$goods_id' and goods_attr_id='$goods_attr_id_qq2211707' and is_attr_image='1' ";
+					$properties['spe'][$skey_ecshop68]['values'][$sskey_ecshop68]['goods_attr_thumb'] = $db->getOne($sql_qq2211707_qq87139667);
+				}
+			}
+			if ($hahaha_zhyh)
+			{
+				$selected_first[$skey_ecshop68] =  $hahaha_zhyh;
+			}
+			if ($sskey_www_ecshop68_com!='-1')
+			{
+				$properties['spe'][$skey_ecshop68]['values'][$sskey_www_ecshop68_com]['selected_key_ecshop68'] = "1";
+			}
+		}
+		$smarty->assign('is_goods_page', 1);
+		//echo '<pre>';
+		//print_r($properties['spe']);
+		//echo '</pre>';
+		/* 代码增加_end  By  bbs.hongyuvip.com */
             $smarty->assign('specification',       $properties['spe']);                              // 商品规格
 
-            $smarty->assign('pictures',            get_goods_gallery($goods_id));                    // 商品相册
-			$smarty->assign('comment_percent',     comment_percent($goods_id));                      // 商品评价
-			
-
+            $smarty->assign('pictures',            get_goods_gallery_attr_www_ecshop68_com($goods_id, $goods_attr_id)); // 商品相册_修改 By bbs.hongyuvip.com
+			$smarty->assign('new_goods',           get_recommend_goods('new'));     // 最新商品  改 By bbs.hongyuvip.com
+			$smarty->assign('url',              $_SERVER["REQUEST_URI"]);
             assign_dynamic('exchange_goods');
         }
     }
@@ -272,13 +394,12 @@ elseif ($_REQUEST['act'] == 'buy')
     $specs = '';
     foreach ($_POST as $key => $value)
     {
-        if (strpos($key, 'spec_') !== false)
+        if (strpos($key, 'value_spec_') !== false)
         {
             $specs .= ',' . intval($value);
         }
     }
     $specs = trim($specs, ',');
-
     /* 查询：如果商品有规格则取规格商品信息 配件除外 */
     if (!empty($specs))
     {
@@ -336,14 +457,15 @@ elseif ($_REQUEST['act'] == 'buy')
         'is_gift'        => 0
     );
     $db->autoExecute($ecs->table('cart'), $cart, 'INSERT');
-
+	$_SESSION['sel_cartgoods'] = $db->insert_id();
     /* 记录购物流程类型：团购 */
     $_SESSION['flow_type'] = CART_EXCHANGE_GOODS;
     $_SESSION['extension_code'] = 'exchange_goods';
     $_SESSION['extension_id'] = $goods_id;
+	
 
     /* 进入收货人页面 */
-    ecs_header("Location: ./flow.php?step=consignee\n");
+    ecs_header("Location: ./flow.php?step=checkout\n");
     exit;
 }
 
@@ -388,7 +510,7 @@ function exchange_get_goods($children, $min, $max, $ext, $size, $page, $sort, $o
     }
 
     /* 获得商品列表 */
-    $sql = 'SELECT g.goods_id, g.goods_name, g.sales_volume, g.comments_number,g.goods_name_style, eg.exchange_integral, ' .
+    $sql = 'SELECT g.goods_id, g.goods_name, g.goods_name_style, eg.exchange_integral, ' .
                 'g.goods_type, g.goods_brief, g.goods_thumb , g.goods_img, eg.is_hot ' .
             'FROM ' . $GLOBALS['ecs']->table('exchange_goods') . ' AS eg, ' .$GLOBALS['ecs']->table('goods') . ' AS g ' .
             "WHERE eg.goods_id = g.goods_id AND $where $ext ORDER BY $sort $order";
@@ -430,8 +552,6 @@ function exchange_get_goods($children, $min, $max, $ext, $size, $page, $sort, $o
         }
         $arr[$row['goods_id']]['name']              = $row['goods_name'];
         $arr[$row['goods_id']]['goods_brief']       = $row['goods_brief'];
-		$arr[$row['goods_id']]['sales_volume']      = $row['sales_volume'];
-		$arr[$row['goods_id']]['comments_number']      = $row['comments_number'];
         $arr[$row['goods_id']]['goods_style_name']  = add_style($row['goods_name'],$row['goods_name_style']);
         $arr[$row['goods_id']]['exchange_integral'] = $row['exchange_integral'];
         $arr[$row['goods_id']]['type']              = $row['goods_type'];
@@ -604,5 +724,37 @@ function get_exchange_goods_info($goods_id)
     }
 }
 
+/* 代码增加_start By bbs.hongyuvip.com */
+/**
+ * 获得指定商品的相册
+ *
+ * @access  public
+ * @param   integer     $goods_id
+ * @return  array
+ */
+function get_goods_gallery_attr_www_ecshop68_com($goods_id, $goods_attr_id)
+{
 
+    $sql = 'SELECT img_id, img_original, img_url, thumb_url, img_desc' .
+        ' FROM ' . $GLOBALS['ecs']->table('goods_gallery') .
+        " WHERE goods_id = '$goods_id' and goods_attr_id='$goods_attr_id' LIMIT " . $GLOBALS['_CFG']['goods_gallery_number'];
+    $row = $GLOBALS['db']->getAll($sql);
+	if (count($row)==0)
+	{
+		$sql = 'SELECT img_id, img_original, img_url, thumb_url, img_desc' .
+        ' FROM ' . $GLOBALS['ecs']->table('goods_gallery') .
+        " WHERE goods_id = '$goods_id' and goods_attr_id='0' LIMIT " . $GLOBALS['_CFG']['goods_gallery_number'];
+		$row = $GLOBALS['db']->getAll($sql);
+	}
+    /* 格式化相册图片路径 */
+    foreach($row as $key => $gallery_img)
+    {
+        $row[$key]['img_url'] = get_image_path($goods_id, $gallery_img['img_url'], false, 'gallery');
+        $row[$key]['thumb_url'] = get_image_path($goods_id, $gallery_img['thumb_url'], true, 'gallery');
+		$row[$key]['img_original'] = get_image_path($goods_id, $gallery_img['img_original'], true, 'gallery');
+    }
+    return $row;
+}
+
+/* 代码增加_end By bbs.hongyuvip.com */
 ?>

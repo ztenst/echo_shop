@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心优惠活动管理
+ * 鸿宇多用户商城 管理中心优惠活动管理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: favourable.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: favourable.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
@@ -18,6 +18,8 @@ require(dirname(__FILE__) . '/includes/init.php');
 require(ROOT_PATH . 'includes/lib_goods.php');
 
 $exc = new exchange($ecs->table('favourable_activity'), $db, 'act_id', 'act_name');
+
+$logo_path = "favourable_action_pic/supplier";
 
 /*------------------------------------------------------ */
 //-- 活动列表页
@@ -267,6 +269,13 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 
     /* 是否添加 */
     $is_add = $_REQUEST['act'] == 'insert';
+    
+	//添加时必须上传图片
+    if($is_add){
+    	if(!$_FILES['logo']['size']){
+    		sys_msg('活动代表图片必须有!');
+    	}
+    }
 
     /* 检查名称是否重复 */
     $act_name = sub_str($_POST['act_name'], 255, false);
@@ -335,6 +344,29 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     {
         $db->autoExecute($ecs->table('favourable_activity'), $favourable, 'UPDATE', "act_id = '$favourable[act_id]'");
     }
+    
+	//代表图片上传
+	if($_FILES['logo']['size']){
+		$save['supplier_id'] = 0;//自营运营商
+		include_once(ROOT_PATH . 'includes/cls_image.php');
+		$image = new cls_image($_CFG['bgcolor']);
+		$logo_path .= $save['supplier_id'];
+		$logo_name = "original".$save['supplier_id'].'_'.$favourable['act_id'].substr($_FILES['logo']['name'],-4);
+		$picinfo = $image->upload_image($_FILES['logo'],$logo_path,$logo_name);
+		$parray = pathinfo($picinfo);
+		if($picinfo){
+			
+			$create_pic_info = array('580x260'=>array('width'=>580,'height'=>260));
+			foreach($create_pic_info as $key => $val){
+				$path = ROOT_PATH.$parray['dirname'].'/';
+				$image->create_pic_name = "original".$save['supplier_id'].'_'.$favourable['act_id']."_".$key;
+				$pinfo = $image->make_thumb(ROOT_PATH.$picinfo,$val['width'],$val['height'],$path);
+			}
+			$save['logo'] = '/'.$pinfo;
+		}
+		$pic_sql = "update " .$ecs->table('favourable_activity'). " set logo='".$save['logo']."' where act_id=".$favourable['act_id'];
+		$db->query($pic_sql);
+	}
 
     /* 记日志 */
     if ($is_add)
@@ -403,8 +435,8 @@ elseif ($_REQUEST['act'] == 'search')
     else
     {
         $sql = "SELECT goods_id AS id, goods_name AS name FROM " . $ecs->table('goods') .
-            " WHERE goods_name LIKE '%" . mysql_like_quote($filter->keyword) . "%'" .
-            " OR goods_sn LIKE '%" . mysql_like_quote($filter->keyword) . "%' LIMIT 50";
+            " WHERE supplier_id=0 AND (goods_name LIKE '%" . mysql_like_quote($filter->keyword) . "%'" .
+            " OR goods_sn LIKE '%" . mysql_like_quote($filter->keyword) . "%') LIMIT 50";
         $arr = $db->getAll($sql);
     }
     if (empty($arr))
@@ -449,7 +481,7 @@ function favourable_list()
         }
 
         $sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('favourable_activity') .
-                " WHERE 1 $where";
+                " WHERE supplier_id = 0 $where";
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
         /* 分页大小 */
@@ -458,7 +490,7 @@ function favourable_list()
         /* 查询 */
         $sql = "SELECT * ".
                 "FROM " . $GLOBALS['ecs']->table('favourable_activity') .
-                " WHERE 1 $where ".
+                " WHERE supplier_id = 0 $where ".
                 " ORDER BY $filter[sort_by] $filter[sort_order] ".
                 " LIMIT ". $filter['start'] .", $filter[page_size]";
 
@@ -475,8 +507,8 @@ function favourable_list()
     $list = array();
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
-        $row['start_time']  = local_date('Y-m-d H:i', $row['start_time']);
-        $row['end_time']    = local_date('Y-m-d H:i', $row['end_time']);
+        $row['start_time']  = local_date('Y-m-d H:i:s ', $row['start_time']);
+        $row['end_time']    = local_date('Y-m-d H:i:s ', $row['end_time']);
 
         $list[] = $row;
     }

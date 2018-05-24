@@ -50,24 +50,12 @@
       <tr>
         <td class="label"><a href="javascript:showNotice('noticeAttrType');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.label_attr_type}</td>
         <td>
-         <!-- EC模板修改 start by zhouH -->
-          <input type="radio" name="attr_type" value="0" {if $attr.attr_type eq 0} checked="true" {/if} onClick="document.getElementById('show_img_box').style.display='none'; document.getElementsByName('is_show_img')[0].checked=true;"  /> {$lang.attr_type_values[0]}
-         
-          <input type="radio" name="attr_type" value="1" {if $attr.attr_type eq 1} checked="true" {/if} onClick="document.getElementById('show_img_box').style.display=''" /> {$lang.attr_type_values[1]}
-             
-          <input type="radio" name="attr_type" value="2" {if $attr.attr_type eq 2} checked="true" {/if} onClick="document.getElementById('show_img_box').style.display='none' document.getElementsByName('is_show_img')[0].checked=true;"/> {$lang.attr_type_values[2]}<!-- EC模板修改 end by zhouH -->
+          <input type="radio" name="attr_type" value="0" {if $attr.attr_type eq 0} checked="true" {/if} /> {$lang.attr_type_values[0]}
+          <input type="radio" name="attr_type" value="1" {if $attr.attr_type eq 1} checked="true" {/if} /> {$lang.attr_type_values[1]}
+          <input type="radio" name="attr_type" value="2" {if $attr.attr_type eq 2} checked="true" {/if} /> {$lang.attr_type_values[2]}
           <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeAttrType">{$lang.note_attr_type}</span>
         </td>
       </tr>
-       <!-- EC模板修改 start by zhouH -->
-       <tr id="show_img_box"  {if $attr.attr_type neq 1}style="display:none;"{/if}>
-        <td class="label">是否显示属性图片</td>
-        <td>
-          <input type="radio" name="is_show_img" value="0" {if $attr.is_show_img eq 0} checked="true" {/if} /> {$lang.no}
-          <input type="radio" name="is_show_img" value="1" {if $attr.is_show_img eq 1} checked="true" {/if} /> {$lang.yes}
-        </td>
-      </tr>
-      <!-- EC模板修改 end by zhouH -->
       <tr>
         <td class="label">{$lang.label_attr_input_type}</td>
         <td>
@@ -85,6 +73,27 @@
           <textarea name="attr_values" cols="30" rows="5">{$attr.attr_values}</textarea>
         </td>
       </tr>
+      <!--增加条形码选择开始 0不显示 1显示-->
+      <tr>
+      	<td class="label">{$lang.label_txm_type}</td>
+       	<td>
+        	<input type="radio" name="attr_txm" value="0" {if $attr.attr_txm eq 0} checked="true" {/if} />{$lang.no}
+            <input type="radio" name="attr_txm" value="1" {if $attr.attr_txm eq 1} checked="true" {/if} />{$lang.yes}
+          </td>
+       </tr>
+       <!--增加条形码选择结束 0不显示 1显示-->
+      
+	  <!--代码增加_start By bbs.hongyuvip.com-->
+		<tr>
+        <td class="label"><font color=#ff3300>是否启用属性相册：</font></td>
+        <td>
+          <input type="radio" name="is_attr_gallery" value="1" {if $attr.is_attr_gallery eq 1 }checked=checked{/if}>启用
+		  <input type="radio" name="is_attr_gallery" value="0" {if $attr.is_attr_gallery eq 0 }checked=checked{/if}>不启用
+		  <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} >注意每个商品类型下只能有一个属性被启用“属性相册”</span>
+        </td>
+      </tr>
+	  <!--代码增加_end By bbs.hongyuvip.com-->
+
       <tr>
         <td colspan="2">
         <div class="button-div">

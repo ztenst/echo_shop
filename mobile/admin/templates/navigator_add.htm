@@ -1,9 +1,9 @@
 {include file="pageheader.htm"}
-{insert_scripts files="./js/validator.js"}
+{insert_scripts files="validator.js"}
 <div class="main-div">
 <form action="navigator.php" method="post" name="form" onSubmit="return checkForm();">
 <table cellspacing="1" cellpadding="3" width="100%">
-<tr style="display:none">
+<tr>
     <td>{$lang.system_main}</td> <td>
         <select onchange="add_main(this.value);" name="menulist" id="menulist">
             <option value='-'>-</option>
@@ -28,14 +28,6 @@
     <td>{$lang.item_vieworder}</td> <td><input type="text" name="item_vieworder" value="{$rt.item_vieworder}" size="40" /></td>
 </tr>
 <tr>
-    <td><a href="javascript:showNotice('ico');" title="{$lang.notice_url}"><img src="images/notice.gif" width="16" height="16" border="0">小图标</a></td> <td><input type="text" name="item_pic" value="{$rt.item_pic}" size="40" /></td>
-</tr>
-  <tr>
-    <td></td>
-    <td>
-<span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="ico">请上传ico图标到模板images目录下</span></td>
-  </tr>
-<tr>
     <td>{$lang.item_ifshow}</td> <td><select name="item_ifshow">
   <option value='1' {$rt.item_ifshow_1}>{$lang.yes}</option><option value='0' {$rt.item_ifshow_0}>{$lang.no}</option>
   </select></td>
@@ -45,9 +37,9 @@
   <option value='0' {$rt.item_opennew_0}>{$lang.no}</option><option value='1' {$rt.item_opennew_1}>{$lang.yes}</option>
   </select></td>
 </tr>
-<tr style="display:none">
+<tr>
     <td>{$lang.item_type}</td> <td><select name="item_type">
-  <option value='top' {$rt.item_type_top}>{$lang.top}</option><option value='middle' {$rt.item_type_middle} selected="selected">{$lang.middle}</option><option value='bottom' {$rt.item_type_bottom}>{$lang.bottom}</option>
+  <option value='top' {$rt.item_type_top}>{$lang.top}</option><option value='middle' {$rt.item_type_middle}>{$lang.middle}</option><option value='bottom' {$rt.item_type_bottom}>{$lang.bottom}</option>
   </select></td>
 </tr>
 <tr align="center">

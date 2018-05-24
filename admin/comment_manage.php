@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 用户评论管理程序
+ * 鸿宇多用户商城 用户评论管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: comment_manage.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: comment_manage.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -229,17 +229,7 @@ if ($_REQUEST['act'] == 'check')
         /* 允许评论显示 */
         $sql = "UPDATE " .$ecs->table('comment'). " SET status = 1 WHERE comment_id = '$_REQUEST[id]'";
         $db->query($sql);
-		
-		$sql = 'SELECT id_value FROM '.$ecs->table('comment')." WHERE comment_id = '$_REQUEST[id]'";
-		$goods_id = $db->getOne($sql);
 
-		$sql = "SELECT COUNT(*) FROM ".$ecs->table('comment')." WHERE id_value = '$goods_id' AND comment_type = 0 AND status = 1 AND parent_id = 0 ";	
-		$count = $db->getOne($sql);
-	
-	
-		$sql = "UPDATE ".$ecs->table('goods'). " SET comments_number = '$count' WHERE goods_id = '$goods_id'";
-
-		$db->query($sql);
         //add_feed($_REQUEST['id'], COMMENT_GOODS);
 
         /* 清除缓存 */
@@ -253,17 +243,6 @@ if ($_REQUEST['act'] == 'check')
         /* 禁止评论显示 */
         $sql = "UPDATE " .$ecs->table('comment'). " SET status = 0 WHERE comment_id = '$_REQUEST[id]'";
         $db->query($sql);
-		
-		$sql = 'SELECT id_value FROM '.$ecs->table('comment')." WHERE comment_id = '$_REQUEST[id]'";
-		$goods_id = $db->getOne($sql);
-
-		$sql = "SELECT COUNT(*) FROM ".$ecs->table('comment')." WHERE id_value = '$goods_id' AND comment_type = 0 AND status = 1 AND parent_id = 0 ";	
-		$count = $db->getOne($sql);
-	
-	
-		$sql = "UPDATE ".$ecs->table('goods'). " SET comments_number = '$count' WHERE goods_id = '$goods_id'";
-
-		$db->query($sql);
 
         /* 清除缓存 */
         clear_cache_files();
@@ -371,7 +350,6 @@ function get_comment_list()
             " ORDER BY $filter[sort_by] $filter[sort_order] ".
             " LIMIT ". $filter['start'] .", $filter[page_size]";
     $res  = $GLOBALS['db']->query($sql);
-
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
         $sql = ($row['comment_type'] == 0) ?

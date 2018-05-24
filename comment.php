@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 提交用户评论
+ * 鸿宇多用户商城 提交用户评论
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: comment.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: comment.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -240,18 +240,19 @@ else
     $cmt->id   = !empty($_GET['id'])   ? intval($_GET['id'])   : 0;
     $cmt->type = !empty($_GET['type']) ? intval($_GET['type']) : 0;
     $cmt->page = isset($_GET['page'])   && intval($_GET['page'])  > 0 ? intval($_GET['page'])  : 1;
+	$cmt->comment_level = !empty($_GET['comment_level']) ? intval($_GET['comment_level'])  : 0;  //代码增加  By www.ecshophome.com
 }
 
 if ($result['error'] == 0)
 {
-    $comments = assign_comment($cmt->id, $cmt->type, $cmt->page);
+    $comments = assign_comment($cmt->id, $cmt->type, $cmt->page, $cmt->comment_level);  //代码修改 增加一个 $cmt->comment_level   By www.ecshophome.com
 
     $smarty->assign('comment_type', $cmt->type);
+	$smarty->assign('comment_level',    $cmt->comment_level);  //代码增加  By www.ecshophome.com
     $smarty->assign('id',           $cmt->id);
     $smarty->assign('username',     $_SESSION['user_name']);
     $smarty->assign('email',        $_SESSION['email']);
     $smarty->assign('comments',     $comments['comments']);
-	$smarty->assign('comment_percent',     $comments['comment_percent']);
     $smarty->assign('pager',        $comments['pager']);
 
     /* 验证码相关设置 */
@@ -285,7 +286,7 @@ function add_comment($cmt)
 
     $user_id = empty($_SESSION['user_id']) ? 0 : $_SESSION['user_id'];
     $email = empty($cmt->email) ? $_SESSION['email'] : trim($cmt->email);
-    $user_name = empty($cmt->username) ? $_SESSION['user_name'] : '';
+    $user_name = empty($cmt->username) ? $_SESSION['user_name'] : trim($cmt->username);
     $email = htmlspecialchars($email);
     $user_name = htmlspecialchars($user_name);
 
@@ -295,23 +296,7 @@ function add_comment($cmt)
            "('" .$cmt->type. "', '" .$cmt->id. "', '$email', '$user_name', '" .$cmt->content."', '".$cmt->rank."', ".gmtime().", '".real_ip()."', '$status', '0', '$user_id')";
 
     $result = $GLOBALS['db']->query($sql);
-	
-	$goods_id = $cmt->id;
-
-	$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('comment')." WHERE id_value = '$goods_id' AND comment_type = 0 AND status = 1 AND parent_id = 0 ";	
-	$count = $GLOBALS['db']->getOne($sql);
-
-	if(empty($count))
-	{
-		$count = 0;
-	}
-
-	$sql = "UPDATE ".$GLOBALS['ecs']->table('goods'). " SET comments_number = '$count' WHERE goods_id = '$goods_id'";
-
-	$GLOBALS['db']->query($sql);
-	
-	clear_cache_files();
-    //clear_cache_files('comments_list.lbi');
+    clear_cache_files('comments_list.lbi');
     /*if ($status > 0)
     {
         add_feed($GLOBALS['db']->insert_id(), COMMENT_GOODS);

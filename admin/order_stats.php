@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 订单统计
+ * 鸿宇多用户商城 订单统计
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: order_stats.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: order_stats.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -391,6 +391,9 @@ elseif ($act = 'download')
     /* 未确认订单数 */
     $sql = 'SELECT COUNT(*) AS unconfirmed_num FROM ' .$GLOBALS['ecs']->table('order_info').
            " WHERE order_status = '" .OS_UNCONFIRMED. "' AND add_time >= '$start_date'".
+           // 代码增加   By  bbs.hongyuvip.com Start
+           " AND supplier_id = 0 AND extension_code <> 'virtual_good'".
+           // 代码增加   By  bbs.hongyuvip.com End
            " AND add_time < '" . ($end_date + 86400) . "'";
 
     $order_info['unconfirmed_num'] = $GLOBALS['db']->getOne($sql);
@@ -398,18 +401,30 @@ elseif ($act = 'download')
     /* 已确认订单数 */
     $sql = 'SELECT COUNT(*) AS confirmed_num FROM ' .$GLOBALS['ecs']->table('order_info').
            " WHERE order_status = '" .OS_CONFIRMED. "' AND shipping_status NOT ". db_create_in(array(SS_SHIPPED, SS_RECEIVED)) . " AND pay_status NOT" . db_create_in(array(PS_PAYED, PS_PAYING)) ." AND add_time >= '$start_date'".
+           // 代码增加   By  bbs.hongyuvip.com Start
+           " AND supplier_id = 0 AND extension_code <> 'virtual_good'".
+           // 代码增加   By  bbs.hongyuvip.com End
            " AND add_time < '" . ($end_date + 86400) . "'";
     $order_info['confirmed_num'] = $GLOBALS['db']->getOne($sql);
 
     /* 已成交订单数 */
     $sql = 'SELECT COUNT(*) AS succeed_num FROM ' .$GLOBALS['ecs']->table('order_info').
            " WHERE 1 " . order_query_sql('finished') .
+           // 代码增加   By  bbs.hongyuvip.com Start
+           " AND supplier_id = 0 AND extension_code <> 'virtual_good'".
+           // 代码增加   By  bbs.hongyuvip.com End
            " AND add_time >= '$start_date' AND add_time < '" . ($end_date + 86400) . "'";
     $order_info['succeed_num'] = $GLOBALS['db']->getOne($sql);
 
     /* 无效或已取消订单数 */
     $sql = "SELECT COUNT(*) AS invalid_num FROM " .$GLOBALS['ecs']->table('order_info').
-           " WHERE order_status > '" .OS_CONFIRMED. "'".
+           // 代码修改   By  bbs.hongyuvip.com Start
+//            " WHERE order_status > '" .OS_CONFIRMED. "'".
+           " WHERE (order_status = '" .OS_CANCELED. "' OR order_status = '" .OS_INVALID. "')".
+           // 代码修改   By  bbs.hongyuvip.com End
+           // 代码增加   By  bbs.hongyuvip.com Start
+           " AND supplier_id = 0 AND extension_code <> 'virtual_good'".
+           // 代码增加   By  bbs.hongyuvip.com End
            " AND add_time >= '$start_date' AND add_time < '" . ($end_date + 86400) . "'";
     $order_info['invalid_num'] = $GLOBALS['db']->getOne($sql);
     return $order_info;

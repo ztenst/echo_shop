@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理中心公用函数库
+ * 鸿宇多用户商城 管理中心公用函数库
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_main.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: lib_main.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-if (!defined('IN_ECTOUCH'))
+if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
@@ -151,10 +151,10 @@ function insert_config($parent, $code, $value)
 {
     global $ecs, $db, $_LANG;
 
-    $sql = 'SELECT id FROM ' . $ecs->table('touch_shop_config') . " WHERE code = '$parent' AND type = 1";
+    $sql = 'SELECT id FROM ' . $ecs->table('ecsmart_shop_config') . " WHERE code = '$parent' AND type = 1";
     $parent_id = $db->getOne($sql);
 
-    $sql = 'INSERT INTO ' . $ecs->table('touch_shop_config') . ' (parent_id, code, value) ' .
+    $sql = 'INSERT INTO ' . $ecs->table('ecsmart_shop_config',1) . ' (parent_id, code, value) ' .
             "VALUES('$parent_id', '$code', '$value')";
     $db->query($sql);
 }
@@ -292,7 +292,7 @@ function get_position_list()
 {
     $position_list = array();
     $sql = 'SELECT position_id, position_name, ad_width, ad_height '.
-           'FROM ' . $GLOBALS['ecs']->table('touch_ad_position');
+           'FROM ' . $GLOBALS['ecs']->table('ecsmart_ad_position');
     $res = $GLOBALS['db']->query($sql);
 
     while ($row = $GLOBALS['db']->fetchRow($res))
@@ -311,15 +311,48 @@ function get_position_list()
 function create_html_editor($input_name, $input_value = '')
 {
     global $smarty;
+    $kindeditor="<script charset='utf-8' src='../includes/kindeditor/kindeditor-min.js'></script>
+    <script>
+        var editor;
+            KindEditor.ready(function(K) {
+                editor = K.create('textarea[name=\"$input_name\"]', {
+                    allowFileManager : true,
+                    width : '100%',
+                    height: '300px',
+                    resizeType: 0    //固定宽高
+                });
+            });
+    </script>
+    <textarea id=\"$input_name\" name=\"$input_name\" style='width:100%;height:300px;'>$input_value</textarea>
+	<input type=\"submit\" value=\"提交\" />
+    ";
+    $smarty->assign('FCKeditor', $kindeditor);  //这里前面的 FCKEditor 不要变
+}
 
-    $editor = new FCKeditor($input_name);
-    $editor->BasePath   = '../include/fckeditor/';
-    $editor->ToolbarSet = 'Normal';
-    $editor->Width      = '100%';
-    $editor->Height     = '320';
-    $editor->Value      = $input_value;
-    $FCKeditor = $editor->CreateHtml();
-    $smarty->assign('FCKeditor', $FCKeditor);
+/**
+ * 取得商品列表：用于把商品添加到分销商品
+ * @param   object  $filters    过滤条件
+ */
+function get_distrib_goods_list($filter)
+{
+    $filter->keyword = json_str_iconv($filter->keyword);
+    $where = get_where_sql($filter); // 取得过滤条件
+//	if($where)
+//	{
+//		$where .= " AND g.supplier_id = 0 ";
+//	}
+//	else
+//	{
+//		$where .= " g.supplier_id = 0 ";
+//	}
+
+    /* 取得数据 */
+    $sql = 'SELECT goods_id, goods_name, shop_price '.
+           'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' . $where . 
+           'LIMIT 50';
+    $row = $GLOBALS['db']->getAll($sql);
+
+    return $row;
 }
 
 /**
@@ -482,7 +515,7 @@ function goods_type_list($selected)
 function get_pay_ids()
 {
     $ids = array('is_cod' => '0', 'is_not_cod' => '0');
-    $sql = 'SELECT pay_id, is_cod FROM ' .$GLOBALS['ecs']->table('touch_payment'). ' WHERE enabled = 1';
+    $sql = 'SELECT pay_id, is_cod FROM ' .$GLOBALS['ecs']->table('payment'). ' WHERE enabled = 1';
     $res = $GLOBALS['db']->query($sql);
 
     while ($row = $GLOBALS['db']->fetchRow($res))
@@ -541,7 +574,7 @@ function get_charset_list()
  */
 function make_json_response($content='', $error="0", $message='', $append=array())
 {
-    include_once(ROOT_PATH . 'include/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
 
     $json = new JSON;
 

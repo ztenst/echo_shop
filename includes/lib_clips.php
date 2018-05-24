@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 用户相关函数库
+ * 鸿宇多用户商城 用户相关函数库
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_clips.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: lib_clips.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 if (!defined('IN_ECS'))
@@ -52,7 +52,19 @@ function get_collection_goods($user_id, $num = 10, $start = 0)
         {
             $promote_price = 0;
         }
-		$goods_list[$row['goods_id']]['goods_thumb']   = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+
+		/* 判断是否为正在预售的商品 */
+		$pre_sale_id = is_pre_sale_goods($row['goods_id']);
+		if($pre_sale_id != null)
+		{
+			$goods_list[$row['goods_id']]['is_pre_sale']        = 1;
+			$goods_list[$row['goods_id']]['pre_sale_id']        = $pre_sale_id;
+		}
+		else 
+		{
+			$goods_list[$row['goods_id']]['is_pre_sale']        = 0;
+		}
+        
         $goods_list[$row['goods_id']]['rec_id']        = $row['rec_id'];
         $goods_list[$row['goods_id']]['is_attention']  = $row['is_attention'];
         $goods_list[$row['goods_id']]['goods_id']      = $row['goods_id'];
@@ -61,9 +73,47 @@ function get_collection_goods($user_id, $num = 10, $start = 0)
         $goods_list[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $goods_list[$row['goods_id']]['promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';
         $goods_list[$row['goods_id']]['url']           = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
+        $goods_list[$row['goods_id']]['thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'],true);
     }
 
     return $goods_list;
+}
+
+/**
+ *  获取指定用户的关注店铺
+ *
+ * @access  public
+ * @param   int     $user_id        用户ID
+ * @param   int     $num            列表最大数量
+ * @param   int     $start          列表其实位置
+ *
+ * @return  array   $arr
+ */
+function get_follow_shops($user_id, $num = 10, $start = 0)
+{
+    $sql = 'SELECT sg.id,sg.supplierid,s.supplier_name,s.tel,s.company_name ' .
+            ' FROM ' . $GLOBALS['ecs']->table('supplier_guanzhu') . ' AS sg' .
+            " LEFT JOIN " . $GLOBALS['ecs']->table('supplier') . " AS s ".
+                "ON sg.supplierid = s.supplier_id ".
+            " WHERE sg.userid = '$user_id' ORDER BY sg.addtime DESC";
+    $res = $GLOBALS['db'] -> selectLimit($sql, $num, $start);
+
+    $supp_list = array();
+    while ($row = $GLOBALS['db']->fetchRow($res))
+    {
+    	$supp_list[$row['supplierid']]['id']        = $row['id'];
+        $supp_list[$row['supplierid']]['supplierid']        = $row['supplierid'];
+        $supp_list[$row['supplierid']]['supplier_name']        = $row['supplier_name'];
+        $supp_list[$row['supplierid']]['tel']        = $row['tel'];
+        $supp_list[$row['supplierid']]['company_name']        = $row['company_name'];
+        
+        $supp_list[$row['supplierid']]['url']           = build_uri('supplier', array('suppid'=>$row['supplierid']));
+        $suppinfo = $GLOBALS['db'] -> query("select value,code from " . $GLOBALS['ecs']->table('supplier_shop_config') ." where supplier_id = ".$row['supplierid']." AND code in('shop_name','shop_logo','qq','ww')");
+        while ($r = $GLOBALS['db']->fetchRow($suppinfo)){
+        	$supp_list[$row['supplierid']][$r['code']]        = $r['value'];
+        }
+    }
+    return $supp_list;
 }
 
 /**
@@ -260,7 +310,7 @@ function delete_tag($tag_words, $user_id)
 function get_booking_list($user_id, $num, $start)
 {
     $booking = array();
-    $sql = "SELECT bg.rec_id, bg.goods_id, bg.goods_number, bg.booking_time, bg.dispose_note, g.goods_name ".
+    $sql = "SELECT bg.rec_id, bg.goods_id, bg.goods_number, bg.booking_time, bg.dispose_note, g.goods_name,g.goods_thumb,g.supplier_id ".
            "FROM " .$GLOBALS['ecs']->table('booking_goods')." AS bg , " .$GLOBALS['ecs']->table('goods')." AS g". " WHERE bg.goods_id = g.goods_id AND bg.user_id = '$user_id' ORDER BY bg.booking_time DESC";
     $res = $GLOBALS['db']->SelectLimit($sql, $num, $start);
 
@@ -272,10 +322,13 @@ function get_booking_list($user_id, $num, $start)
         }
         $booking[] = array('rec_id'       => $row['rec_id'],
                            'goods_name'   => $row['goods_name'],
-                           'goods_number' => $row['goods_number'],
+                           'goods_number' => $row['goods_number'],//商品图片   jx
+						   'goods_thumb'  => $row['goods_thumb'],
+						   'supplier_id'  => $row['supplier_id'],//  商家id     jx
                            'booking_time' => local_date($GLOBALS['_CFG']['date_format'], $row['booking_time']),
                            'dispose_note' => $row['dispose_note'],
-                           'url'          => build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']));
+                           'url'          => build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']),
+						   'goods_id'=>$row['goods_id']);
     }
 
     return $booking;
@@ -510,6 +563,7 @@ function get_account_log($user_id, $num, $start)
             if (($rows['is_paid'] == 0) && ($rows['process_type'] == 0))
             {
                 $rows['handle'] = '<a href="user.php?act=pay&id='.$rows['id'].'&pid='.$pid.'">'.$GLOBALS['_LANG']['pay'].'</a>';
+				$rows['pay_id'] = $pid;
             }
 
             $account_log[] = $rows;
@@ -564,19 +618,30 @@ function get_user_surplus($user_id)
 function get_user_default($user_id)
 {
     $user_bonus = get_user_bonus();
-
-    $sql = "SELECT pay_points, user_money, credit_line, last_login, is_validated, email FROM " .$GLOBALS['ecs']->table('users'). " WHERE user_id = '$user_id'";
+/*代码修改2014-12-23 by bbs.hongyuvip.com  _star */
+    $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('users'). " WHERE user_id = '$user_id'";
+/*代码修改2014-12-23 by bbs.hongyuvip.com  _end */
     $row = $GLOBALS['db']->getRow($sql);
+    /* 代码增加_start By bbs.hongyuvip.com */
+    $_SESSION['user_name'] =$row['user_name'];
+    /* 代码增加_end By bbs.hongyuvip.com */
     $info = array();
     $info['username']  = stripslashes($_SESSION['user_name']);
     $info['shop_name'] = $GLOBALS['_CFG']['shop_name'];
     $info['integral']  = $row['pay_points'] . $GLOBALS['_CFG']['integral_name'];
-	$info['email']     = substr($row['email'],0,3).'****'.substr($row['email'],-3);
     /* 增加是否开启会员邮件验证开关 */
     $info['is_validate'] = ($GLOBALS['_CFG']['member_email_validate'] && !$row['is_validated'])?0:1;
     $info['credit_line'] = $row['credit_line'];
     $info['formated_credit_line'] = price_format($info['credit_line'], false);
-
+	/*代码增加2014-12-23 by bbs.hongyuvip.com  _star */
+	$info['mobile_phone'] = $row['mobile_phone'];
+	$info['email']	= $row['email'];
+	$info['status'] = $row['status'];
+	$info['is_validated'] = $row['is_validated'];
+	$info['validated'] = $row['validated'];
+	$info['is_surplus_open'] = $row['is_surplus_open'];
+	$info['status'] = $row['status'];
+    /*代码增加2014-12-23 by bbs.hongyuvip.com  _end */
     //如果$_SESSION中时间无效说明用户是第一次登录。取当前登录时间。
     $last_time = !isset($_SESSION['last_time']) ? $row['last_login'] : $_SESSION['last_time'];
 
@@ -875,4 +940,146 @@ function get_comment_list($user_id, $page_size, $start)
 
     return $comments;
 }
-?>
+/*
+ *
+ * 获取当前用户购物车里面的商品
+ *  jx   2014/12/12
+ *
+ */
+function get_user_gouwuche($user_id)
+{
+	$sql = "SELECT c.goods_price,c.goods_id,g.* FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('cart')."as c WHERE c.user_id='$user_id' AND g.goods_id=c.goods_id";
+	$res =  $GLOBALS['db']->getAll($sql);
+	return $res;
+}
+/*
+ *
+ *
+ *获取当前积分商城的数据
+ *jx   2014/12/12
+ *
+ */
+function get_user_jifen()
+{
+	$sql = "SELECT e.*,g.* FROM".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('exchange_goods')."as e WHERE g.goods_id=e.goods_id AND e.is_exchange='1'";
+	$res = $GLOBALS['db']->getAll($sql);
+	return $res;
+}
+/*
+ *
+ *获取当前用户收藏的商品
+ *jx  2014/12/15
+ *
+ */
+function get_user_collection($user_id)
+{
+	$sql = "SELECT c.user_id,c.goods_id,g.* FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('collect_goods')." as c WHERE c.user_id = '$user_id' AND g.goods_id = c.goods_id";
+	$res = $GLOBALS['db']->getAll($sql);
+	foreach($res as $key=>$value)
+	{
+		if($value['is_promote'] == 1 )
+		{
+			$res[$key]['shop_price'] = $res[$key]['promote_price'];
+		}
+	}
+	return $res;
+}
+
+/*
+ *
+ *获取当前用户关注的商铺
+ *jx  2014/12/15
+ *
+ */
+function get_user_guanzhu($user_id)
+{
+	$sql = "SELECT * FROM ".$GLOBALS['ecs']->table('supplier_guanzhu')."as g,".$GLOBALS['ecs']->table('supplier_street')." as s WHERE g.userid='$user_id' AND s.supplier_id=g.supplierid";
+	$res = $GLOBALS['db']->getAll($sql);
+	return $res;		
+}
+/*
+ *
+ *获取当前用户购买过得商品
+ *jx 2014/12/15
+ *
+ */
+function get_user_mai($user_id)
+{
+	$sql = "SELECT g.*,i.*,o.* FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('order_info')."as i,".$GLOBALS['ecs']->table('order_goods')."as o WHERE i.user_id ='$user_id' AND i.shipping_status=2 AND i.order_id=o.order_id AND o.goods_id = g.goods_id";
+	$res = $GLOBALS['db']->getAll($sql);
+	return $res;
+}
+/*
+ *
+ *获取当前用户的交易记录
+ *jx	2014/12/16
+ *
+ */
+function get_user_reminding($user_id)
+{
+	//查找代付款的详情
+	$sql = "SELECT * FROM ".$GLOBALS['ecs']->table('order_info')."WHERE user_id = '$user_id' AND pay_status=0 order by order_sn desc limit 4";
+	$res = $GLOBALS['db']->getAll($sql);
+	foreach($res as $key=>$value)
+	{
+		$rea[$key] = $value['order_id'];
+		$sql = "SELECT g.goods_thumb,o.* FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('order_goods')."as o WHERE o.order_id='$rea[$key]' AND o.goods_id = g.goods_id ";
+		$resu[$key] = $GLOBALS['db']->getRow($sql);
+		$sqls = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('order_goods')."as o WHERE o.order_id='$rea[$key]' AND o.goods_id = g.goods_id ";
+		$resu[$key]['shu'] = $GLOBALS['db']->getOne($sqls);
+		
+		if ($value['order_status'] == OS_UNCONFIRMED)
+        {
+            $value['handler'] = $GLOBALS['_LANG']['cancel'];
+        }
+        else if ($value['order_status'] == OS_SPLITED)
+        {
+            /* 对配送状态的处理 */
+            if ($value['shipping_status'] == SS_SHIPPED)
+            {
+                @$value['handler'] = $GLOBALS['_LANG']['received'];
+            }
+            elseif ($value['shipping_status'] == SS_RECEIVED)
+            {
+                @$value['handler'] = '<span style="color:red">'.$GLOBALS['_LANG']['ss_received'] .'</span>';
+            }
+            else
+            {
+                if ($value['pay_status'] == PS_UNPAYED)
+                {
+                    @$value['handler'] = $GLOBALS['_LANG']['pay_money'];
+                }
+                else
+                {
+                    @$value['handler'] = $GLOBALS['_LANG']['view_order'];
+                }
+
+            }
+        }
+        else
+        {
+            $value['handler'] = '<span style="color:red">'.$GLOBALS['_LANG']['os'][$value['order_status']] .'</span>';
+        }
+        $resu[$key]['handler'] = $value['handler'];
+	}
+	return $resu;
+	//$sql = "SELECT g.*,i.*,o.* FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('order_info')."as i,".$GLOBALS['ecs']->table('order_goods')."as o WHERE i.user_id ='$user_id' AND i.shipping_status=0 AND i.order_id=o.order_id AND o.goods_id = g.goods_id limit 4";
+	//$res = $GLOBALS['db']->getAll($sql);
+	
+}
+function get_user_shu($user_id)
+{
+	//查询待付款的
+	$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('order_info')."WHERE user_id ='$user_id' AND order_status=0";
+	$res['daif'] = $GLOBALS['db']->getOne($sql);
+	//查询待收货的数量
+	$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('order_info')."WHERE user_id='$user_id' AND pay_status=0 AND order_status=1";
+	$res['dais'] = $GLOBALS['db']->getOne($sql);
+	//查询待评价的数量
+	$sql = "SELECT count(*) FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS['ecs']->table('order_goods')."as o,".$GLOBALS['ecs']->table('order_info')."as i WHERE i.user_id = '$user_id' AND  i.order_id=o.order_id AND o.goods_id=g.goods_id";
+	$res['quan'] = $GLOBALS['db']->getOne($sql);
+	return $res;
+}
+/*$sql = "SELECT g.goods_thumb,o.*,i.* FROM ".$GLOBALS['ecs']->table('goods')."as g,".$GLOBALS('ecs')->table('order_info')."as i,".$GLOBALS('ecs')->table('order_goods')."as  o  WHERE i.user_id = '$user_id' AND i.order_id=o.order_id  AND	i.shipping_status='2' AND o.goods_id = g.goods_id";
+	*/
+?> 

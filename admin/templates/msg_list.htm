@@ -1,5 +1,5 @@
 {if $full_page}
-<!-- $Id: msg_list.htm 15616 2009-02-18 05:16:22Z sunxiaodong $ -->
+<!-- $Id: msg_list.htm 15616 2009-02-18 05:16:22Z Shadow & 鸿宇 -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
 <div class="form-div">
@@ -51,15 +51,15 @@
     <td align="center">{if $msg.reply eq 0}{$lang.unreplyed}{else}{$lang.replyed}{/if}</td>
     <td align="center">
       <a href="user_msg.php?act=view&id={$msg.msg_id}" title="{$lang.view}">
-        <img src="images/icon_view.gif" border="0" height="21" width="21" />
+        <img src="images/icon_view.gif" border="0" height="16" width="16" />
       </a>
       <a href="javascript:;" onclick="listTable.remove({$msg.msg_id}, '{$lang.drop_confirm}')"  title="{$lang.remove}">
-        <img src="images/icon_drop.gif" border="0" height="21" width="21">
+        <img src="images/icon_drop.gif" border="0" height="16" width="16">
       </a>
     </td>
   </tr>
   {foreachelse}
-  <tr><td class="no-records" colspan="7">{$lang.no_records}</td></tr>
+  <tr><td class="no-records" colspan="8">{$lang.no_records}</td></tr>
   {/foreach}
 </table>
 <table id="page-table" cellspacing="0">

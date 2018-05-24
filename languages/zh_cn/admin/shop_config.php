@@ -1,15 +1,15 @@
 <?php
 /**
- * ECSHOP 管理中心商店设置语言文件
+ * 鸿宇多用户商城 管理中心商店设置语言文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: shop_config.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: shop_config.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 require(ROOT_PATH.ADMIN_PATH.'/sms_url.php');
@@ -59,6 +59,7 @@ $_LANG['cfg_name']['shop_country'] = '所在国家';
 $_LANG['cfg_name']['shop_province'] = '所在省份';
 $_LANG['cfg_name']['shop_city'] = '所在城市';
 $_LANG['cfg_name']['shop_address'] = '详细地址';
+$_LANG['cfg_name']['shop_option'] = '位置坐标';
 $_LANG['cfg_name']['licensed'] = '是否显示 Licensed';
 $_LANG['cfg_name']['qq'] = '客服QQ号码';
 $_LANG['cfg_name']['ww'] = '淘宝旺旺';
@@ -70,6 +71,8 @@ $_LANG['cfg_name']['service_phone'] = '客服电话';
 $_LANG['cfg_name']['can_invoice'] = '能否开发票';
 $_LANG['cfg_name']['user_notice'] = '用户中心公告';
 $_LANG['cfg_name']['shop_notice'] = '商店公告';
+$_LANG['cfg_name']['shop_index_num'] = '商店首页商品数量';
+$_LANG['cfg_name']['shop_search_price'] = '全店搜索价格区间';
 $_LANG['cfg_name']['shop_reg_closed'] = '是否关闭注册';
 $_LANG['cfg_name']['send_mail_on'] = '是否开启自动发送邮件';
 $_LANG['cfg_name']['auto_generate_gallery'] = '上传商品是否自动生成相册图';
@@ -137,11 +140,7 @@ $_LANG['cfg_name']['show_goods_in_cart'] = '购物车里显示商品方式';
 $_LANG['cfg_name']['show_attr_in_cart'] = '购物车里是否显示商品属性';
 $_LANG['test_mail_title'] = '测试邮件';
 $_LANG['cfg_name']['email_content']  = '您好！这是一封检测邮件服务器设置的测试邮件。收到此邮件，意味着您的邮件服务器设置正确！您可以进行其它邮件发送的操作了！';
-$_LANG['cfg_name']['sms'] = '短信设置';
-$_LANG['cfg_name']['sms_shop_mobile'] = '商家的手机号码';
-$_LANG['cfg_name']['sms_order_placed'] = '客户下订单时是否给商家发短信';
-$_LANG['cfg_name']['sms_order_payed'] = '客户付款时是否给商家发短信';
-$_LANG['cfg_name']['sms_order_shipped'] = '商家发货时是否给客户发短信';
+
 $_LANG['cfg_name']['attr_related_number'] = '属性关联的商品数量';
 $_LANG['cfg_name']['top10_time'] = '排行统计的时间';
 $_LANG['cfg_name']['goods_gallery_number'] = '商品详情页相册图片数量';
@@ -159,6 +158,8 @@ $_LANG['cfg_name']['name_of_region_4'] = '四级配送区域名称';
 $_LANG['cfg_name']['related_goods_number'] = '关联商品显示数量';
 $_LANG['cfg_name']['visit_stats'] = '站点访问统计';
 $_LANG['cfg_name']['help_open'] = '用户帮助是否打开';
+$_LANG['cfg_name']['recom_rank'] = '参与分成的积分下限';
+$_LANG['cfg_name']['shop_opint'] = '地址坐标';
 
 $_LANG['cfg_desc']['smtp'] = '设置邮件服务器基本参数';
 $_LANG['cfg_desc']['market_price_rate'] = '输入商品售价时将自动根据该比例计算市场价格';
@@ -191,12 +192,14 @@ $_LANG['cfg_desc']['comment_factor'] = '选取较高的评论条件可以有效�
 $_LANG['cfg_desc']['min_goods_amount'] = '达到此购物金额，才能提交订单。';
 $_LANG['cfg_desc']['search_keywords'] = '首页显示的搜索关键字,请用半角逗号(,)分隔多个关键字';
 $_LANG['cfg_desc']['shop_notice'] = '以上内容将显示在首页商店公告中,注意控制公告内容长度不要超过公告显示区域大小。';
+$_LANG['cfg_desc']['shop_opint'] = '请输入店铺所在位置坐标用逗号隔开,例:x,y。<a target="blank" href="http://api.map.baidu.com/lbsapi/getpoint/index.html">坐标查询</a>';
+$_LANG['cfg_desc']['shop_index_num'] = '精品商品数量 回车 最新商品数量 回车 热门商品数量(回车换行)';
+$_LANG['cfg_desc']['shop_search_price'] = '价格范围1 回车 价格范围2 回车 价格范围3(回车换行)';
 $_LANG['cfg_desc']['bgcolor'] = '颜色请以#FFFFFF格式填写';
 $_LANG['cfg_desc']['cart_confirm'] = '允许您设置用户点击“加入购物车”后是否提示以及随后的动作。';
 $_LANG['cfg_desc']['use_how_oos'] = '使用缺货处理时前台订单确认页面允许用户选择缺货时处理方法。';
 $_LANG['cfg_desc']['send_service_email'] = '网店信息中的客服邮件地址不为空时，该选项有效。';
 $_LANG['cfg_desc']['send_mail_on'] = '启用该选项登录后台时，会自动发送邮件队列中尚未发送的邮件';
-$_LANG['cfg_desc']['sms_shop_mobile'] = '请先注册手机短信服务再填写手机号码';
 $_LANG['cfg_desc']['send_verify_email'] = '“是否开启会员邮件验证”设为开启时才可使用此功能';
 
 $_LANG['cfg_range']['cart_confirm'][1] = '提示用户，点击“确定”进购物车';
@@ -321,12 +324,7 @@ $_LANG['cfg_range']['goodsattr_style']['1'] = '单选按钮';
 $_LANG['cfg_range']['goodsattr_style']['0'] = '下拉列表';
 $_LANG['cfg_range']['show_marketprice']['1'] = '显示';
 $_LANG['cfg_range']['show_marketprice']['0'] = '不显示';
-$_LANG['cfg_range']['sms_order_placed']['1'] = '发短信';
-$_LANG['cfg_range']['sms_order_placed']['0'] = '不发短信';
-$_LANG['cfg_range']['sms_order_payed']['1'] = '发短信';
-$_LANG['cfg_range']['sms_order_payed']['0'] = '不发短信';
-$_LANG['cfg_range']['sms_order_shipped']['1'] = '发短信';
-$_LANG['cfg_range']['sms_order_shipped']['0'] = '不发短信';
+
 $_LANG['cfg_range']['cron_method']['0'] = '否';
 $_LANG['cfg_range']['cron_method']['1'] = '是';
 $_LANG['cfg_range']['enable_order_check']['0'] = '否';
@@ -446,4 +444,144 @@ $_LANG['back_mail_settings'] = '返回邮件服务器设置';
 $_LANG['mail_settings'] = '邮件服务器设置';
 
 $_LANG['sms_url'] = '<a href="'.$url.'" target="_blank">点此注册手机短信服务</a>';
+
+$_LANG['cfg_name']['erweima_wapurl']	= '扫描二维码打开的URL';
+$_LANG['cfg_desc']['erweima_wapurl']      = ' 输入格式：http://localhost/mobile/goods.php?id={id}，注意{id}代表每个商品的ID，<br>用手机扫描某个商品二维码的时候 会自动替换为该商品的ID';
+$_LANG['cfg_name']['erweima_logo']	= '二维码中间LOGO';
+$_LANG['cfg_desc']['erweima_logo']      = '您上传的LOGO图片不宜过大，图片过大的话，遮挡二维码过多，将导致二维码不能识别<br>假设你的二维码图片为200*200，那么你上传的LOGO图片以80*80以下为宜';
+
+$_LANG['cfg_name']['tuihuan_days_fahuo'] = '退换货期限（发货后第几天起）';
+$_LANG['cfg_name']['tuihuan_days_qianshou']  = '退换货期限（发货后第几天止）';
+$_LANG['cfg_desc']['tuihuan_days_fahuo'] = '';
+$_LANG['cfg_desc']['tuihuan_days_qianshou'] = '发货后第X--Y天内可退换货，例如：上面输3下面输5，表示发货后第3--5天内可退换货';
+$_LANG['cfg_name']['time_shouhuo'] = 'N小时之后开始送货';
+$_LANG['cfg_desc']['time_shouhuo'] = '输入数字，如：输入48，代表最早送货时间为下订单起48小时后';
+
+$_LANG['cfg_name']['tuihuan_days_fahuo'] = '退款/退货/维修期限（发货后第几天起）';
+$_LANG['cfg_desc']['tuihuan_days_fahuo'] = '';
+$_LANG['cfg_name']['tuihuan_days_qianshou']  = '退款/退货/维修期限（发货后第几天止）';
+$_LANG['cfg_desc']['tuihuan_days_qianshou'] = '发货后第X--Y天内可退款/退货/维修，例如：上面输3下面输5，表示发货后第3--5天内可可退款/退货/维修';
+$_LANG['cfg_name']['email_domain'] = '用户注册邮箱类型提醒：';
+$_LANG['cfg_desc']['email_domain'] = '提示：域名之间用“，”隔开（逗号不分全角、半角），域名无须带www<br>参照样式：163.com,hongyuvip.com,sina.com';
+
+$_LANG['cfg_name']['comment_youxiaoqi'] = '评价/晒单有效期限（确认收货后第几天止）';
+$_LANG['cfg_desc']['comment_youxiaoqi'] = '例如：设置30，则自确认收货起30天内买家可以评价、晒单';
+$_LANG['cfg_name']['comment_total_min'] = '评价订单最小金额';
+$_LANG['cfg_name']['comment_pay_points'] = '评价可获得积分';
+$_LANG['cfg_name']['shaidan_pre_num'] = '晒单前多少位可获得积分';
+$_LANG['cfg_desc']['shaidan_pre_num'] = '如果评论不需要审核，则前X位晒单的买家可获得积分。如果评论需要审核，则前X位审核通过的买家可获得积分0表示不限制数量';
+$_LANG['cfg_name']['shaidan_img_num'] = '晒单图片数量大于多少可获得积分';
+$_LANG['cfg_name']['shaidan_pay_points'] = '晒单可获得积分数';
+$_LANG['cfg_name']['shaidan_check'] = '晒单是否需要审核';
+$_LANG['cfg_range']['shaidan_check']['0'] = '是';
+$_LANG['cfg_range']['shaidan_check']['1'] = '否';
+$_LANG['cfg_name']['user_tag_check'] = '自定义标签是否需要审核';
+$_LANG['cfg_range']['user_tag_check']['0'] = '是';
+$_LANG['cfg_range']['user_tag_check']['1'] = '否';
+$_LANG['cfg_name']['tag_show_num'] = '商品标签显示数量';
+$_LANG['cfg_desc']['tag_show_num'] = '例如：设置5，则商品详情页的商品标签至多显示5个';
+
+$_LANG['cfg_name']['time_shouhuo'] = 'N小时之后开始送货';
+$_LANG['cfg_desc']['time_shouhuo']      = '输入数字，如：输入48，代表最早送货时间为下订单起48小时后';
+
+$_LANG['cfg_name']['sms_register'] = '客户注册时是否发送手机验证码';
+$_LANG['cfg_range']['sms_register'][1] = '发送';
+$_LANG['cfg_range']['sms_register'][0] = '不发送';
+
+$_LANG['cfg_name']['identity'] = '是否开启实名认证';
+$_LANG['cfg_range']['identity'][1] = '是';
+$_LANG['cfg_range']['identity'][0] = '否';
+
+$_LANG['cfg_name']['okgoods_time'] = '确认收货期限（发货后第几天止）';
+$_LANG['cfg_desc']['okgoods_time'] = '例如：设置7，则自下单起第7天系统会自动确认收货';
+$_LANG['cfg_name']['okback_time']  = '退货/退款/维修卖家确认期限（单位天）';
+$_LANG['cfg_desc']['okback_time']  = '例如：设置7，则自买家提交退款/货或者维修申请起第7天系统会自动通过审核';
+$_LANG['cfg_name']['delback_time'] = '退货/维修买家发货期限（单位天）';
+$_LANG['cfg_desc']['delback_time'] = '例如：设置7，则自卖家同意协议后7天内，买家如果没有补充物流信息，则该申请自动取消，该申请关闭';
+$_LANG['cfg_name']['weixiu_time']  = '申请维修期限（确认收货后第几天止）';
+$_LANG['cfg_desc']['weixiu_time']  = '例如：设置30，则自确认收货起30天内买家可以申请维修';
+
+$_LANG['normal_invoice'] = '普通发票';
+$_LANG['vat_invoice'] = '增值税发票';
+$_LANG['myname'] = 'wo de ming zi';
+
+$_LANG['cfg_name']['sms'] = '短信设置';
+
+$_LANG['cfg_name']['sms_shop_mobile'] = '商家的手机号码';
+$_LANG['cfg_desc']['sms_shop_mobile'] = '请填写接收短信的手机号码';
+
+$_LANG['cfg_name']['sms_sign'] = '短信签名';
+$_LANG['cfg_desc']['sms_sign'] = '提示：此处填写内容必须是阿里大鱼审核通过的签名，否则短信无法发送。如需技术支持请联系：鸿宇科技 & Shadow QQ：1527200768';
+
+$_LANG['cfg_name']['sms_order_placed'] = '客户下订单时是否给商家发短信';
+$_LANG['cfg_range']['sms_order_placed']['1'] = '发短信';
+$_LANG['cfg_range']['sms_order_placed']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_order_placed_tpl'] = '';
+
+$_LANG['cfg_name']['sms_order_pay'] = '客户付款时是否给客户发短信';
+$_LANG['cfg_range']['sms_order_pay']['1'] = '发短信';
+$_LANG['cfg_range']['sms_order_pay']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_order_pay_tpl'] = '';
+
+$_LANG['cfg_name']['sms_order_payed'] = '客户付款时是否给商家发短信';
+$_LANG['cfg_range']['sms_order_payed']['1'] = '发短信';
+$_LANG['cfg_range']['sms_order_payed']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_order_payed_tpl'] = '';
+
+$_LANG['cfg_name']['sms_order_shipped'] = '商家发货时是否给客户发短信';
+$_LANG['cfg_range']['sms_order_shipped']['1'] = '发短信';
+$_LANG['cfg_range']['sms_order_shipped']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_order_shipped_tpl'] = '';
+
+$_LANG['cfg_name']['sms_register'] = '客户注册是否发送验证码';
+$_LANG['cfg_range']['sms_register']['1'] = '发短信';
+$_LANG['cfg_range']['sms_register']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_register_tpl'] = '';
+
+$_LANG['cfg_name']['sms_goods_stockout'] = '缺货商品到货是否给登记用户发短信';
+$_LANG['cfg_range']['sms_goods_stockout']['1'] = '发短信';
+$_LANG['cfg_range']['sms_goods_stockout']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_goods_stockout_tpl'] = '';
+
+$_LANG['cfg_name']['sms_pricecut'] = '商品降价是否给客户发短信';
+$_LANG['cfg_range']['sms_pricecut']['1'] = '发短信';
+$_LANG['cfg_range']['sms_pricecut']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_pricecut_tpl'] = '';
+
+$_LANG['cfg_name']['sms_change_password'] = '密码修改是否给客户发短信';
+$_LANG['cfg_range']['sms_change_password']['1'] = '发短信';
+$_LANG['cfg_range']['sms_change_password']['0'] = '不发短信';
+$_LANG['cfg_name']['sms_change_password_tpl'] = '';
+
+$_LANG['cfg_name']['sms_user_money_change'] = '余额变动是否给客户发短信';
+$_LANG['cfg_range']['sms_user_money_change']['1'] = '发短信';
+$_LANG['cfg_range']['sms_user_money_change']['0'] = '不发短信';
+
+$_LANG['use_balance_reduce'] = '用户消费余额减少';
+$_LANG['cfg_name']['sms_use_balance_reduce_tpl'] = '';
+$_LANG['deposit_balance_reduce'] = '用户提现余额减少';
+$_LANG['cfg_name']['sms_deposit_balance_reduce_tpl'] = '';
+$_LANG['recharge_balance_add'] = '用户充值余额增加';
+$_LANG['cfg_name']['sms_recharge_balance_add_tpl'] = '';
+$_LANG['admin_operation'] = '管理员操作余额';
+$_LANG['cfg_name']['sms_admin_operation_tpl'] = '';
+$_LANG['return_goods'] = '退货余额增加';
+$_LANG['cfg_name']['sms_return_goods_tpl'] = '';
+
+
+
+/*fulltext_search_add_START_bbs.hongyuvip.com*/
+$_LANG['cfg_name']['fulltext_search'] = '全文搜索引擎';
+$_LANG['cfg_range']['fulltext_search']['0'] = '关闭';
+$_LANG['cfg_range']['fulltext_search']['1'] = '开启';
+/*fulltext_search_add_END_bbs.hongyuvip.com*/
+
+/* 代码增加_注册红包start  By  bbs.hongyuvip.com */
+$_LANG['cfg_name']['bonus_reg_rand'] = '随机发放注册红包';
+$_LANG['cfg_desc']['bonus_reg_rand'] = '说明：红包发放类型为【按注册用户发放】时该设置才有效';
+$_LANG['cfg_range']['bonus_reg_rand'][0] = '关闭';
+$_LANG['cfg_range']['bonus_reg_rand'][1] = '打开';
+/* 代码增加_注册红包end  By  bbs.hongyuvip.com */
+
+$_LANG['cfg_name']['shop_opint'] = '店铺坐标';
 ?>

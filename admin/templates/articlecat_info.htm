@@ -7,6 +7,17 @@
     <td class="label">{$lang.cat_name}</td>
     <td><input type="text" name="cat_name" maxlength="60" size = "30" value="{$cat.cat_name|escape}" />{$lang.require_field}</td>
   </tr>
+  
+  {* 代码增加_start  By  bbs.hongyuvip.com *}
+	  <tr>
+        <td class="label">目录名称:</td>
+        <td>
+          <input type='text' name='path_name' maxlength="20" value='{$cat.path_name|escape:html}' size='27' />
+		  <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticePathname">生成的【真静态HTML文件】将保存到该目录下<br>例如：在这里输入 changshi，根目录下就会生成一个 articlecat-changshi 的二级目录用来保存纯静态HTML文件，<br>articlecat- 属于默认前缀部分，可在data/config.php里进行修改</span>
+        </td>
+      </tr>
+   {* 代码增加_end  By  bbs.hongyuvip.com *}
+  
   <tr>
     <td class="label">{$lang.parent_cat}</td>
     <td>

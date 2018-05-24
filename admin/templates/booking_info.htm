@@ -23,7 +23,7 @@
   </tr>
   <tr>
     <td align="right" class="first-cell" >{$lang.link_man}：</td>
-    <td>{$booking.link_man|escape} {if $booking.email}<{$booking.email|escape}>{/if} </td>
+    <td>{$booking.link_man} {if $booking.email}<{$booking.email|escape}>{/if} </td>
     <td align="right" class="first-cell" >{$lang.tel}：</td>
     <td>{$booking.tel|escape}</td>
   </tr>
@@ -51,6 +51,12 @@
 
 <div class="form-div">
 <form name='theForm' method="post" action="goods_booking.php" onsubmit="return validate()">
+<select name="status" {if $notice_status eq '2'}disabled=disabled{/if}>
+	<option value="-1">请选择</option>
+	{foreach from=$notice_status key=skey item=status}
+	<option value="{$skey}"  {if $booking.is_dispose eq $skey}selected{/if}>{$notice_status[$skey]}</option>
+	{/foreach}
+	</select>
   {$lang.note}:&nbsp;&nbsp;<input type="text" name="dispose_note" size="55" value="{$booking.dispose_note}" />&nbsp;<input type ="hidden" name="act" value="update" /><input type="hidden" name="rec_id" value="{$booking.rec_id}" ><input name="send_email_notice" type="checkbox" value='1'/>{$lang.send_email_notice} <input type="submit" value="{$lang.i_dispose}" class="button">
   {if $booking.is_dispose}<input type="submit" name="remail" value="{$lang.remail}" class="button">{/if}
 

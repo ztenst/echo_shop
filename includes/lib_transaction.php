@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 用户交易相关函数库
+ * 鸿宇多用户商城 用户交易相关函数库
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_transaction.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: lib_transaction.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -22,7 +22,7 @@ if (!defined('IN_ECS'))
  * 修改个人资料（Email, 性别，生日)
  *
  * @access  public
- * @param   array       $profile       array_keys(user_id int, email string, sex int, birthday string);
+ * @param   array       $profile       array_keys(user_id int, user_name string, email string, sex int, birthday string);
  *
  * @return  boolen      $bool
  */
@@ -36,10 +36,15 @@ function edit_profile($profile)
     }
 
     $cfg = array();
+    $cfg['user_id'] = $profile['user_id'];
     $cfg['username'] = $GLOBALS['db']->getOne("SELECT user_name FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_id='" . $profile['user_id'] . "'");
     if (isset($profile['sex']))
     {
         $cfg['gender'] = intval($profile['sex']);
+    }
+	 if (isset($profile['user_name']))
+    {
+        $cfg['user_name'] = empty($profile['user_name']) ? $cfg['username'] : $profile['user_name'];
     }
     if (!empty($profile['email']))
     {
@@ -56,7 +61,6 @@ function edit_profile($profile)
         $cfg['bday'] = $profile['birthday'];
     }
 
-
     if (!$GLOBALS['user']->edit_user($cfg))
     {
         if ($GLOBALS['user']->error == ERR_EMAIL_EXISTS)
@@ -72,7 +76,7 @@ function edit_profile($profile)
     }
 
     /* 过滤非法的键值 */
-    $other_key_array = array('msn', 'qq', 'office_phone', 'home_phone', 'mobile_phone');
+    $other_key_array = array('user_name','msn', 'qq', 'office_phone', 'home_phone', 'mobile_phone');
     foreach ($profile['other'] as $key => $val)
     {
         //删除非法key值
@@ -86,6 +90,7 @@ function edit_profile($profile)
         }
     }
     /* 修改在其他资料 */
+	
     if (!empty($profile['other']))
     {
         $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('users'), $profile['other'], 'UPDATE', "user_id = '$profile[user_id]'");
@@ -110,14 +115,14 @@ function get_profile($user_id)
     /* 会员帐号信息 */
     $info  = array();
     $infos = array();
-    $sql  = "SELECT user_name, birthday, sex, question, answer, rank_points, pay_points,user_money, user_rank,".
-             " msn, qq, office_phone, home_phone, mobile_phone, passwd_question, passwd_answer ".
+    $sql  = "SELECT * ".
            "FROM " .$GLOBALS['ecs']->table('users') . " WHERE user_id = '$user_id'";
     $infos = $GLOBALS['db']->getRow($sql);
     $infos['user_name'] = addslashes($infos['user_name']);
 
     $row = $user->get_profile_by_name($infos['user_name']); //获取用户帐号信息
     $_SESSION['email'] = $row['email'];    //注册SESSION
+    $_SESSION['user_name'] = $infos['user_name'];    //注册SESSION
 
     /* 会员等级 */
     if ($infos['user_rank'] > 0)
@@ -160,7 +165,9 @@ function get_profile($user_id)
 
     $info['discount']    = $_SESSION['discount'] * 100 . "%";
     $info['email']       = $_SESSION['email'];
+    $info['headimg']          = $infos['headimg'];
     $info['user_name']   = $_SESSION['user_name'];
+    $info['password']	      = $infos['password'];
     $info['rank_points'] = isset($infos['rank_points']) ? $infos['rank_points'] : '';
     $info['pay_points']  = isset($infos['pay_points'])  ? $infos['pay_points']  : 0;
     $info['user_money']  = isset($infos['user_money'])  ? $infos['user_money']  : 0;
@@ -178,7 +185,22 @@ function get_profile($user_id)
     $info['mobile_phone'] = $infos['mobile_phone'];
     $info['passwd_question'] = $infos['passwd_question'];
     $info['passwd_answer'] = $infos['passwd_answer'];
-
+    $info['real_name']	= $infos['real_name'];
+    $info['card']		= $infos['card'];
+    $info['face_card']	= $infos['face_card'];
+    $info['back_card']	= $infos['back_card'];
+    $info['country']	= $infos['country'];
+    $info['province']	= $infos['province'];
+    $info['city']		= $infos['city'];
+    $info['district']	= $infos['district'];
+    $info['address']	= $infos['address'];
+    $info['validated']  = $infos['validated'];
+    $info['is_validated'] = $infos['is_validated'];
+    $info['status'] = $infos['status'];
+    $info['headimg'] = $infos['headimg'];
+    $info['is_surplus_open'] = isset($infos['is_surplus_open']) ? $infos['is_surplus_open'] : '0';
+    $info['surplus_password'] = isset($infos['surplus_password']) ? $infos['surplus_password'] : '';
+	
     return $info;
 }
 
@@ -234,6 +256,12 @@ function add_bonus($user_id, $bouns_sn)
                 $GLOBALS['err']->add($GLOBALS['_LANG']['bonus_use_expire']);
                 return false;
             }
+			
+            if ($now > $bonus_time['send_end_date'])
+            {
+                $GLOBALS['err']->add('该红包已经过期，不能添加。');
+                return false;
+            }
 
             $sql = "UPDATE " .$GLOBALS['ecs']->table('user_bonus') . " SET user_id = '$user_id' ".
                    "WHERE bonus_id = '$row[bonus_id]'";
@@ -286,7 +314,8 @@ function get_user_orders($user_id, $num = 10, $start = 0)
     /* 取得订单列表 */
     $arr    = array();
 
-    $sql = "SELECT order_id, order_sn, order_status, shipping_status, pay_status, add_time, " .
+    $sql = "SELECT order_id, order_sn, order_status, shipping_status, pay_status, add_time, shipping_time," .
+			" supplier_id, rebate_id, parent_order_id,	  ". //代码增加  By  bbs.hongyuvip.com
            "(goods_amount + shipping_fee + insure_fee + pay_fee + pack_fee + card_fee + tax - discount) AS total_fee ".
            " FROM " .$GLOBALS['ecs']->table('order_info') .
            " WHERE user_id = '$user_id' ORDER BY add_time DESC";
@@ -326,7 +355,33 @@ function get_user_orders($user_id, $num = 10, $start = 0)
         {
             $row['handler'] = '<span style="color:red">'.$GLOBALS['_LANG']['os'][$row['order_status']] .'</span>';
         }
+	    /* 代码增加_start  By  bbs.hongyuvip.com */
+		if ($row['shipping_status']==SS_SHIPPED || $row['shipping_status']==SS_RECEIVED || $row['shipping_status']==SS_SHIPPED_PART)
+		{
+			$now_time = gmtime();
+			
+			if ($GLOBALS['_CFG']['tuihuan_days_fahuo'] > 0) //退换货期限（发货后第几天起）:
+			{
+				if (($now_time - $row['shipping_time'])/86400 < $GLOBALS['_CFG']['tuihuan_days_fahuo'])
+				{
+					$no = 1;
+				}
+				
+			}
+			if ($GLOBALS['_CFG']['tuihuan_days_qianshou'] > 0) //退换货期限（发货后第几天止）:
+			{
+				if (($now_time - $row['shipping_time'])/86400 > $GLOBALS['_CFG']['tuihuan_days_qianshou'])
+				{
+					$no = 1;
+				}
+			}
 
+			if ($no != 1)
+			{
+			$row['handler'] .= '<br /><a href="user.php?act=order_detail&order_id='. $row['order_id'] .'" >申请返修/退款/退货</a>';
+			}
+		}
+		/* 代码增加_end  By  bbs.hongyuvip.com */
         $row['shipping_status'] = ($row['shipping_status'] == SS_SHIPPED_ING) ? SS_PREPARING : $row['shipping_status'];
         $row['order_status'] = $GLOBALS['_LANG']['os'][$row['order_status']] . ',' . $GLOBALS['_LANG']['ps'][$row['pay_status']] . ',' . $GLOBALS['_LANG']['ss'][$row['shipping_status']];
 
@@ -335,7 +390,9 @@ function get_user_orders($user_id, $num = 10, $start = 0)
                        'order_time'     => local_date($GLOBALS['_CFG']['time_format'], $row['add_time']),
                        'order_status'   => $row['order_status'],
                        'total_fee'      => price_format($row['total_fee'], false),
-                       'handler'        => $row['handler']);
+			'is_suborder' => $row['parent_order_id'] ? "(子订单)" : "",  //代码增加   By  bbs.hongyuvip.com
+                       'handler'        => $row['handler']);		
+
     }
 
     return $arr;
@@ -488,9 +545,20 @@ function affirm_received($order_id, $user_id = 0)
     /* 修改订单发货状态为“确认收货” */
     else
     {
-        $sql = "UPDATE " . $GLOBALS['ecs']->table('order_info') . " SET shipping_status = '" . SS_RECEIVED . "' WHERE order_id = '$order_id'";
+        $sql = "UPDATE " . $GLOBALS['ecs']->table('order_info') . " SET shipping_status = '" . SS_RECEIVED . "',shipping_time_end = '" . gmtime() . "' WHERE order_id = '$order_id'";
         if ($GLOBALS['db']->query($sql))
         {
+			$sql_2 = "SELECT back_id FROM " . $GLOBALS['ecs']->table('back_order') . " WHERE order_id = '$order_id' AND status_back < 6 AND status_back != 3";
+			$re_2  = $GLOBALS['db']->getCol($sql_2);
+			if (count($re_2) > 0)
+			{
+				$sql_3 = "UPDATE " . $GLOBALS['ecs']->table('back_goods') . " SET status_back = 8 WHERE back_id in (" . implode(',', $re_2) . ")";
+				$GLOBALS['db']->query($sql_3);
+			}
+			
+			$sql_4 = "UPDATE " . $GLOBALS['ecs']->table('back_order') . " SET status_back = 8 WHERE order_id = '$order_id' AND status_back < 6 AND status_back != 3";
+			$GLOBALS['db']->query($sql_4);
+			
             /* 记录日志 */
             order_action($order['order_sn'], $order['order_status'], SS_RECEIVED, $order['pay_status'], '', $GLOBALS['_LANG']['buyer']);
 
@@ -638,7 +706,7 @@ function get_order_detail($order_id, $user_id = 0)
         {
               include_once($plugin);
               $shipping = new $shipping_code;
-              $order['invoice_no'] = $shipping->query($order['invoice_no']);
+              $order['invoice_no_a'] = $shipping->query($order['invoice_no']);
         }
     }
 
@@ -666,7 +734,7 @@ function get_order_detail($order_id, $user_id = 0)
         //支付方式信息
         $payment_info = array();
         $payment_info = payment_info($order['pay_id']);
-
+		
         //无效支付方式
         if ($payment_info === false)
         {
@@ -676,7 +744,11 @@ function get_order_detail($order_id, $user_id = 0)
         {
             //取得支付信息，生成支付代码
             $payment = unserialize_config($payment_info['pay_config']);
-
+			if($payment_info['pay_code'] == 'alipay_bank')
+			{		
+				$payment['www_ecshop68_com_alipay_bank'] = $order['defaultbank'];
+			}
+			
             //获取需要支付的log_id
             $order['log_id']    = get_paylog_id($order['order_id'], $pay_type = PAY_ORDER);
             $order['user_name'] = $_SESSION['user_name'];
@@ -687,6 +759,7 @@ function get_order_detail($order_id, $user_id = 0)
 
             /* 取得在线支付方式的支付按钮 */
             $pay_obj    = new $payment_info['pay_code'];
+			
             $order['pay_online'] = $pay_obj->get_code($order, $payment);
         }
     }
@@ -1023,17 +1096,21 @@ function save_order_address($address, $user_id)
     empty($address['consignee']) and $GLOBALS['err']->add($GLOBALS['_LANG']['consigness_empty']);
     empty($address['address']) and $GLOBALS['err']->add($GLOBALS['_LANG']['address_empty']);
     $address['order_id'] == 0 and $GLOBALS['err']->add($GLOBALS['_LANG']['order_id_empty']);
-    if (empty($address['email']))
+    // 邮箱格式校验
+    if (!empty($address['email']) && !is_email($address['email']))
     {
-        $GLOBALS['err']->add($GLOBALS['email_empty']);
+        $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['email_invalid'], $address['email']));
     }
-    else
+    // 手机号不能为空并且校验手机号码格式
+    if(empty($address['mobile']))
     {
-        if (!is_email($address['email']))
-        {
-            $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['email_invalid'], $address['email']));
-        }
+    	$GLOBALS['err']->add($GLOBALS['_LANG']['mobile_phone_empty']);
     }
+    else if(!is_mobile_phone($address['mobile']))
+    {
+    	$GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['mobile_phone_invalid'], $address['mobile']));
+    }
+    
     if ($GLOBALS['err']->error_no > 0)
     {
         return false;
@@ -1071,15 +1148,24 @@ function save_order_address($address, $user_id)
  * @param   int         $user_id         用户ID
  * @param   int         $num             列表显示条数
  * @param   int         $start           显示起始位置
- *
+ * @param   int         $suppid          店铺id
  * @return  array       $arr             红保列表
  */
-function get_user_bouns_list($user_id, $num = 10, $start = 0)
+function get_user_bouns_list($user_id, $num = 10, $start = 0, $suppid=-1)
 {
-    $sql = "SELECT u.bonus_sn, u.order_id, b.type_name, b.type_money, b.min_goods_amount, b.use_start_date, b.use_end_date ".
+   /* $sql = "SELECT u.bonus_sn,u.supplier_id, u.order_id, b.type_name, b.type_money, b.min_goods_amount, b.use_start_date, b.use_end_date ".
+           " FROM " .$GLOBALS['ecs']->table('user_bonus'). " AS u ,".
+           $GLOBALS['ecs']->table('bonus_type'). " AS b".
+           " WHERE u.bonus_type_id = b.type_id AND u.user_id = '" .$user_id. "'";*/
+	$sql = "SELECT u.bonus_sn,u.supplier_id, u.order_id, b.type_name, b.type_money, b.min_goods_amount, b.use_start_date, b.use_end_date ".
            " FROM " .$GLOBALS['ecs']->table('user_bonus'). " AS u ,".
            $GLOBALS['ecs']->table('bonus_type'). " AS b".
            " WHERE u.bonus_type_id = b.type_id AND u.user_id = '" .$user_id. "'";
+    
+    if($suppid>-1){
+    	$sql .= " AND u.supplier_id=".intval($suppid);
+    }
+           
     $res = $GLOBALS['db']->selectLimit($sql, $num, $start);
     $arr = array();
 
@@ -1109,7 +1195,19 @@ function get_user_bouns_list($user_id, $num = 10, $start = 0)
         {
             $row['status'] = '<a href="user.php?act=order_detail&order_id=' .$row['order_id']. '" >' .$GLOBALS['_LANG']['had_use']. '</a>';
         }
-
+		
+		if($row['supplier_id'] == '0')
+		{
+			$row['supplier_id'] = "自营商";
+		}
+		else
+		{
+			$supplierid = $row['supplier_id'];
+			$sql = "SELECT * FROM ".$GLOBALS['ecs']->table('supplier_shop_config')."WHERE supplier_id = '$supplierid' AND code = 'shop_name'";
+			$supp = $GLOBALS['db']->getRow($sql);
+			$row['s_id'] = $supplierid;
+			$row['supplier_id'] = $supp['value'];
+		}
         $row['use_startdate']   = local_date($GLOBALS['_CFG']['date_format'], $row['use_start_date']);
         $row['use_enddate']     = local_date($GLOBALS['_CFG']['date_format'], $row['use_end_date']);
 

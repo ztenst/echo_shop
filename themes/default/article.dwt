@@ -28,7 +28,7 @@
   <div class="AreaL">
 <!-- #BeginLibraryItem "/library/cart.lbi" -->
 
-{insert_scripts files='transport_jquery.js'}
+{insert_scripts files='transport.js'}
 <div class="cart" id="ECS_CARTINFO">
  {insert name='cart_info'}
 </div>
@@ -121,8 +121,8 @@
   </div>
   <div class="blank"></div>
   <!-- #BeginLibraryItem "/library/comments.lbi" -->
-{insert_scripts files='transport_jquery.js,utils.js'}
-<div id="ECS_COMMENT"> {* ECSHOP 提醒您：动态载入comments_list.lbi，显示评论列表和评论表单 *}{insert name='comments' type=$type id=$id}</div>
+{insert_scripts files='transport.js,utils.js'}
+<div id="ECS_COMMENT"> {* 鸿宇多用户商城 提醒您：动态载入comments_list.lbi，显示评论列表和评论表单 *}{insert name='comments' type=$type id=$id}</div>
 <!-- #EndLibraryItem -->
 
   </div>

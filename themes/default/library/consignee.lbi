@@ -1,7 +1,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <div class="flowBox">
 <h6><span>{$lang.consignee_info}</span></h6>
-{insert_scripts files='utils.js,transport_jquery.js'}
+{insert_scripts files='utils.js,transport.js'}
 <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
   <!-- {if $real_goods_count gt 0} -->
   <!-- 购物车中存在实体商品显示国家和地区 -->

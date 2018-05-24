@@ -1,21 +1,23 @@
 <?php
 
 /**
- * ECSHOP 红包类型的处理
+ * 鸿宇多用户商城 红包类型的处理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: bonus.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: bonus.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
+include_once(ROOT_PATH . 'includes/cls_image.php');
+$image = new cls_image($_CFG['bgcolor']);
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -206,6 +208,25 @@ if ($_REQUEST['act'] == 'insert')
     $type_id     = !empty($_POST['type_id'])    ? intval($_POST['type_id'])    : 0;
     $min_amount  = !empty($_POST['min_amount']) ? intval($_POST['min_amount']) : 0;
 
+	$user_bonus_max = !empty($_POST['user_bonus_max'])  ? intval($_POST['user_bonus_max'])    : 0;
+	if ($_POST['send_type'] == '4')
+    {
+        if ((isset($_FILES['bonus_img']['error']) && $_FILES['bonus_img']['error'] == 0) || (!isset($_FILES['bonus_img']['error']) && isset($_FILES['bonus_img']['tmp_name'] ) &&$_FILES['bonus_img']['tmp_name'] != 'none'))
+        {
+            $ad_code = basename($image->upload_image($_FILES['bonus_img'], 'bonusimg'));
+			
+        }
+        if (!empty($_POST['img_url']))
+        {
+            $ad_code = $_POST['img_url'];
+        }
+        if (((isset($_FILES['ad_img']['error']) && $_FILES['ad_img']['error'] > 0) || (!isset($_FILES['ad_img']['error']) && isset($_FILES['ad_img']['tmp_name']) && $_FILES['ad_img']['tmp_name'] == 'none')) && empty($_POST['img_url']))
+        {
+            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
+            sys_msg($_LANG['js_languages']['ad_photo_empty'], 0, $link);
+        }
+    }
+
     /* 检查类型是否有重复 */
     $sql = "SELECT COUNT(*) FROM " .$ecs->table('bonus_type'). " WHERE type_name='$type_name'";
     if ($db->getOne($sql) > 0)
@@ -221,7 +242,7 @@ if ($_REQUEST['act'] == 'insert')
     $use_enddate    = local_strtotime($_POST['use_end_date']);
 
     /* 插入数据库。 */
-    $sql = "INSERT INTO ".$ecs->table('bonus_type')." (type_name, type_money,send_start_date,send_end_date,use_start_date,use_end_date,send_type,min_amount,min_goods_amount)
+	$sql = "INSERT INTO ".$ecs->table('bonus_type')." (type_name, type_money,send_start_date,send_end_date,use_start_date,use_end_date,send_type,bonus_code,user_bonus_max,min_amount,min_goods_amount)
     VALUES ('$type_name',
             '$_POST[type_money]',
             '$send_startdate',
@@ -229,6 +250,8 @@ if ($_REQUEST['act'] == 'insert')
             '$use_startdate',
             '$use_enddate',
             '$_POST[send_type]',
+			'$ad_code',
+			'$user_bonus_max',			
             '$min_amount','" . floatval($_POST['min_goods_amount']) . "')";
 
     $db->query($sql);
@@ -291,6 +314,26 @@ if ($_REQUEST['act'] == 'update')
     $type_id     = !empty($_POST['type_id'])    ? intval($_POST['type_id'])    : 0;
     $min_amount  = !empty($_POST['min_amount']) ? intval($_POST['min_amount']) : 0;
 
+	$user_bonus_max = !empty($_POST['user_bonus_max'])  ? intval($_POST['user_bonus_max'])    : 0;
+
+	if ($_POST['send_type'] == '4')
+    {
+        if ((isset($_FILES['bonus_img']['error']) && $_FILES['bonus_img']['error'] == 0) || (!isset($_FILES['bonus_img']['error']) && isset($_FILES['bonus_img']['tmp_name'] ) &&$_FILES['bonus_img']['tmp_name'] != 'none'))
+        {
+            $ad_code = basename($image->upload_image($_FILES['bonus_img'], 'bonusimg'));
+			
+        }
+        if (!empty($_POST['img_url']))
+        {
+            $ad_code = $_POST['img_url'];
+        }
+        if (((isset($_FILES['ad_img']['error']) && $_FILES['ad_img']['error'] > 0) || (!isset($_FILES['ad_img']['error']) && isset($_FILES['ad_img']['tmp_name']) && $_FILES['ad_img']['tmp_name'] == 'none')) && empty($_POST['img_url']))
+        {
+            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
+            sys_msg($_LANG['js_languages']['ad_photo_empty'], 0, $link);
+        }
+    }
+
     $sql = "UPDATE " .$ecs->table('bonus_type'). " SET ".
            "type_name       = '$type_name', ".
            "type_money      = '$_POST[type_money]', ".
@@ -300,6 +343,8 @@ if ($_REQUEST['act'] == 'update')
            "use_end_date    = '$use_enddate', ".
            "send_type       = '$_POST[send_type]', ".
            "min_amount      = '$min_amount', " .
+			"user_bonus_max      = '$user_bonus_max', " .
+			 "bonus_code      = '$ad_code', " .
            "min_goods_amount = '" . floatval($_POST['min_goods_amount']) . "' ".
            "WHERE type_id   = '$type_id'";
 
@@ -452,6 +497,30 @@ if ($_REQUEST['act'] == 'send_by_user')
                " WHERE user_id " .db_create_in($id_array);
         $user_list  = $db->getAll($sql);
         $count = count($user_list);
+
+		$email_sql = "SELECT value FROM " .$ecs->table('shop_config'). " WHERE  code = 'email_bonus_payed'";
+         $email_on = $db->getOne($email_sql);
+		 $sms_sql = "SELECT value FROM " .$ecs->table('shop_config'). " WHERE  code = 'sms_bonus_payed'";
+         $sms_on = $db->getOne($sms_sql);
+		 if($email_on>0)
+		 {
+			 $msg_goods_url = $GLOBALS['ecs']->url().'user.php';
+			 $email_title ='恭喜您收到一个红包！~';
+			$email_content = '您收到一个红包，您可点击下面链接直接进入个人页面查看！~'.$msg_goods_url;
+			 for($i=0;$i<$count;$i++)
+		          {	
+				  send_mail('', $user_list[$i]['email'],  $email_title,  $email_content , 0);
+		           }
+		 }
+		 if($sms_on>0)
+		 {
+			 $sms_content = '您收到一个红包，您可点击下面链接直接进入个人页面查看！~'.$msg_goods_url;
+			 require_once(ROOT_PATH . '/sms/sms1.php');	
+			 for($i=0;$i<$count;$i++)
+		         {
+					 sendSMS($user_list[$i]['mobile_phone'], $sms_content);
+   	             }
+		 }
     }
 
     /* 发送红包 */
@@ -906,6 +975,7 @@ function get_type_list()
     /* 获得所有红包类型的发放数量 */
     $sql = "SELECT bonus_type_id, COUNT(*) AS sent_count".
             " FROM " .$GLOBALS['ecs']->table('user_bonus') .
+    		" WHERE supplier_id=0".
             " GROUP BY bonus_type_id";
     $res = $GLOBALS['db']->query($sql);
 
@@ -918,7 +988,7 @@ function get_type_list()
     /* 获得所有红包类型的发放数量 */
     $sql = "SELECT bonus_type_id, COUNT(*) AS used_count".
             " FROM " .$GLOBALS['ecs']->table('user_bonus') .
-            " WHERE used_time > 0".
+            " WHERE supplier_id=0 AND used_time > 0".
             " GROUP BY bonus_type_id";
     $res = $GLOBALS['db']->query($sql);
 
@@ -935,13 +1005,13 @@ function get_type_list()
         $filter['sort_by']    = empty($_REQUEST['sort_by']) ? 'type_id' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
 
-        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('bonus_type');
+        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('bonus_type')." WHERE supplier_id = 0";
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
         /* 分页大小 */
         $filter = page_and_size($filter);
 
-        $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('bonus_type'). " ORDER BY $filter[sort_by] $filter[sort_order]";
+        $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('bonus_type'). " WHERE supplier_id = 0 ORDER BY $filter[sort_by] $filter[sort_order]";
 
         set_filter($filter, $sql);
     }

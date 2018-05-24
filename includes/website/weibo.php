@@ -24,24 +24,24 @@ if (defined('WEBSITE'))
 	$web[$i]['type'] = 'weibo';
 	
 	// 作者信息
-	$web[$i]['author'] = '`clearlove\'';
+	$web[$i]['author'] = '`68ecshop\'';
 	
 	$web[$i]['className'] = 'weibo';
 	
 	// 作者QQ
-	$web[$i]['qq'] = '2355497362';
+	$web[$i]['qq'] = '1527200768';
 	
 	// 作者邮箱
-	$web[$i]['email'] = '2355497362@oeob.cn';
+	$web[$i]['email'] = 'admin@hongyuvip.com';
 	
 	// 申请网址
 	$web[$i]['website'] = 'http://open.weibo.com';
 	
 	// 版本号
-	$web[$i]['version'] = '2.7v';
+	$web[$i]['version'] = '1.2v';
 	
 	// 更新日期
-	$web[$i]['date']  = '2013-11-5';
+	$web[$i]['date']  = '2012-2-25';
 	
 	// 配置信息
 	$web[$i]['config'] = array(

@@ -7,6 +7,7 @@
 <!-- start ad position list -->
 <div class="list-div" id="listDiv">
 {/if}
+
 <table width="100%" cellspacing="1" cellpadding="2" id="list-table">
   <tr>
     <th>{$lang.cat_name}</th>
@@ -20,7 +21,7 @@
   <tr align="center" class="{$cat.level}" id="{$cat.level}_{$cat.cat_id}">
     <td align="left" class="first-cell nowrap" valign="top" >
       {if $cat.is_leaf neq 1}
-      <img src="images/menu_minus.gif" id="icon_{$cat.level}_{$cat.cat_id}" width="12" height="12" border="0" style="margin-left:{$cat.level}em" onclick="rowClicked(this)" />
+      <img src="images/menu_minus.gif" id="icon_{$cat.level}_{$cat.cat_id}" width="9" height="9" border="0" style="margin-left:{$cat.level}em" onclick="rowClicked(this)" />
       {else}
       <img src="images/menu_arrow.gif" width="9" height="9" border="0" style="margin-left:{$cat.level}em" />
       {/if}

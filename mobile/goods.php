@@ -1,22 +1,23 @@
 <?php
 
 /**
- * ECSHOP 商品详情
+ * 鸿宇多用户商城 商品详情
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: goods.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: goods.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
-require(ROOT_PATH . 'include/lib_weixintong.php');
+require(dirname(__FILE__) . '/includes/init.php');
+include_once(ROOT_PATH. "includes/lib_comment.php");
+
 if ((DEBUG_MODE & 2) != 2)
 {
     $smarty->caching = true;
@@ -25,6 +26,105 @@ if ((DEBUG_MODE & 2) != 2)
 $affiliate = unserialize($GLOBALS['_CFG']['affiliate']);
 $smarty->assign('affiliate', $affiliate);
 
+if(!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_pickup_list')
+{
+	$select_info = array();
+	$country = $_REQUEST['country'];
+	$province = $_REQUEST['province'];
+	$city = $_REQUEST['city'];
+	$sql_cn = 'select region_id from ' . $ecs->table('region') . " where region_name='$country'";
+	$country_id = $db->getOne($sql_cn);
+	$sql_p = 'select region_id from ' . $ecs->table('region') . " where region_name='$province'";
+	$province_id = $db->getOne($sql_p);
+	$sql_c = 'select region_id from ' . $ecs->table('region') . " where region_name='$city'";
+	$city_id = $db->getOne($sql_c);
+	
+	$select_info['pro_select']  = region_select(2, $country_id, $province_id);
+	$select_info['city_select'] = region_select(3, $province_id, $city_id);
+	$select_info['dist_select'] = region_select(4, $city_id);
+	
+	die(json_encode(array('error' => 0, 'info' => $select_info)));
+}
+
+if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'pickup_info')
+{
+	$district_id = $_REQUEST['district_id'];
+	$sql_pinfo = "select * from " . $ecs->table('pickup_point') . " where district_id = '" . $district_id . "'";
+	$p_info = $db->getAll($sql_pinfo);
+	if (count($p_info) == 0)
+	{
+		$pickup_list_info = "<div class='pick_col'>该地区尚未开放自提点!</div>";
+	}
+	else
+	{
+		$pickup_list_info = "<div><span>自提点信息：</span><br /><ul>";
+		foreach ($p_info as $p_infos)
+		{
+			$pickup_list_info .= "<li>" . $p_infos['shop_name'] . "<br />地址：" . $p_infos['address'] .
+								"<br />联系人：" . $p_infos['contact'] . "&nbsp;&nbsp;&nbsp;&nbsp;联系方式：" . $p_infos['phone'] . "</li>";
+		}
+		$pickup_list_info .= "</ul></div>";
+	}
+	die(json_encode(array('error' => 0, 'pinfos' => $pickup_list_info)));
+}
+
+if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_region_select')
+{
+	$t = $_REQUEST['t'];
+	$parent_id = $_REQUEST['parent_id'];
+	
+	switch ($t)
+	{
+		case 2 : $ts = 'p_list'; break;
+		case 3 : $ts = 'c_list'; break;
+		case 4 : $ts = 'd_list'; break;
+	}
+	
+	$selcet_info = region_select($t, $parent_id);
+	die(json_encode(array('error' => 0, 't' => $ts, 'selcet_info' => $selcet_info)));
+}
+
+if(!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_pickup_info')
+{
+	$province = $_REQUEST['province'];
+	$city = $_REQUEST['city'];
+	$district = $_REQUEST['district'];
+	$suppid = intval($_REQUEST['suppid']);
+        
+	$city_info = get_city_info($province, $city, $district);
+
+	$where = 'where supplier_id='.$suppid;
+	if($city_info['province_id']>0 && $city_info['city_id']>0)
+	{
+		$where .= ' and province_id=' . $city_info['province_id'] . ' and city_id=' . $city_info['city_id'];
+		
+		$sql = 'select * from ' . $GLOBALS['ecs']->table('pickup_point') . $where;
+
+		$pickup_point_list = $GLOBALS['db']->getAll($sql);
+                
+		echo json_encode(array('error' => 0, 'result' => $pickup_point_list, 'city_info' => $city_info));
+	}
+	else{
+		echo json_encode(array('error' => 1));
+        }
+        exit;
+}
+elseif (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_area_list')
+{
+	$parent_id = $_REQUEST['parent_id'];
+	$sql = 'select region_id, region_name, region_type from ' . $GLOBALS['ecs']->table('region'). ' where parent_id=' . $parent_id;
+	$area_list = $GLOBALS['db']->getAll($sql);
+	die(json_encode($area_list));
+}
+elseif (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'get_pickup_point_list')
+{
+	$district_id = $_REQUEST['district_id'];
+	//$sql = 'select * from ' . $GLOBALS['ecs']->table('pickup_point') . ' where district_id=' . $district_id;
+	$suppid = intval($_REQUEST['suppid']);
+	$sql = 'select * from ' . $GLOBALS['ecs']->table('pickup_point') . ' where district_id=' . $district_id.' and supplier_id='.$suppid;
+	$pickup_point_list = $GLOBALS['db']->getAll($sql);
+	die(json_encode($pickup_point_list));
+}
 /*------------------------------------------------------ */
 //-- INPUT
 /*------------------------------------------------------ */
@@ -37,7 +137,7 @@ $goods_id = isset($_REQUEST['id'])  ? intval($_REQUEST['id']) : 0;
 
 if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'price')
 {
-    include('include/cls_json.php');
+    include('includes/cls_json.php');
 
     $json   = new JSON;
     $res    = array('err_msg' => '', 'result' => '', 'qty' => 1);
@@ -75,7 +175,7 @@ if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'price')
 
 if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'gotopage')
 {
-    include('include/cls_json.php');
+    include('includes/cls_json.php');
 
     $json   = new JSON;
     $res    = array('err_msg' => '', 'result' => '');
@@ -126,12 +226,24 @@ if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'gotopage')
         $res['result'] = $GLOBALS['smarty']->fetch('library/bought_notes.lbi');
 
         $GLOBALS['smarty']->caching = $need_cache;
-        $GLOBALS['smarty']->force_compile = $need_compile;
+        
     }
 
     die($json->encode($res));
 }
-
+/* 商品套餐　*/
+if($_REQUEST['act']=='taocan'){
+    $goods_id = empty($_REQUEST['goods_id'])?'':intval($_REQUEST['goods_id']);
+        //获取关联礼包
+    $package_goods_list = get_package_goods_list($goods_id);
+    $smarty->assign('package_goods_list',$package_goods_list);    // 获取关联礼包
+		/* 代码增加_start By bbs.hongyuvip.com */
+    $package_goods_list_120 = get_package_goods_list_120($goods_id);
+    $smarty->assign('package_goods_list_120',$package_goods_list_120);    // 获取关联礼包
+		/* 代码增加_end By bbs.hongyuvip.com */
+    $smarty->display('goods_taocan.dwt');
+    exit;
+}
 
 /*------------------------------------------------------ */
 //-- PROCESSOR
@@ -141,17 +253,25 @@ $cache_id = $goods_id . '-' . $_SESSION['user_rank'].'-'.$_CFG['lang'];
 $cache_id = sprintf('%X', crc32($cache_id));
 if (!$smarty->is_cached('goods.dwt', $cache_id))
 {
+    /* 获得商品的信息 */
+    $goods = get_goods_info($goods_id);
     $smarty->assign('image_width',  $_CFG['image_width']);
     $smarty->assign('image_height', $_CFG['image_height']);
     $smarty->assign('helps',        get_shop_help()); // 网店帮助
     $smarty->assign('id',           $goods_id);
     $smarty->assign('type',         0);
     $smarty->assign('cfg',          $_CFG);
-    $smarty->assign('promotion',       get_promotion_info($goods_id));//促销信息
+    $smarty->assign('promotion',       get_promotion_info($goods_id,$goods['supplier_id']));//促销信息
     $smarty->assign('promotion_info', get_promotion_info());
+    $smarty->assign('shop_country',   $_CFG['shop_country']);
+    $sql = 'select region_id, region_name from ' . $ecs->table('region') . ' where parent_id=' . $_CFG['shop_country'];
+    $country_list = $GLOBALS['db']->getAll($sql);
+    $smarty->assign('country_list',   $country_list);
+    $city_id = $country_list[0]['region_id'];
+    $smarty->assign('city_id',        $city_id);
+    $district_id = $db->getOne('select region_id from ' . $ecs->table('region') . ' where parent_id=' . $city_id);
+    $smarty->assign('district_id',    $district_id);
 
-    /* 获得商品的信息 */
-    $goods = get_goods_info($goods_id);
 
     if ($goods === false)
     {
@@ -166,11 +286,19 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
             $goods['goods_brand_url'] = build_uri('brand', array('bid'=>$goods['brand_id']), $goods['goods_brand']);
         }
 
+	$goods['supplier_name'] ="网站自营";
+	if ($goods['supplier_id'] > 0)
+	{
+		$sql_supplier = "SELECT s.supplier_id,s.supplier_name,s.add_time,sr.rank_name FROM ". $ecs->table("supplier") . " as s left join ". $ecs->table("supplier_rank") ." as sr ON s.rank_id=sr.rank_id
+		WHERE s.supplier_id=".$goods[supplier_id]." AND s.status=1";
+		$shopuserinfo = $db->getRow($sql_supplier);
+		$goods['supplier_name']= $shopuserinfo['supplier_name'];
+		get_dianpu_baseinfo($goods['supplier_id'],$shopuserinfo);
+	}
         $shop_price   = $goods['shop_price'];
         $linked_goods = get_linked_goods($goods_id);
 
         $goods['goods_style_name'] = add_style($goods['goods_name'], $goods['goods_name_style']);
-        $goods['comment_count'] = get_comment_count($goods['goods_id']);
 
         /* 购买该商品可以得到多少钱的红包 */
         if ($goods['bonus_type_id'] > 0)
@@ -187,12 +315,11 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
                 $goods['bonus_money'] = price_format($goods['bonus_money']);
             }
         }
-		$goods['goods_desc'] = str_replace('src="/images/', 'src="'.$config['site_url'].'images/', $goods['goods_desc']); //修复产品详情的图片 by wang
         $smarty->assign('goods',              $goods);
         $smarty->assign('goods_id',           $goods['goods_id']);
         $smarty->assign('promote_end_time',   $goods['gmt_end_time']);
-        $smarty->assign('sales_count',        get_goods_sales_count($goods['goods_id'])); // by wang
         $smarty->assign('categories',         get_categories_tree($goods['cat_id']));  // 分类树
+		 $smarty->assign('zhekou',  get_zhekou($goods['goods_id']));        //折扣
 
         /* meta */
         $smarty->assign('keywords',           htmlspecialchars($goods['keywords']));
@@ -236,44 +363,100 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
         $smarty->assign('related_goods',       $linked_goods);                                   // 关联商品
         $smarty->assign('goods_article_list',  get_linked_articles($goods_id));                  // 关联文章
         $smarty->assign('fittings',            get_goods_fittings(array($goods_id)));                   // 配件
-        $smarty->assign('rank_prices',         get_user_rank_prices($goods_id, $shop_price)); 
-		/*甜心添加*/
-		$rank_prices=get_user_rank_prices($goods_id, $shop_price);
-		$user_prices="";
-		foreach($rank_prices as $k=>$v){
-			
-			if($_SESSION['user_rank']==$k){
-				$user_prices=$v;
-			}
-		}
-
-		$smarty->assign('user_prices',            $user_prices); 
-		/*甜心添加*/
-		
-		//甜心添加判断该商品是否被收藏过
-			$is_collect=0;
-			$user_id=$_SESSION['user_id'];
-			$sql = "SELECT * FROM " .$GLOBALS['ecs']->table('collect_goods'). " WHERE user_id = '$user_id' and goods_id='$goods_id'";
-			$is_collect = $GLOBALS['db']->getRow($sql);
-			
-		if(!empty($is_collect))	{
-			$smarty->assign('is_collect', 1 );
-		}else{
-			$smarty->assign('is_collect', 0 );
-		}		
-		//甜心添加判断该商品是否被收藏过
-		// 会员等级价格
+        $smarty->assign('rank_prices',         get_user_rank_prices($goods_id, $shop_price));    // 会员等级价格
         $smarty->assign('pictures',            get_goods_gallery($goods_id));                    // 商品相册
         $smarty->assign('bought_goods',        get_also_bought($goods_id));                      // 购买了该商品的用户还购买了哪些商品
         $smarty->assign('goods_rank',          get_goods_rank($goods_id));                       // 商品的销售排名
+				//yyy添加start  //商品评价个数
+			$count = $GLOBALS['db']->getOne("SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('comment') . " where comment_type=0 and id_value ='$goods_id' and status=1");
+        $smarty->assign('review_count',       $count); 
+		
+			//yyy添加end     
+	$smarty->assign('order_num',			selled_count($goods_id));
+	$smarty->assign('pinglun',			get_evaluation_sum($goods_id));
+	$sql="select * from ".$ecs->table('comment')." where comment_type=0 and status=1 and comment_rank!=0 and id_value=$goods_id";
+	$comments=$db->getall($sql);
+	$coun12t=count($comments);
+
+	$yixing=0;
+	$erxing=0;
+	$sanxing=0;
+	$sixing=0;
+	$wuxing=0;
+	$haoping=0;
+
+	foreach($comments as $value){
+
+	if($value['comment_rank'] == 1){
+	$yixing=$yixing+1;
+	$haoping= $haoping +1;
+	}
+
+	if($value['comment_rank'] == 2){
+	$erxing=$erxing+1;
+	$haoping= $haoping +2;
+	}
+	if($value['comment_rank'] == 3){
+	$sanxing=$sanxing+1;
+	$haoping= $haoping +3;
+	}
+	if($value['comment_rank'] == 4){
+	$sixing=$sixing+1;
+	$haoping= $haoping +4;
+	}
+	if($value['comment_rank'] == 5){
+	$wuxing=$wuxing+1;
+	$haoping= $haoping +5;
+	}
+	}
+	$smarty->assign('coun12t', $coun12t); 
+	if($coun12t>0){
+	$smarty->assign('yixing', $yixing); 
+	$smarty->assign('erxing', $erxing); 
+	$smarty->assign('sanxing',$sanxing);
+	$smarty->assign('sixing', $sixing); 
+	$smarty->assign('wuxing', $wuxing);
+	if($coun12t > 0){
+	$smarty->assign('haopinglv',  round($haoping/($coun12t*5)*100,1));
+	}
+}
+
 
         //获取tag
         $tag_array = get_tags($goods_id);
-        $smarty->assign('tags',                $tag_array);                                       // 商品的标记
+        $smarty->assign('tags',                $tag_array);   // 商品的标记
+	
+	if($goods['is_buy'] == 1)
+	{
+		 if($goods['buymax_start_date'] < gmtime() && $goods['buymax_end_date'] > gmtime())
+		 {
+			  if($goods['buymax'] > 0)
+			  {
+				  $tag = 1; 
+			  }
+			  else
+			  {
+				  $tag = 0; 
+			  }
+		 }
+		 else
+		 {
+			 $tag = 0; 
+		 }
+	}
+	else
+	{
+		$tag = 0; 
+	}
+	$smarty->assign('tag',$tag);
 
         //获取关联礼包
         $package_goods_list = get_package_goods_list($goods['goods_id']);
         $smarty->assign('package_goods_list',$package_goods_list);    // 获取关联礼包
+		/* 代码增加_start By bbs.hongyuvip.com */
+		$package_goods_list_120 = get_package_goods_list_120($goods['goods_id']);
+        $smarty->assign('package_goods_list_120',$package_goods_list_120);    // 获取关联礼包
+		/* 代码增加_end By bbs.hongyuvip.com */
 
         assign_dynamic('goods');
         $volume_price_list = get_volume_price_list($goods['goods_id'], '1');
@@ -301,29 +484,12 @@ else
     setcookie('ECS[history]', $goods_id, gmtime() + 3600 * 24 * 30);
 }
 
-
+/* 添加评价晒单 */
+    $comment_list = get_my_comments($goods_id,0, 1);    
+    $smarty->assign('comments_list',$comment_list['item_list']);
 /* 更新点击次数 */
 $db->query('UPDATE ' . $ecs->table('goods') . " SET click_count = click_count + 1 WHERE goods_id = '$_REQUEST[id]'");
 
-
-		/*甜心修改*/
-		$userid=$_SESSION['user_id'];
-		$rank_id=$_SESSION['user_rank'];
-		$parent_ranks = $db->getOne("SELECT special_rank FROM " .$ecs->table('user_rank')."where rank_id=".$rank_id);
-		if($parent_ranks==1){
-		if(!empty($userid)){
-	
-			$url="http://".$_SERVER['HTTP_HOST']."/mobile/goods.php?id=".$goods_id;
-			$u=$userid;
-		}
-		}else{
-			$url="";
-			$u="";
-		}
-$smarty->assign('userurl',  $url);
-$smarty->assign('u',  $u);
-		
-/*甜心修改*/
 $smarty->assign('now_time',  gmtime());           // 当前系统时间
 $smarty->display('goods.dwt',      $cache_id);
 
@@ -342,7 +508,7 @@ function get_linked_goods($goods_id)
 {
     $sql = 'SELECT g.goods_id, g.goods_name, g.goods_thumb, g.goods_img, g.shop_price AS org_price, ' .
                 "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, ".
-                'g.market_price, g.promote_price, g.promote_start_date, g.promote_end_date,g.bb_chicun ' .
+                'g.market_price, g.promote_price, g.promote_start_date, g.promote_end_date ' .
             'FROM ' . $GLOBALS['ecs']->table('link_goods') . ' lg ' .
             'LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . ' AS g ON g.goods_id = lg.link_goods_id ' .
             "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
@@ -358,11 +524,10 @@ function get_linked_goods($goods_id)
         $arr[$row['goods_id']]['goods_name']   = $row['goods_name'];
         $arr[$row['goods_id']]['short_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
             sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
-        $arr[$row['goods_id']]['goods_thumb']  = get_image_path($row['goods_id'], $row['goods_thumb'], true);
-        $arr[$row['goods_id']]['goods_img']    = get_image_path($row['goods_id'], $row['goods_img']);
+        $arr[$row['goods_id']]['goods_thumb']  = '../'.get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']    = '../'.get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['market_price'] = price_format($row['market_price']);
         $arr[$row['goods_id']]['shop_price']   = price_format($row['shop_price']);
-        $arr[$row['goods_id']]['bb_chicun']    = $row['bb_chicun'];
         $arr[$row['goods_id']]['url']          = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
 
         if ($row['promote_price'] > 0)
@@ -465,8 +630,8 @@ function get_also_bought($goods_id)
         $arr[$key]['goods_name']  = $row['goods_name'];
         $arr[$key]['short_name']  = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
             sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
-        $arr[$key]['goods_thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'], true);
-        $arr[$key]['goods_img']   = get_image_path($row['goods_id'], $row['goods_img']);
+        $arr[$key]['goods_thumb'] = '../'.get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$key]['goods_img']   = '../'.get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$key]['shop_price']  = price_format($row['shop_price']);
         $arr[$key]['url']         = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
 
@@ -623,7 +788,7 @@ function get_package_goods_list($goods_id)
         foreach($goods_res as $key => $val)
         {
             $goods_id_array[] = $val['goods_id'];
-            $goods_res[$key]['goods_thumb']  = get_image_path($val['goods_id'], $val['goods_thumb'], true);
+            $goods_res[$key]['goods_thumb']  = '../'.get_image_path($val['goods_id'], $val['goods_thumb'], true);
             $goods_res[$key]['market_price'] = price_format($val['market_price']);
             $goods_res[$key]['rank_price']   = price_format($val['rank_price']);
             $subtotal += $val['rank_price'] * $val['goods_number'];
@@ -669,43 +834,229 @@ function get_package_goods_list($goods_id)
 
     return $res;
 }
+/*
+ * 获取商品所对应店铺的店铺基本信息
+ * @param int $suppid 店铺id
+ * @param int $suppinfo 入驻商的信息
+ */
+function get_dianpu_baseinfo($suppid=0,$suppinfo){
+	if(intval($suppid) <= 0){
+		return ;
+	}
+	global $smarty;
+	$sql = "SELECT * FROM " .$GLOBALS['ecs']->table('supplier_shop_config'). " WHERE supplier_id = " . $suppid;
+        $shopinfo = $GLOBALS['db']->getAll($sql);
 
-// 获取商品的销量 by wang
-function get_goods_sales_count($goods_id)
+        $_goods_attr = array();
+        foreach ($shopinfo as $value)
+        {
+            $_goods_attr[$value['code']] = $value['value'];
+        }
+	$smarty->assign('ghs_css_path',        'themesmobile/'.$_goods_attr['template'].'/images/ghs/css/ghs_style.css');//入驻商所选模板样式路径
+	$shoplogo = empty($_goods_attr['shop_logo']) ? 'themesmobile/'.$_goods_attr['template'].'/images/dianpu.jpg' : $_goods_attr['shop_logo'];
+	$smarty->assign('shoplogo',        $shoplogo);//商家logo
+	$smarty->assign('shopname',        htmlspecialchars($_goods_attr['shop_name']));//店铺名称
+	$smarty->assign('suppid',        $suppinfo['supplier_id']);//商家名称
+	$smarty->assign('suppliername',        htmlspecialchars($suppinfo['supplier_name']));//商家名称
+	$smarty->assign('userrank',        htmlspecialchars($suppinfo['rank_name']));//商家等级
+   	//$smarty->assign('region', get_province_city($_goods_attr['shop_province'],$_goods_attr['shop_city']));
+	$smarty->assign('address', $_goods_attr['shop_address']);
+	$smarty->assign('serviceqq', $_goods_attr['qq']);
+	$smarty->assign('serviceemail', $_goods_attr['service_email']);
+	$smarty->assign('servicephone', $_goods_attr['service_phone']);
+	$smarty->assign('createtime',      gmdate('Y-m-d',$suppinfo['add_time']));//商家创建时间
+	$suppid = (intval($suppid)>0) ? intval($suppid) : intval($_GET['suppId']);
+	//$sql="SELECT count(`goods_id`) FROM ".$GLOBALS['ecs']->table('goods')." as g WHERE  g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.supplier_id='$suppid'";
+	//$smarty->assign('goodsnum',      $GLOBALS['db']->getOne($sql));//商家商品数量
+}
+
+function region_select($type, $parent_id, $start_id = "")
 {
-    /* 统计时间段 */
-    //$period = intval($GLOBALS['_CFG']['top10_time']);
-    $period = 4; //近一个月（30天）
-    if ($period == 1) { // 一年
-        $ext = " AND o.add_time > '" . local_strtotime('-1 years') . "'";
-    } elseif ($period == 2) { // 半年
-        $ext = " AND o.add_time > '" . local_strtotime('-6 months') . "'";
-    } elseif ($period == 3) { // 三个月
-        $ext = " AND o.add_time > '" . local_strtotime('-3 months') . "'";
-    } elseif ($period == 4) { // 一个月
-        $ext = " AND o.add_time > '" . local_strtotime('-1 months') . "'";
-    } else {
-        $ext = '';
+	switch ($type)
+	{
+		case 1 : $select_id = 'country_list'; $select_name = '国家'; $_js = " onchange='get_region_list(2,this.value)'"; break;
+		case 2 : $select_id = 'province_list'; $select_name = '省份'; $_js = " onchange='get_region_list(3,this.value)'"; break;
+		case 3 : $select_id = 'city_list'; $select_name = '城市'; $_js = " onchange='get_region_list(4,this.value)'"; break;
+		case 4 : $select_id = 'district_list'; $select_name = '地区'; $_js = " onchange='get_pickup_point_list(this.value)'"; break;
+	}
+	
+	$region_info = "<select name='" . $select_id . "' " . $_js . ">";
+	
+	if ($start_id != "")
+	{
+		$sql_s = "select region_id, region_name from " . $GLOBALS['ecs']->table('region') . " where region_id = '" . $start_id . "'";
+		$s_info = $GLOBALS['db']->getRow($sql_s);
+		$sql_a = "select region_id, region_name from " . $GLOBALS['ecs']->table('region') . " where parent_id = '" . $parent_id . "' and region_id <> '" . $start_id . "'";
+		$a_info = $GLOBALS['db']->getAll($sql_a);
+		
+		$region_info .= "<option value='" . $s_info['region_id'] . "'>" . $s_info['region_name'] . "</option>";
+		foreach ($a_info as $minfo)
+		{
+			$region_info .= "<option value='" . $minfo['region_id'] . "'>" . $minfo['region_name'] . "</option>";
+		}
+	}
+	else
+	{
+		$sql_all = "select region_id, region_name from " . $GLOBALS['ecs']->table('region') . " where parent_id = '" . $parent_id . "'";
+		$all_info = $GLOBALS['db']->getAll($sql_all);
+		
+		$region_info .= "<option value='0'>请选择" . $select_name . "</option>";
+		foreach ($all_info as $info)
+		{
+			$region_info .= "<option value='" . $info['region_id'] . "'>" . $info['region_name'] . "</option>";
+		}
+	}
+	
+	$region_info .= "</select>";
+	
+	return $region_info;
+}
+
+
+function get_zhekou($goods_id)
+{
+	 $zhekou  = '0'; 
+
+    /* 取得商品信息 */
+    $sql = "SELECT g.shop_price , g.promote_price".
+               
+           " FROM " .$GLOBALS['ecs']->table('goods'). " AS g ".
+         
+           " WHERE g.goods_id = '" . $goods_id . "'";
+         
+    $goods = $GLOBALS['db']->getRow($sql);
+	
+	if ($goods['shop_price'] == 0)
+	{
+		
+	$zhekou = 0;
+	
+	}else{
+		
+	 $zhekou = (number_format(intval($goods['promote_price'])/intval($goods['shop_price']),2))*10;
+	
+	}
+    return $zhekou;
+}
+/* 代码增加_start  By bbs.hongyuvip.com */
+function get_package_goods_list_120($goods_id)
+{
+	$now = gmtime();
+    $sql = "SELECT ga.act_id,ga.ext_info
+            FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS ga, " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+            WHERE pg.package_id = ga.act_id
+            AND ga.start_time <= '" . $now . "'
+            AND ga.end_time >= '" . $now . "'
+            AND pg.goods_id = " . $goods_id . "
+            GROUP BY pg.package_id
+            ORDER BY ga.act_id";
+
+	$res = $GLOBALS['db']->getAll($sql);
+
+    foreach ($res as $tempkey => $value)
+    {
+        $subtotal = 0;
+		$i=1;
+
+		//获取礼包价
+		$row = unserialize($value['ext_info']);
+        unset($value['ext_info']);
+        if ($row)
+        {
+            foreach ($row as $key=>$val)
+            {
+                $res[$tempkey][$key] = $val;
+            }
+        }
+
+        $sql = "SELECT pg.package_id, pg.goods_id, pg.product_id, pg.goods_number, pg.admin_id, p.goods_attr, g.goods_sn, g.goods_name, g.market_price, g.goods_thumb, IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS rank_price
+                FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+                    LEFT JOIN ". $GLOBALS['ecs']->table('goods') . " AS g
+                        ON g.goods_id = pg.goods_id
+                    LEFT JOIN ". $GLOBALS['ecs']->table('products') . " AS p
+                        ON p.product_id = pg.product_id
+                    LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp
+                        ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]'
+                WHERE pg.package_id = " . $value['act_id']. "
+                ORDER BY pg.package_id, pg.goods_id";
+
+		$goods_ress = $GLOBALS['db']->query($sql);
+		$goods_res = array();
+		while ($row = $GLOBALS['db']->fetchRow($goods_ress))
+		{
+			if ($row['goods_id'] == $goods_id )
+			{
+				$goods_res[0]=$row;
+			}
+			else
+			{
+				$goods_res[$i]=$row;
+				$i++;
+			}
+		}
+
+        foreach($goods_res as $key => $val)
+        {
+            $goods_id_array[] = $val['goods_id'];
+            $goods_res[$key]['goods_thumb']  = '../'.get_image_path($val['goods_id'], $val['goods_thumb'], true);
+            $goods_res[$key]['market_price'] = price_format($val['market_price']);
+            $goods_res[$key]['rank_price']   = $val['rank_price'];
+            $subtotal += $val['rank_price'] * $val['goods_number'];
+        }
+
+        /* 取商品属性 */
+        $sql = "SELECT ga.goods_attr_id, ga.attr_value
+                FROM " .$GLOBALS['ecs']->table('goods_attr'). " AS ga, " .$GLOBALS['ecs']->table('attribute'). " AS a
+                WHERE a.attr_id = ga.attr_id
+                AND a.attr_type = 1
+                AND " . db_create_in($goods_id_array, 'goods_id');
+        $result_goods_attr = $GLOBALS['db']->getAll($sql);
+
+        $_goods_attr = array();
+        foreach ($result_goods_attr as $value)
+        {
+            $_goods_attr[$value['goods_attr_id']] = $value['attr_value'];
+        }
+
+        /* 处理货品 */
+        $format = '[%s]';
+        foreach($goods_res as $key => $val)
+        {
+            if ($val['goods_attr'] != '')
+            {
+                $goods_attr_array = explode('|', $val['goods_attr']);
+
+                $goods_attr = array();
+                foreach ($goods_attr_array as $_attr)
+                {
+                    $goods_attr[] = $_goods_attr[$_attr];
+                }
+
+                $goods_res[$key]['goods_attr_str'] = sprintf($format, implode('，', $goods_attr));
+            }
+        }
+
+		ksort($goods_res); //重新排序数组
+
+		/* 重新计算套餐内的商品折扣价 */
+		$zhekou=  round(($res[$tempkey]['package_price'] / $subtotal), 8);
+		foreach($goods_res as $key => $val)
+		{
+			$goods_res[$key]['rank_price_zk']=$val['rank_price'] * $zhekou;
+			$goods_res[$key]['rank_price_zk_format']= price_format($goods_res[$key]['rank_price_zk']);
+		}
+
+        $res[$tempkey]['goods_list']    = $goods_res;
+        $res[$tempkey]['subtotal']      = price_format($subtotal);
+		$res[$tempkey]['zhekou']      = $zhekou*100;
+        $res[$tempkey]['saving']        = price_format(($subtotal - $res[$tempkey]['package_price']));
+        $res[$tempkey]['package_price'] = price_format($res[$tempkey]['package_price']);
+
     }
 
-    /* 查询该商品销量 */
-    $sql = 'SELECT IFNULL(SUM(g.goods_number), 0) ' .
-        'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
-            $GLOBALS['ecs']->table('order_goods') . ' AS g ' .
-        "WHERE o.order_id = g.order_id " .
-        "AND o.order_status " . db_create_in(array(OS_CONFIRMED, OS_SPLITED)) .
-        "AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
-        " AND o.pay_status " . db_create_in(array(PS_PAYED, PS_PAYING)) .
-        " AND g.goods_id = '$goods_id'" . $ext;
-    $sales_count = $GLOBALS['db']->getOne($sql);
-
-    return intval($sales_count);
+	return $res;
 }
 
-// 统计商品的评论数
-function get_comment_count($goods_id){
-    $sql = 'SELECT count(*) FROM '.$GLOBALS['ecs']->table('comment').' where status=1 and id_value='.$goods_id;
-    $res = $GLOBALS['db']->getOne($sql);
-    return intval($res);
-}
+
+/* 代码增加_start  By bbs.hongyuvip.com */
 ?>

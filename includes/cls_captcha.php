@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 验证码图片类
+ * 鸿宇多用户商城 验证码图片类
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: cls_captcha.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: cls_captcha.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -47,19 +47,28 @@ class captcha
      * @var array   $themes
      */
     var $themes_jpg = array(
-        1 => array('captcha_bg1.jpg', 255, 255, 255),
-        2 => array('captcha_bg2.jpg', 0, 0, 0),
-        3 => array('captcha_bg3.jpg', 0, 0, 0),
-        4 => array('captcha_bg4.jpg', 255, 255, 255),
-        5 => array('captcha_bg5.jpg', 255, 255, 255),
+		1 => array('captcha_bg6.jpg', 16, 138, 205),
+        2 => array('captcha_bg6.jpg', 46, 46, 46),
+        3 => array('captcha_bg6.jpg', 176, 46, 56),
+        4 => array('captcha_bg6.jpg', 18, 18, 18),
+        5 => array('captcha_bg6.jpg', 248, 3, 0),
+//         2 => array('captcha_bg2.jpg', 0, 0, 0),
+//         3 => array('captcha_bg3.jpg', 0, 0, 0),
+//         4 => array('captcha_bg4.jpg', 255, 255, 255),
+//         5 => array('captcha_bg5.jpg', 255, 255, 255),
     );
 
     var $themes_gif = array(
-        1 => array('captcha_bg1.gif', 255, 255, 255),
-        2 => array('captcha_bg2.gif', 0, 0, 0),
-        3 => array('captcha_bg3.gif', 0, 0, 0),
-        4 => array('captcha_bg4.gif', 255, 255, 255),
-        5 => array('captcha_bg5.gif', 255, 255, 255),
+//         1 => array('captcha_bg1.gif', 255, 255, 255),
+//         2 => array('captcha_bg2.gif', 0, 0, 0),
+//         3 => array('captcha_bg3.gif', 0, 0, 0),
+//         4 => array('captcha_bg4.gif', 255, 255, 255),
+//         5 => array('captcha_bg5.gif', 255, 255, 255),
+		1 => array('captcha_bg6.gif', 16, 138, 205),
+		2 => array('captcha_bg6.gif', 46, 46, 46),
+		3 => array('captcha_bg6.gif', 176, 46, 56),
+		4 => array('captcha_bg6.gif', 18, 18, 18),
+		5 => array('captcha_bg6.gif', 248, 3, 0),
     );
 
     /**
@@ -67,7 +76,7 @@ class captcha
      *
      * @var integer $width
      */
-    var $width      = 130;
+    var $width      = 70;
 
     /**
      * 图片的高度
@@ -75,6 +84,22 @@ class captcha
      * @var integer $height
      */
     var $height     = 20;
+    
+
+	/* 代码修改_start By  bbs.hongyuvip.com */
+
+	/**
+     * 构造函数
+     *
+     * @access  public
+     * @param
+     *
+     * @return void
+     */
+    function __construct($folder = '', $width = 75, $height = 30)
+    {
+        $this->captcha($folder, $width, $height);
+    }
 
     /**
      * 构造函数
@@ -85,7 +110,7 @@ class captcha
      * @param   integer $height     图片高度
      * @return  bool
      */
-    function captcha($folder = '', $width = 145, $height = 20)
+    function captcha($folder = '', $width = 75, $height = 30)
     {
         if (!empty($folder))
         {
@@ -106,20 +131,9 @@ class captcha
 
             return (((imagetypes() & IMG_GIF) > 0) || ((imagetypes() & IMG_JPG)) > 0 );
         }
-    }
+    }    
 
-    /**
-     * 构造函数
-     *
-     * @access  public
-     * @param
-     *
-     * @return void
-     */
-    function __construct($folder = '', $width = 145, $height = 20)
-    {
-        $this->captcha($folder, $width, $height);
-    }
+	/* 代码修改_end By  bbs.hongyuvip.com */
 
 
     /**
@@ -168,7 +182,7 @@ class captcha
         {
             $theme  = $this->themes_gif[mt_rand(1, count($this->themes_gif))];
         }
-
+        
         if (!file_exists($this->folder . $theme[0]))
         {
             return false;
@@ -194,7 +208,8 @@ class captcha
             }
             imagedestroy($img_bg);
 
-            $clr = imagecolorallocate($img_org, $theme[1], $theme[2], $theme[3]);
+            //$clr = imagecolorallocate($img_org, $theme[1], $theme[2], $theme[3]);
+            $clr = imagecolorallocate($img_org, 0, 0, 0);
 
             /* 绘制边框 */
             //imagerectangle($img_org, 0, 0, $this->width - 1, $this->height - 1, $clr);
@@ -202,7 +217,23 @@ class captcha
             /* 获得验证码的高度和宽度 */
             $x = ($this->width - (imagefontwidth(5) * $letters)) / 2;
             $y = ($this->height - imagefontheight(5)) / 2;
-            imagestring($img_org, 5, $x, $y, $word, $clr);
+            
+			//imagestring($img_org, 5, $x, $y, $word, $clr);
+            
+            //倾斜角度、X、Y位置
+            $position = null;
+            if(rand(0, 1) == 0)
+            {
+            	$position = array('-'.rand(0, 10), 10, 20);
+            }
+            else 
+            {
+            	$position = array(rand(0, 10), 10, 23);
+            }
+            //字体
+            $ttf_font = $this->folder.'/arial.ttf';
+            
+            ImageTTFText($img_org, 14, $position[0], $position[1], $position[2], $clr, $ttf_font, $word);
 
             header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 

@@ -24,8 +24,8 @@
       <th>
         <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox" />
         <a href="javascript:listTable.sort('act_id'); ">{$lang.record_id}</a>{$sort_act_id}</th>
-      <th><a href="javascript:listTable.sort('act_name'); ">{$lang.act_name}</a>{$sort_act_name}</th>
-      <th><a href="javascript:listTable.sort('goods_name'); ">{$lang.goods_name}</a>{$sort_goods_name}</th>
+      <th width="25%"><a href="javascript:listTable.sort('act_name'); ">{$lang.act_name}</a>{$sort_act_name}</th>
+      <th width="25%"><a href="javascript:listTable.sort('goods_name'); ">{$lang.goods_name}</a>{$sort_goods_name}</th>
       <th><a href="javascript:listTable.sort('start_time'); ">{$lang.start_time}</a>{$sort_start_time}</th>
       <th><a href="javascript:listTable.sort('end_time'); ">{$lang.end_time}</a>{$sort_end_time}</th>
       <th>{$lang.start_price}</th>
@@ -38,14 +38,14 @@
       <td><input value="{$auction.act_id}" name="checkboxes[]" type="checkbox">{$auction.act_id}</td>
       <td>{$auction.act_name|escape:html}</td>
       <td>{$auction.goods_name|escape:html}</td>
-      <td align="right">{$auction.start_time}</td>
-      <td align="right">{$auction.end_time}</td>
+      <td align="center">{$auction.start_time}</td>
+      <td align="center">{$auction.end_time}</td>
       <td align="right">{$auction.start_price}</td>
       <td align="right">{if $auction.no_top}{$lang.label_no_top}{else}{$auction.end_price}{/if}</td>
       <td align="center">
-        <a href="auction.php?act=view_log&id={$auction.act_id}"><img src="images/icon_view.gif" title="{$lang.auction_log}" border="0" height="21" width="21" /></a>
-        <a href="auction.php?act=edit&amp;id={$auction.act_id}" title="{$lang.edit}"><img src="images/icon_edit.gif" border="0" height="21" width="21" /></a>
-        <a href="javascript:;" onclick="listTable.remove({$auction.act_id},'{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="21" width="21" /></a>      </td>
+        <a href="auction.php?act=view_log&id={$auction.act_id}"><img src="images/icon_view.gif" title="{$lang.auction_log}" border="0" height="16" width="16" /></a>
+        <a href="auction.php?act=edit&amp;id={$auction.act_id}" title="{$lang.edit}"><img src="images/icon_edit.gif" border="0" height="16" width="16" /></a>
+        <a href="javascript:;" onclick="listTable.remove({$auction.act_id},'{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16" /></a>      </td>
     </tr>
     {foreachelse}
     <tr><td class="no-records" colspan="12">{$lang.no_records}</td></tr>

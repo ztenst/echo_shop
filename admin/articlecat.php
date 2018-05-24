@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 文章分类管理程序
+ * 鸿宇多用户商城 文章分类管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: articlecat.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: articlecat.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -86,7 +86,18 @@ elseif ($_REQUEST['act'] == 'insert')
     {
         sys_msg(sprintf($_LANG['catname_exist'], stripslashes($_POST['cat_name'])), 1);
     }
+	/* 代码增加_start By bbs.hongyuvip.com */
+	if($_POST['path_name'] != '')
+	{
+		$is_only = $exc->is_only('path_name', $_POST['path_name']);
 
+    	if (!$is_only)
+    	{
+        	sys_msg(sprintf('对不起，已经存在相同目录名', stripslashes($_POST['path_name'])), 1);
+    	}
+	}
+	/* 代码增加_end  By  bbs.hongyuvip.com  */
+	
     $cat_type = 1;
     if ($_POST['parent_id'] > 0)
     {
@@ -103,8 +114,8 @@ elseif ($_REQUEST['act'] == 'insert')
     }
 
 
-    $sql = "INSERT INTO ".$ecs->table('article_cat')."(cat_name, cat_type, cat_desc,keywords, parent_id, sort_order, show_in_nav)
-           VALUES ('$_POST[cat_name]', '$cat_type',  '$_POST[cat_desc]','$_POST[keywords]', '$_POST[parent_id]', '$_POST[sort_order]', '$_POST[show_in_nav]')";
+    $sql = "INSERT INTO ".$ecs->table('article_cat')."(cat_name, cat_type, cat_desc,keywords, parent_id, sort_order, show_in_nav, path_name)
+           VALUES ('$_POST[cat_name]', '$cat_type',  '$_POST[cat_desc]','$_POST[keywords]', '$_POST[parent_id]', '$_POST[sort_order]', '$_POST[show_in_nav]', '$_POST[path_name]')";//代码修改 By  bbs.hongyuvip.com 增加新字段 path_name 和  $_POST[path_name]
     $db->query($sql);
 
     if($_POST['show_in_nav'] == 1)
@@ -135,8 +146,8 @@ elseif ($_REQUEST['act'] == 'edit')
     /* 权限判断 */
     admin_priv('article_cat');
 
-    $sql = "SELECT cat_id, cat_name, cat_type, cat_desc, show_in_nav, keywords, parent_id,sort_order FROM ".
-           $ecs->table('article_cat'). " WHERE cat_id='$_REQUEST[id]'";
+    $sql = "SELECT cat_id, cat_name, cat_type, cat_desc, show_in_nav, keywords, parent_id,sort_order, path_name FROM ".
+           $ecs->table('article_cat'). " WHERE cat_id='$_REQUEST[id]'";//代码修改 By bbs.hongyuvip.com 增加一个path_name 字段
     $cat = $db->GetRow($sql);
 
     if ($cat['cat_type'] == 2 || $cat['cat_type'] == 3 || $cat['cat_type'] ==4)
@@ -176,7 +187,6 @@ elseif ($_REQUEST['act'] == 'update')
 {
     /* 权限判断 */
     admin_priv('article_cat');
-
     /*检查重名*/
     if ($_POST['cat_name'] != $_POST['old_catname'])
     {
@@ -187,7 +197,16 @@ elseif ($_REQUEST['act'] == 'update')
             sys_msg(sprintf($_LANG['catname_exist'], stripslashes($_POST['cat_name'])), 1);
         }
     }
-
+	/* 代码增加_start  By  bbs.hongyuvip.com */
+	if($_POST['path_name'] != '')
+	{
+		$is_only = $exc->is_only('path_name', $_POST['path_name'], $_POST['id']);
+    	 if (!$is_only)
+     	{
+            sys_msg(sprintf('对不起，已经存在相同的目录名', stripslashes($_POST['path_name'])), 1);
+     	}
+	}
+	/* 代码增加_start  By  bbs.hongyuvip.com */
     if(!isset($_POST['parent_id']))
     {
         $_POST['parent_id'] = 0;
@@ -238,6 +257,13 @@ elseif ($_REQUEST['act'] == 'update')
     $dat = $db->getOne("SELECT cat_name, show_in_nav FROM ". $ecs->table('article_cat') . " WHERE cat_id = '" . $_POST['id'] . "'");
     if ($exc->edit("cat_name = '$_POST[cat_name]', cat_desc ='$_POST[cat_desc]', keywords='$_POST[keywords]',parent_id = '$_POST[parent_id]', cat_type='$cat_type', sort_order='$_POST[sort_order]', show_in_nav = '$_POST[show_in_nav]'",  $_POST['id']))
     {
+		/* 代码增加_start  By  bbs.hongyuvip.com */
+		if($_POST['path_name'])
+        {
+			$sql = "UPDATE " . $ecs->table('article_cat') . " SET path_name = '" . $_POST['path_name'] . "' WHERE cat_id = '" . $_POST['id'] . "' ";
+            $db->query($sql);
+		}
+		/* 代码增加_end  By  bbs.hongyuvip.com */
         if($_POST['cat_name'] != $dat['cat_name'])
         {
             //如果分类名称发生了改变

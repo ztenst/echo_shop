@@ -27,11 +27,14 @@
   </tr>
   <tr>
     <td class="label">{$lang.send_method}</td>
-    <td>
-      <input type="radio" name="send_type" value="0" {if $bonus_arr.send_type eq 0} checked="true" {/if} onClick="showunit(0)"  />{$lang.send_by[0]}
-      <input type="radio" name="send_type" value="1" {if $bonus_arr.send_type eq 1} checked="true" {/if} onClick="showunit(1)"  />{$lang.send_by[1]}
-      <input type="radio" name="send_type" value="2" {if $bonus_arr.send_type eq 2} checked="true" {/if} onClick="showunit(2)"  />{$lang.send_by[2]}
-      <input type="radio" name="send_type" value="3" {if $bonus_arr.send_type eq 3} checked="true" {/if} onClick="showunit(3)"  />{$lang.send_by[3]}    </td>
+    <td valign="middle">
+      <input type="radio" name="send_type" value="0" {if $bonus_arr.send_type eq 0} checked="true" {/if} onClick="showunit(0)"/>{$lang.send_by[0]}
+      <input type="radio" name="send_type" value="1" {if $bonus_arr.send_type eq 1} checked="true" {/if} onClick="showunit(1)"/>{$lang.send_by[1]}
+      <input type="radio" name="send_type" value="2" {if $bonus_arr.send_type eq 2} checked="true" {/if} onClick="showunit(2)"/>{$lang.send_by[2]}
+      <input type="radio" name="send_type" value="3" {if $bonus_arr.send_type eq 3} checked="true" {/if} onClick="showunit(3)"/>{$lang.send_by[3]}
+	  <input type="radio" name="send_type" value="4" {if $bonus_arr.send_type eq 4} checked="true" {/if} onClick="showunit(4)"  />{$lang.send_by[4]} 
+       <input type="radio" name="send_type" value="5" {if $bonus_arr.send_type eq 5} checked="true" {/if} onClick="showunit(5)"  />{$lang.send_by[5]} 
+    </td>
   </tr>
   <tr id="1" style="display:none">
     <td class="label">
@@ -68,6 +71,25 @@
     <td>
       <input name="use_end_date" type="text" id="use_end_date" size="22" value='{$bonus_arr.use_end_date}' readonly="readonly" /><input name="selbtn4" type="button" id="selbtn4" onclick="return showCalendar('use_end_date', '%Y-%m-%d', false, false, 'selbtn4');" value="{$lang.btn_select}" class="button"/>    </td>
   </tr>
+ 
+   <tr>
+    <td class="label">{$lang.bonus_img}</td>
+    <td>
+      <input type='file' name='bonus_img'  size='20' />   <br />
+		<span class="notice-span" >{$lang.bonus_type4_notic}</span>   
+	  </td>
+  </tr>
+  
+  
+   <tr>
+    <td class="label">{$lang.user_bonus_max}</td>
+    <td>
+      <input type='text' name='user_bonus_max' size='20' />    <br/>
+	  <span class="notice-span" >{$lang.bonus_type4_max_notic}</span>   
+	  </td>
+  </tr>
+  
+
   <tr>
     <td class="label">&nbsp;</td>
     <td>

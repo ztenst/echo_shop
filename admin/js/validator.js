@@ -1,8 +1,8 @@
 /* *
- * ECSHOP 表单验证类
+ * 鸿宇多用户商城 表单验证类
  * ============================================================================
  * 版权所有 (C) 2005-2011 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址 : http : // www.ecshop.com
+ * 网站地址 : http : // bbs.hongyuvip.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改和再发布。
@@ -61,6 +61,29 @@ var Validator = function(name)
       this.addErrorMsg(msg);
     }
   }
+  
+  /* *
+   * 检查用户输入的是否为合法的手机号码
+   *
+   * @param :  controlId   表单元素的ID
+   * @param :  msg         错误提示信息
+   * @param :  required    是否必须
+   */
+   this.isMobile = function(controlId, msg, required)
+   {
+     var obj = document.forms[this.formName].elements[controlId];
+     obj.value = Utils.trim(obj.value);
+
+     if ( ! required && obj.value == '')
+     {
+       return;
+     }
+
+     if ( ! Utils.isMobile(obj.value))
+     {
+       this.addErrorMsg(msg);
+     }
+   }
 
   /* *
   * 检查两个表单元素的值是否相等

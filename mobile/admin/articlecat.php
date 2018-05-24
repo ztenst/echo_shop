@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 文章分类管理程序
+ * 鸿宇多用户商城 文章分类管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: articlecat.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: articlecat.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-$exc = new exchange($ecs->table("article_cat"), $db, 'cat_id', 'cat_name');
+$exc = new exchange($ecs->table("ecsmart_article_cat"), $db, 'cat_id', 'cat_name');
 /* act操作项的初始化 */
 $_REQUEST['act'] = trim($_REQUEST['act']);
 if (empty($_REQUEST['act']))
@@ -90,7 +90,7 @@ elseif ($_REQUEST['act'] == 'insert')
     $cat_type = 1;
     if ($_POST['parent_id'] > 0)
     {
-        $sql = "SELECT cat_type FROM " . $ecs->table('article_cat') . " WHERE cat_id = '$_POST[parent_id]'";
+        $sql = "SELECT cat_type FROM " . $ecs->table('ecsmart_article_cat') . " WHERE cat_id = '$_POST[parent_id]'";
         $p_cat_type = $db->getOne($sql);
         if ($p_cat_type == 2 || $p_cat_type == 3 || $p_cat_type == 5)
         {
@@ -103,16 +103,16 @@ elseif ($_REQUEST['act'] == 'insert')
     }
 
 
-    $sql = "INSERT INTO ".$ecs->table('article_cat')."(cat_name, cat_type, cat_desc,keywords, parent_id, sort_order, show_in_nav)
+    $sql = "INSERT INTO ".$ecs->table('ecsmart_article_cat')."(cat_name, cat_type, cat_desc,keywords, parent_id, sort_order, show_in_nav)
            VALUES ('$_POST[cat_name]', '$cat_type',  '$_POST[cat_desc]','$_POST[keywords]', '$_POST[parent_id]', '$_POST[sort_order]', '$_POST[show_in_nav]')";
     $db->query($sql);
 
     if($_POST['show_in_nav'] == 1)
     {
-        $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('touch_nav') . " WHERE type = 'middle'");
+        $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('nav') . " WHERE type = 'middle'");
         $vieworder += 2;
         //显示在自定义导航栏中
-        $sql = "INSERT INTO " . $ecs->table('touch_nav') . " (name,ctype,cid,ifshow,vieworder,opennew,url,type) VALUES('" . $_POST['cat_name'] . "', 'a', '" . $db->insert_id() . "','1','$vieworder','0', '" . build_uri('article_cat', array('acid'=> $db->insert_id()), $_POST['cat_name']) . "','middle')";
+        $sql = "INSERT INTO " . $ecs->table('nav') . " (name,ctype,cid,ifshow,vieworder,opennew,url,type) VALUES('" . $_POST['cat_name'] . "', 'a', '" . $db->insert_id() . "','1','$vieworder','0', '" . build_uri('article_cat', array('acid'=> $db->insert_id()), $_POST['cat_name']) . "','middle')";
         $db->query($sql);
     }
 
@@ -136,7 +136,7 @@ elseif ($_REQUEST['act'] == 'edit')
     admin_priv('article_cat');
 
     $sql = "SELECT cat_id, cat_name, cat_type, cat_desc, show_in_nav, keywords, parent_id,sort_order FROM ".
-           $ecs->table('article_cat'). " WHERE cat_id='$_REQUEST[id]'";
+           $ecs->table('ecsmart_article_cat'). " WHERE cat_id='$_REQUEST[id]'";
     $cat = $db->GetRow($sql);
 
     if ($cat['cat_type'] == 2 || $cat['cat_type'] == 3 || $cat['cat_type'] ==4)
@@ -193,7 +193,7 @@ elseif ($_REQUEST['act'] == 'update')
         $_POST['parent_id'] = 0;
     }
 
-    $row = $db->getRow("SELECT cat_type, parent_id FROM " . $ecs->table('article_cat') . " WHERE cat_id='$_POST[id]'");
+    $row = $db->getRow("SELECT cat_type, parent_id FROM " . $ecs->table('ecsmart_article_cat') . " WHERE cat_id='$_POST[id]'");
     $cat_type = $row['cat_type'];
     if ($cat_type == 3 || $cat_type ==4)
     {
@@ -218,7 +218,7 @@ elseif ($_REQUEST['act'] == 'update')
     {
         if ($_POST['parent_id'] > 0)
         {
-            $sql = "SELECT cat_type FROM " . $ecs->table('article_cat') . " WHERE cat_id = '$_POST[parent_id]'";
+            $sql = "SELECT cat_type FROM " . $ecs->table('ecsmart_article_cat') . " WHERE cat_id = '$_POST[parent_id]'";
             $p_cat_type = $db->getOne($sql);
             if ($p_cat_type == 4)
             {
@@ -235,13 +235,13 @@ elseif ($_REQUEST['act'] == 'update')
         }
     }
 
-    $dat = $db->getOne("SELECT cat_name, show_in_nav FROM ". $ecs->table('article_cat') . " WHERE cat_id = '" . $_POST['id'] . "'");
+    $dat = $db->getOne("SELECT cat_name, show_in_nav FROM ". $ecs->table('ecsmart_article_cat') . " WHERE cat_id = '" . $_POST['id'] . "'");
     if ($exc->edit("cat_name = '$_POST[cat_name]', cat_desc ='$_POST[cat_desc]', keywords='$_POST[keywords]',parent_id = '$_POST[parent_id]', cat_type='$cat_type', sort_order='$_POST[sort_order]', show_in_nav = '$_POST[show_in_nav]'",  $_POST['id']))
     {
         if($_POST['cat_name'] != $dat['cat_name'])
         {
             //如果分类名称发生了改变
-            $sql = "UPDATE " . $ecs->table('touch_nav') . " SET name = '" . $_POST['cat_name'] . "' WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'";
+            $sql = "UPDATE " . $ecs->table('nav') . " SET name = '" . $_POST['cat_name'] . "' WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'";
             $db->query($sql);
         }
         if($_POST['show_in_nav'] != $dat['show_in_nav'])
@@ -249,27 +249,27 @@ elseif ($_REQUEST['act'] == 'update')
             if($_POST['show_in_nav'] == 1)
             {
                 //显示
-                $nid = $db->getOne("SELECT id FROM ". $ecs->table('touch_nav') . " WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'");
+                $nid = $db->getOne("SELECT id FROM ". $ecs->table('nav') . " WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'");
                 if(empty($nid))
                 {
-                    $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('touch_nav') . " WHERE type = 'middle'");
+                    $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('nav') . " WHERE type = 'middle'");
                     $vieworder += 2;
                     $uri = build_uri('article_cat', array('acid'=> $_POST['id']), $_POST['cat_name']);
                     //不存在
-                    $sql = "INSERT INTO " . $ecs->table('touch_nav') .
+                    $sql = "INSERT INTO " . $ecs->table('nav') .
                         " (name,ctype,cid,ifshow,vieworder,opennew,url,type) ".
                         "VALUES('" . $_POST['cat_name'] . "', 'a', '" . $_POST['id'] . "','1','$vieworder','0', '" . $uri . "','middle')";
                 }
                 else
                 {
-                    $sql = "UPDATE " . $ecs->table('touch_nav') . " SET ifshow = 1 WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'";
+                    $sql = "UPDATE " . $ecs->table('nav') . " SET ifshow = 1 WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'";
                 }
                 $db->query($sql);
             }
             else
             {
                 //去除
-                $db->query("UPDATE " . $ecs->table('touch_nav') . " SET ifshow = 0 WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'");
+                $db->query("UPDATE " . $ecs->table('nav') . " SET ifshow = 0 WHERE ctype = 'a' AND cid = '" . $_POST['id'] . "' AND type = 'middle'");
             }
         }
         $link[0]['text'] = $_LANG['back_list'];
@@ -326,7 +326,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $id = intval($_GET['id']);
 
-    $sql = "SELECT cat_type FROM " . $ecs->table('article_cat') . " WHERE cat_id = '$id'";
+    $sql = "SELECT cat_type FROM " . $ecs->table('ecsmart_article_cat') . " WHERE cat_id = '$id'";
     $cat_type = $db->getOne($sql);
     if ($cat_type == 2 || $cat_type == 3 || $cat_type ==4)
     {
@@ -334,7 +334,7 @@ elseif ($_REQUEST['act'] == 'remove')
         make_json_error($_LANG['not_allow_remove']);
     }
 
-    $sql = "SELECT COUNT(*) FROM " . $ecs->table('article_cat') . " WHERE parent_id = '$id'";
+    $sql = "SELECT COUNT(*) FROM " . $ecs->table('ecsmart_article_cat') . " WHERE parent_id = '$id'";
     if ($db->getOne($sql) > 0)
     {
         /* 还有子分类，不能删除 */
@@ -350,7 +350,7 @@ elseif ($_REQUEST['act'] == 'remove')
     else
     {
         $exc->drop($id);
-        $db->query("DELETE FROM " . $ecs->table('touch_nav') . "WHERE  ctype = 'a' AND cid = '$id' AND type = 'middle'");
+        $db->query("DELETE FROM " . $ecs->table('nav') . "WHERE  ctype = 'a' AND cid = '$id' AND type = 'middle'");
         clear_cache_files();
         admin_log($cat_name, 'remove', 'category');
     }
@@ -376,28 +376,28 @@ if ($_REQUEST['act'] == 'toggle_show_in_nav')
         if($val == 1)
         {
             //显示
-            $nid = $db->getOne("SELECT id FROM ". $ecs->table('touch_nav') . " WHERE ctype='a' AND cid='$id' AND type = 'middle'");
+            $nid = $db->getOne("SELECT id FROM ". $ecs->table('nav') . " WHERE ctype='a' AND cid='$id' AND type = 'middle'");
             if(empty($nid))
             {
                 //不存在
-                $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('touch_nav') . " WHERE type = 'middle'");
+                $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('nav') . " WHERE type = 'middle'");
                 $vieworder += 2;
-                $catname = $db->getOne("SELECT cat_name FROM ". $ecs->table('article_cat') . " WHERE cat_id = '$id'");
+                $catname = $db->getOne("SELECT cat_name FROM ". $ecs->table('ecsmart_article_cat') . " WHERE cat_id = '$id'");
                 $uri = build_uri('article_cat', array('acid'=> $id), $_POST['cat_name']);
 
-                $sql = "INSERT INTO " . $ecs->table('touch_nav') . " (name,ctype,cid,ifshow,vieworder,opennew,url,type) ".
+                $sql = "INSERT INTO " . $ecs->table('nav') . " (name,ctype,cid,ifshow,vieworder,opennew,url,type) ".
                     "VALUES('" . $catname . "', 'a', '$id','1','$vieworder','0', '" . $uri . "','middle')";
             }
             else
             {
-                $sql = "UPDATE " . $ecs->table('touch_nav') . " SET ifshow = 1 WHERE ctype='a' AND cid='$id' AND type = 'middle'";
+                $sql = "UPDATE " . $ecs->table('nav') . " SET ifshow = 1 WHERE ctype='a' AND cid='$id' AND type = 'middle'";
             }
             $db->query($sql);
         }
         else
         {
             //去除
-            $db->query("UPDATE " . $ecs->table('touch_nav') . " SET ifshow = 0 WHERE ctype='a' AND cid='$id' AND type = 'middle'");
+            $db->query("UPDATE " . $ecs->table('nav') . " SET ifshow = 0 WHERE ctype='a' AND cid='$id' AND type = 'middle'");
         }
         clear_cache_files();
         make_json_result($val);
@@ -423,6 +423,6 @@ function cat_update($cat_id, $args)
         return false;
     }
 
-    return $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('article_cat'), $args, 'update', "cat_id='$cat_id'");
+    return $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('ecsmart_article_cat'), $args, 'update', "cat_id='$cat_id'");
 }
 ?>

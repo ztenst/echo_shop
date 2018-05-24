@@ -1,21 +1,21 @@
 <?php
 
 /**
- * ECSHOP 标签云
+ * 鸿宇多用户商城 标签云
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: tag_cloud.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: tag_cloud.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
     assign_template();
     $position = assign_ur_here(0, $_LANG['tag_cloud']);
     $smarty->assign('page_title', $position['title']);    // 页面标题
@@ -39,7 +39,7 @@ require(dirname(__FILE__) . '/include/init.php');
 
     if (!empty($tags))
     {
-        include_once(ROOT_PATH . 'include/lib_clips.php');
+        include_once(ROOT_PATH . 'includes/lib_clips.php');
         color_tag($tags);
     }
 

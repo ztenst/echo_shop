@@ -1,488 +1,414 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
+
 <title>ECSHOP Menu</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
+
 <script language="JavaScript">
+
 <!--
+
 var noHelp   = "<p align='center' style='color: #666'>{$lang.no_help}</p>";
+
 var helpLang = "{$help_lang}";
+
 //-->
+
 </script>
+
 {literal}
+
 <style type="text/css">
-body {
-  background: #80BDCB;
+
+.article_menu{margin:0; padding:0; width:178px; overflow:hidden;}
+
+.article_menu UL{
+
+ WIDTH: 100%;margin:0; padding:0; 
+
 }
-#tabbar-div {
-  background: #278296;
-  padding-left: 10px;
-  height: 21px;
-  padding-top: 0px;
+
+.article_menu LI {
+
+	LIST-STYLE-TYPE: none; TEXT-ALIGN: left;
+
 }
-#tabbar-div p {
-  margin: 1px 0 0 0;
+
+.article_menu LI.menu {
+
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; WIDTH: 100%; PADDING-TOP: 0px
+
 }
-.tab-front {
-  background: #80BDCB;
-  line-height: 20px;
-  font-weight: bold;
-  padding: 4px 15px 4px 18px;
-  border-right: 2px solid #335b64;
-  cursor: hand;
-  cursor: pointer;
+
+.article_menu LI.button_wu A {
+
+	DISPLAY: block; FONT-SIZE: 14px; BACKGROUND: url(images/menu_bottom.gif) no-repeat 0px 0px; OVERFLOW: hidden; WIDTH: 100%; TEXT-INDENT: 35px; LINE-HEIGHT: 35px; POSITION: relative; HEIGHT: 35px;
+
 }
-.tab-back {
-  color: #F4FAFB;
-  line-height: 20px;
-  padding: 4px 15px 4px 18px;
-  cursor: hand;
-  cursor: pointer;
+
+.article_menu LI.button_wu A SPAN {
+
+	RIGHT: 5px; BACKGROUND: url(images/help_menu-b5.gif) no-repeat; WIDTH: 16px; float:right; TOP: 15px; HEIGHT: 16px
+
 }
-.tab-hover {
-  color: #F4FAFB;
-  line-height: 20px;
-  padding: 4px 15px 4px 18px;
-  cursor: hand;
-  cursor: pointer;
-  background: #2F9DB5;
+
+.article_menu LI.button{  }
+
+.article_menu LI.button A {BACKGROUND: url(images/menu_bottom.gif) #e6e6e6 no-repeat center bottom;
+
+DISPLAY: block; FONT-SIZE: 14px;OVERFLOW: hidden; WIDTH: 100%; TEXT-INDENT: 43px; LINE-HEIGHT: 35px; POSITION: relative; HEIGHT: 35px; 
+
 }
-#top-div
-{
-  padding: 3px 0 2px;
-  background: #BBDDE5;
-  margin: 5px;
-  text-align: center;
+
+.article_menu LI.button A em{ background:url(images/allico.png) no-repeat;background-position:18px -528px;POSITION: absolute; top:0px; left:0px; width:45px; height:35px  }
+
+.article_menu LI.button a em#h1_02_cat_and_goods {
+
+background-position:18px -3px;
+
 }
-#main-div {
-  border: 1px solid #345C65;
-  padding: 5px;
-  margin: 5px;
-  background: #FFF;
+
+.article_menu LI.button a em#h1_03_promotion {
+
+background-position:18px -40px;
+
 }
-#menu-list {
-  padding: 0;
-  margin: 0;
+
+.article_menu LI.button a em#h1_04_order {
+
+background-position:18px -82px;
+
 }
-#menu-list ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-  color: #335B64;
+
+.article_menu LI.button a em#h1_05_banner {
+
+background-position:18px -120px;
+
 }
-#menu-list li {
-  padding-left: 16px;
-  line-height: 16px;
-  cursor: hand;
-  cursor: pointer;
+
+.article_menu LI.button a em#h1_06_stats {
+
+background-position:18px -160px;
+
 }
-#main-div a:visited, #menu-list a:link, #menu-list a:hover {
-  color: #335B64
-  text-decoration: none;
+
+.article_menu LI.button a em#h1_07_content {
+
+background-position:18px -200px;
+
 }
-#menu-list a:active {
-  color: #EB8A3D;
+
+.article_menu LI.button a em#h1_08_members {
+
+background-position:18px -242px;
+
 }
-.explode {
-  background: url(images/menu_minus.gif) no-repeat 0px 3px;
-  font-weight: bold;
+
+.article_menu LI.button a em#h1_10_priv_admin {
+
+background-position:18px -276px;
+
 }
-.collapse {
-  background: url(images/menu_plus.gif) no-repeat 0px 3px;
-  font-weight: bold;
+
+.article_menu LI.button a em#h1_11_system {
+
+background-position:18px -313px;
+
 }
-.menu-item {
-  background: url(images/menu_arrow.gif) no-repeat 0px 3px;
-  font-weight: normal;
+
+.article_menu LI.button a em#h1_12_template {
+
+background-position:18px -352px;
+
 }
-#help-title {
-  font-size: 14px;
-  color: #000080;
-  margin: 5px 0;
-  padding: 0px;
+
+.article_menu LI.button a em#h1_13_backup {
+
+background-position:18px -387px;
+
 }
-#help-content {
-  margin: 0;
-  padding: 0;
+
+.article_menu LI.button a em#h1_14_sms {
+
+background-position:18px -424px;
+
 }
-.tips {
-  color: #CC0000;
+
+.article_menu LI.button a em#h1_15_rec {
+
+background-position:18px -458px;
+
 }
-.link {
-  color: #000099;
+
+
+
+.article_menu LI.button a em#h1_16_email_manage {
+
+background-position:18px -493px;
+
 }
+
+.article_menu LI.button A:hover {
+
+	TEXT-DECORATION: none
+
+}
+
+.article_menu LI.button A SPAN {
+
+	RIGHT: 5px; BACKGROUND: url(images/help_menu-plus.gif) no-repeat; WIDTH: 16px; POSITION: absolute; TOP: 15px; HEIGHT: 16px; display:none
+
+}
+
+.article_menu LI.button A SPAN.add{RIGHT: 5px; BACKGROUND: url(images/help_menu-b5.gif) no-repeat; WIDTH: 16px; POSITION: absolute; TOP: 15px; HEIGHT: 16px} 
+
+#menu-ul-suo{BACKGROUND:url(images/show_right.gif) no-repeat left top; width:37px; height:490px; display:none; float:left;}
+
+.dropdown {
+
+	width:100%;
+
+}
+
+.dropdown LI {
+
+	 DISPLAY: block; PADDING-LEFT: 55px; BACKGROUND: url(images/menu_arrow.gif) no-repeat 0px center; COLOR: #666; LINE-HEIGHT: 25px; BORDER-BOTTOM: #f2f2f2 1px solid; HEIGHT:25px; 
+
+}
+
+.article_menu P {
+
+	PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; PADDING-TOP: 10px; TEXT-ALIGN: center
+
+}
+
 </style>
+
 {/literal}
+
+
+
+
+
+
+
 </head>
-<body>
-<div id="tabbar-div">
-<p><span style="float:right; padding: 3px 5px;" ><a href="javascript:toggleCollapse();"><img id="toggleImg" src="images/menu_minus.gif" width="9" height="9" border="0" alt="{$lang.collapse_all}" /></a></span>
-  <span class="tab-front" id="menu-tab">{$lang.menu}</span>
-</p>
-</div>
-<div id="main-div">
-<div id="menu-list">
+
+<body><div id="menu-list" class="article_menu">
+
 <ul id="menu-ul">
-<li class="explode" key="menu_1" name="menu">
-	系统设置
+
+  <li class="button" key="11_system" name="menu">
+
+  <a href="javascript:void(0);"><em id="h1_11_system"></em>系统设置<span id="fa_11_system"></span></a></li>
+
+  <li class="dropdown" id="11_system">
+
     <ul>
-        <li class="menu-item"><a href="shop_config.php?act=list_edit" target="main-frame">基本设置</a></li>
-        <li class="menu-item"><a href="brand.php?act=list" target="main-frame">品牌管理</a></li>
-        <li class="menu-item"><a href="category.php?act=list" target="main-frame">分类图标</a></li>
-        <li class="menu-item"><a href="ad_position.php?act=list" target="main-frame">广告管理</a></li>
-        <li class="menu-item"><a href="payment.php?act=list" target="main-frame">支付方式</a></li>
-       <li class="menu-item"><a href="shipping.php?act=list" target="main-frame">配送方式</a></li>
-        <li class="menu-item"><a href="website.php?act=list" target="main-frame">授权登录</a></li>
-        <li class="menu-item"><a href="navigator.php?act=list" target="main-frame">菜单管理</a></li>
-		<li class="menu-item"><a href="shop_config.php?act=mail_settings" target="main-frame">邮件服务器设置</a></li>
+
+        <li class="dropdown"><a href="shop_config.php?act=list_edit" target="main_frame">商店设置</a></li>
+        <li class="dropdown"><a href="menu.php?act=list" target="main_frame">自定义菜单</a></li>
+        <li class="dropdown"><a href="payment.php?act=list" target="main_frame">支付方式</a></li>
+        <li class="dropdown"><a href="website.php?act=list" target="main_frame">授权登录</a></li>
+		<li class="dropdown"><a href="captcha_manage.php?act=main" target="main_frame">验证码管理</a></li>
+
     </ul>
+
+</li>
+ <li class="button" key="02_cat_and_goods" name="menu">
+
+  <a href="javascript:void(0);"><em id="h1_02_cat_and_goods"></em>商品管理<span id="fa_02_cat_and_goods"></span></a></li>
+
+  <li class="dropdown" id="02_cat_and_goods">
+    <ul>
+        <li class="dropdown"><a href="category.php?act=list" target="main_frame">商品分类</a></li>
+		<li class="dropdown"><a href="brand.php?act=list" target="main_frame">商品品牌</a></li>
+    </ul>
+
 </li>
 
+ <li class="button" key="15_distrib" name="menu">
 
-<li class="explode" key="menu_2" name="menu">
-	订单管理
+
+
+  <a href="javascript:void(0);"><em id="h1_15_distrib"></em>分销管理<span id="fa_15_distrib"></span></a></li>
+
+  <li class="dropdown" id="15_distrib">
+
     <ul>
-        <li class="menu-item"><a href="order.php?act=list" target="main-frame">订单列表</a></li>
-        <li class="menu-item"><a href="order.php?act=order_query" target="main-frame">订单查询</a></li>
-        <li class="menu-item"><a href="order.php?act=merge" target="main-frame">合并订单</a></li>
-        <li class="menu-item"><a href="goods_booking.php?act=list_all" target="main-frame">缺货登记</a></li>
-        <li class="menu-item"><a href="order.php?act=delivery_list" target="main-frame">发货单列表</a></li>
-        <li class="menu-item"><a href="order.php?act=back_list" target="main-frame">退货单列表</a></li>
+
+        <li class="dropdown"><a href="distrib_goods.php?act=list" target="main_frame">分销商品列表</a></li>
+
+        <li class="dropdown"><a href="distributor.php?act=list" target="main_frame">分销商列表</a></li>
+
+        <li class="dropdown"><a href="affiliate.php?act=list" target="main_frame">分销等级设置</a></li>
+
+        <li class="dropdown"><a href="affiliate_ck.php?act=list" target="main_frame">分成订单管理</a></li>
+
+         <li class="dropdown"><a href="distrib_sort.php?act=list" target="main_frame">分销排行榜</a></li>
+         
+          <li class="dropdown"><a href="deposit_list.php?act=list" target="main_frame">提现申请列表</a></li>
+
     </ul>
+
+
+
 </li>
-<li class="explode" key="menu_2" name="menu">
-	促销管理
-    <ul>
-        <li class="menu-item"><a href="bonus.php?act=list" target="main-frame">红包类型</a></li>
-        <li class="menu-item"><a href="exchange_goods.php?act=list" target="main-frame">积分商城</a></li>
-        <li class="menu-item"><a href="group_buy.php?act=list" target="main-frame">团购活动</a></li>
+
+<li class="button" key="05_banner" name="menu">
+
+	<a href="javascript:void(0);"><em id="h1_05_banner"></em>广告管理<span id="fa_05_banner"></span></a></li>
+
+   <li class="dropdown" id="05_banner">
+
+   <ul>
+        <li class="dropdown"><a href="ad_position.php?act=list" target="main_frame">广告位置</a></li>
+
+        <li class="dropdown"><a href="ads.php?act=list" target="main_frame">广告列表</a></li>
     </ul>
-</li>
-<li class="explode" key="menu_2" name="menu">
-	模板管理
-    <ul>
-        <li class="menu-item"><a href="template.php?act=list" target="main-frame">模板选择</a></li>
-        <li class="menu-item"><a href="template.php?act=setup" target="main-frame">设置模板</a></li>
-        <li class="menu-item"><a href="template.php?act=library" target="main-frame">库项目管理</a></li>
-        <li class="menu-item"><a href="edit_languages.php?act=list" target="main-frame">语言项编辑</a></li>
-        <li class="menu-item"><a href="template.php?act=backup_setting" target="main-frame">模板设置备份</a></li>
+
+    </li>
+
+
+<li class="button" key="07_content" name="menu">
+
+	<a href="javascript:void(0);"><em id="h1_07_content"></em>文章管理<span id="fa_07_content"></span></a></li>
+
+   <li class="dropdown" id="07_content">
+
+   <ul>
+
+        <li class="dropdown"><a href="article.php?act=list" target="main_frame">文章列表</a></li>
+
+        <li class="dropdown"><a href="articlecat.php?act=list" target="main_frame">文章分类</a></li>
+
     </ul>
-</li>
-<li class="explode" key="menu_3" name="menu">
-	商创微信通
-    <ul>
-      <li class="menu-item"><a href="wxch-ent.php?act=wxconfig" target="main-frame">微信接口</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=menu" target="main-frame">微信菜单设置</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=config" target="main-frame">Ecshop微信通设置</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=bonus" target="main-frame">关注送红包</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=regmsg" target="main-frame">关注回复内容</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=lang" target="main-frame">语言设置</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=keywords" target="main-frame">关键词自动回复</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=point" target="main-frame">积分增加</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=fun" target="main-frame">功能变量</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=prize" target="main-frame">抽奖规则</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=zjd" target="main-frame">砸金蛋</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=dzp" target="main-frame">大转盘</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=qr" target="main-frame">多功能二维码</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=order" target="main-frame">发货提醒</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=pay" target="main-frame">付款提醒</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=reorder" target="main-frame">订单提醒</a></li>
-          <li class="menu-item"><a href="wxch_users.php?act=list" target="main-frame">粉丝管理</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=oauth" target="main-frame">微信OAuth</a></li>
-          <li class="menu-item"><a href="wxch-ent.php?act=tuijian" target="main-frame">扫码引荐</a></li>
-		   <li class="menu-item">
-		   <a href="users_invite.php?act=list" target="main-frame"><font style="color:red">推荐人列表</font></a></li>
-		   <!--<li class="menu-item">
-		   <a href="wxch-ent.php?act=muli_user" target="main-frame"><font style="color:red">添加推广服务号</font></a></li>-->
+
+    </li>
+<li class="button" key="14_school" name="menu">
+
+	<a href="javascript:void(0);"><em id="h1_14_school"></em>鸿宇多用户商城<span id="fa_14_school"></span></a></li>
+
+   <li class="dropdown" id="14_school">
+
+   <ul>
+        <li class="dropdown"><a href="http://bbs.hongyuvip.com/" target="_blank">官方网址</a></li>
+
+        <li class="dropdown"><a href="http://buy.hongyuvip.com/" target="_blank">鸿宇商城</a></li>
+
+        <li class="dropdown"><a href="http://zc.hongyuvip.com/" target="_blank">鸿宇众筹</a></li>
+
+        <li class="dropdown"><a href="http://bbs.hongyuvip.com/" target="_blank">在线论坛</a></li>
+
+    </ul>
+    </li>
+
+  <li class="button" key="12_template" name="menu">
+
+	<a href="javascript:void(0);"><em id="h1_12_template"></em>模板管理<span id="fa_12_template"></span></a></li>
+
+   <li class="dropdown" id="12_template">
+
+   <ul>
+
+        <li class="dropdown"><a href="template.php?act=list" target="main_frame">模板选择</a></li>
+
+        <li class="dropdown"><a href="template.php?act=setup" target="main_frame">设置模板</a></li>
+
+        <li class="dropdown"><a href="template.php?act=library" target="main_frame">库项目管理</a></li>
+
+        <li class="dropdown"><a href="edit_languages.php?act=list" target="main_frame">语言项编辑</a></li>
+
+    </ul>
+
+    </li>
+
+
+
+  <li class="button" key="14_sms" name="menu">
+
+  <a href="javascript:void(0);"><em id="h1_14_sms"></em>微信设置<span id="fa_14_sms"></span></a></li>
+
+    <li class="dropdown" id="14_sms">
+
+       <ul >
+
+          <li class="dropdown"><a href="weixin_egg.php?act=list" target="main_frame">活动管理</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=addconfig" target="main_frame">多微信设置</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=addkey" target="main_frame">关键字回复</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=addqcode" target="main_frame">生成二维码</a></li>
+
+          <li class="dropdown"><a href="weixin_egg.php?act=log" target="main_frame">中奖管理</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=config" target="main_frame">微信设置</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=fans" target="main_frame">粉丝管理</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=keywords" target="main_frame">功能变量</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=menu" target="main_frame">自定义菜单</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=news" target="main_frame">消息推送</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=notice" target="main_frame">提醒设置</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=oauth" target="main_frame">OAuth设置</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=qcode" target="main_frame">管理二维码</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=qiandao" target="main_frame">签到设置</a></li>
+
+          <li class="dropdown"><a href="weixin.php?act=reg" target="main_frame">注册管理</a></li>
+
         </ul>
-</li>
+
+        </li>
 
 
-<!--{if not $menus} 不显示菜单-->
-{foreach from=$menus item=menu key=k}
-{if $menu.action}
-  <li class="explode"><a href="{$menu.action}" target="main-frame">{$menu.label}</a></li>
-{else}
-  <li class="explode" key="{$k}" name="menu">
-    {$menu.label}
-    {if $menu.children}
-    <ul>
-    {foreach from=$menu.children item=child}
-      <li class="menu-item"><a href="{$child.action}" target="main-frame">{$child.label}</a></li>
-    {/foreach}
-    </ul>
-    {/if}
-  </li>
-{/if}
-{/foreach}
-<!--{/if}-->
+
+    <li class="button" key="14_sms" name="menu">
+        <a href="javascript:void(0);">
+            <em id="h1_14_sms"></em>APP管理
+            <span id="fa_14_sms"></span>
+        </a>
+    </li>
+    <li class="dropdown" id="14_sms">
+        <ul >
+            <li class="dropdown">
+                <a href="app_manage.php?act=basic_setting" target="main_frame">基础设置</a>
+            </li>
+            <li class="dropdown">
+                <a href="app_push.php?act=setting" target="main_frame">推送设置</a>
+            </li>
+            <li class="dropdown">
+                <a href="app_push.php?act=push_message" target="main_frame">推送消息</a>
+            </li>
+            <li class="dropdown">
+                <a href="app_manage.php?act=guide_picture" target="main_frame">引导图片</a>
+            </li>
+            <li class="dropdown">
+                <a href="app_manage.php?act=menu_setting" target="main_frame">菜单设置</a>
+            </li>
+            <li class="dropdown">
+                <a href="app_manage.php?act=template_setting" target="main_frame">模板设置</a>
+            </li>
+        </ul>
+    </li>
 </ul>
+
+
+
 </div>
-<div id="help-div" style="display:none">
-<h1 id="help-title"></h1>
-<div id="help-content"></div>
-</div>
-</div>
-{insert_scripts files="../data/static/js/global.js,../data/static/js/utils.js,../data/static/js/transport.js"}
-<script language="JavaScript">
-<!--
-var collapse_all = "{$lang.collapse_all}";
-var expand_all = "{$lang.expand_all}";
-var collapse = true;
-{literal}
-function toggleCollapse()
-{
-  var items = document.getElementsByTagName('LI');
-  for (i = 0; i < items.length; i++)
-  {
-    if (collapse)
-    {
-      if (items[i].className == "explode")
-      {
-        toggleCollapseExpand(items[i], "collapse");
-      }
-    }
-    else
-    {
-      if ( items[i].className == "collapse")
-      {
-        toggleCollapseExpand(items[i], "explode");
-        ToggleHanlder.Reset();
-      }
-    }
-  }
-
-  collapse = !collapse;
-  document.getElementById('toggleImg').src = collapse ? 'images/menu_minus.gif' : 'images/menu_plus.gif';
-  document.getElementById('toggleImg').alt = collapse ? collapse_all : expand_all;
-}
-
-function toggleCollapseExpand(obj, status)
-{
-  if (obj.tagName.toLowerCase() == 'li' && obj.className != 'menu-item')
-  {
-    for (i = 0; i < obj.childNodes.length; i++)
-    {
-      if (obj.childNodes[i].tagName == "UL")
-      {
-        if (status == null)
-        {
-          if (obj.childNodes[1].style.display != "none")
-          {
-            obj.childNodes[1].style.display = "none";
-            ToggleHanlder.RecordState(obj.getAttribute("key"), "collapse");
-            obj.className = "collapse";
-          }
-          else
-          {
-            obj.childNodes[1].style.display = "block";
-            ToggleHanlder.RecordState(obj.getAttribute("key"), "explode");
-            obj.className = "explode";
-          }
-          break;
-        }
-        else
-        {
-          if( status == "collapse")
-          {
-            ToggleHanlder.RecordState(obj.getAttribute("key"), "collapse");
-            obj.className = "collapse";
-          }
-          else
-          {
-            ToggleHanlder.RecordState(obj.getAttribute("key"), "explode");
-            obj.className = "explode";
-          }
-          obj.childNodes[1].style.display = (status == "explode") ? "block" : "none";
-        }
-      }
-    }
-  }
-}
-document.getElementById('menu-list').onclick = function(e)
-{
-  var obj = Utils.srcElement(e);
-  toggleCollapseExpand(obj);
-}
-
-document.getElementById('tabbar-div').onmouseover=function(e)
-{
-  var obj = Utils.srcElement(e);
-
-  if (obj.className == "tab-back")
-  {
-    obj.className = "tab-hover";
-  }
-}
-
-document.getElementById('tabbar-div').onmouseout=function(e)
-{
-  var obj = Utils.srcElement(e);
-
-  if (obj.className == "tab-hover")
-  {
-    obj.className = "tab-back";
-  }
-}
-
-document.getElementById('tabbar-div').onclick=function(e)
-{
-  var obj = Utils.srcElement(e);
-
- // var mnuTab = document.getElementById('menu-tab');
-  var hlpTab = document.getElementById('help-tab');
-  var mnuDiv = document.getElementById('menu-list');
-  var hlpDiv = document.getElementById('help-div');
-
-  //if (obj.id == 'menu-tab')
-//  {
-//    mnuTab.className = 'tab-front';
-//    hlpTab.className = 'tab-back';
-//    mnuDiv.style.display = "block";
-//    hlpDiv.style.display = "none";
-//  }
-
-  if (obj.id == 'help-tab')
-  {
-    mnuTab.className = 'tab-back';
-    hlpTab.className = 'tab-front';
-    mnuDiv.style.display = "none";
-    hlpDiv.style.display = "block";
-
-    loc = parent.frames['main-frame'].location.href;
-    pos1 = loc.lastIndexOf("/");
-    pos2 = loc.lastIndexOf("?");
-    pos3 = loc.indexOf("act=");
-    pos4 = loc.indexOf("&", pos3);
-
-    filename = loc.substring(pos1 + 1, pos2 - 4);
-    act = pos4 < 0 ? loc.substring(pos3 + 4) : loc.substring(pos3 + 4, pos4);
-    loadHelp(filename, act);
-  }
-}
-
-/**
- * 创建XML对象
- */
-function createDocument()
-{
-  var xmlDoc;
-
-  // create a DOM object
-  if (window.ActiveXObject)
-  {
-    try
-    {
-      xmlDoc = new ActiveXObject("Msxml2.DOMDocument.6.0");
-    }
-    catch (e)
-    {
-      try
-      {
-        xmlDoc = new ActiveXObject("Msxml2.DOMDocument.5.0");
-      }
-      catch (e)
-      {
-        try
-        {
-          xmlDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
-        }
-        catch (e)
-        {
-          try
-          {
-            xmlDoc = new ActiveXObject("Msxml2.DOMDocument.3.0");
-          }
-          catch (e)
-          {
-            alert(e.message);
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    if (document.implementation && document.implementation.createDocument)
-    {
-      xmlDoc = document.implementation.createDocument("","doc",null);
-    }
-    else
-    {
-      alert("Create XML object is failed.");
-    }
-  }
-  xmlDoc.async = false;
-
-  return xmlDoc;
-}
-
-//菜单展合状态处理器
-var ToggleHanlder = new Object();
-
-Object.extend(ToggleHanlder ,{
-  SourceObject : new Object(),
-  CookieName   : 'Toggle_State',
-  RecordState : function(name,state)
-  {
-    if(state == "collapse")
-    {
-      this.SourceObject[name] = state;
-    }
-    else
-    {
-      if(this.SourceObject[name])
-      {
-        delete(this.SourceObject[name]);
-      }
-    }
-    var date = new Date();
-    date.setTime(date.getTime() + 99999999);
-    document.setCookie(this.CookieName, this.SourceObject.toJSONString(), date.toGMTString());
-  },
-
-  Reset :function()
-  {
-    var date = new Date();
-    date.setTime(date.getTime() + 99999999);
-    document.setCookie(this.CookieName, "{}" , date.toGMTString());
-  },
-
-  Load : function()
-  {
-    if (document.getCookie(this.CookieName) != null)
-    {
-      this.SourceObject = eval("("+ document.getCookie(this.CookieName) +")");
-      var items = document.getElementsByTagName('LI');
-      for (var i = 0; i < items.length; i++)
-      {
-        if ( items[0].getAttribute("name") == "menu" && items[0].getAttribute("id") != '20_yun')
-        {
-          for (var k in this.SourceObject)
-          {
-            if ( typeof(items[i]) == "object")
-            {
-              if (items[i].getAttribute('key') == k)
-              {
-                toggleCollapseExpand(items[i], this.SourceObject[k]);
-                collapse = false;
-              }
-            }
-          }
-        }
-     }
-    }
-    document.getElementById('toggleImg').src = collapse ? 'images/menu_minus.gif' : 'images/menu_plus.gif';
-    document.getElementById('toggleImg').alt = collapse ? collapse_all : expand_all;
-  }
-});
-{/literal}
-ToggleHanlder.CookieName += "_{$admin_id}";
-//初始化菜单状态
-ToggleHanlder.Load();
-//-->
-</script>
 
 </body>
+
 </html>

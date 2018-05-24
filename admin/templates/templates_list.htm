@@ -1,11 +1,11 @@
-<!-- $Id: templates_list.htm 16480 2009-07-21 13:33:40Z liubo $ -->
+<!-- $Id: templates_list.htm 16480 2009-07-21 13:33:40Z Shadow & 鸿宇 -->
 {include file="pageheader.htm"}
 <!-- start templates list -->
 <div class="list-div">
   <table width="100%" cellpadding="3" cellspacing="1">
   <tr><th>{$lang.current_template}</th></tr>
   <tr><td>
-    <table>
+    <table style="background:none">
       <tr>
         <td width="250" align="center"><img id="screenshot" src="{$curr_template.screenshot}"/></td>
         <td valign="top"><strong><span id="templateName">{$curr_template.name}</span></strong> v<span id="templateVersion">{$curr_template.version}</span><br />
@@ -26,7 +26,7 @@
   <tr><td>
   {foreach from=$available_templates item=template}
   <div style="display:-moz-inline-stack;display:inline-block;vertical-align:top;zoom:1;*display:inline;">
-    <table style="width: 220px;">
+    <table style="width: 220px;background:none;margin-right:40px">
       <tr>
         <td><strong><a href="{$template.uri}" target="_blank">{$template.name}</a></strong></td>
       </tr>

@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 管理中心品牌管理
+ * 鸿宇多用户商城 管理中心品牌管理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: brand.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: brand.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-include_once(ROOT_PATH . 'include/cls_image.php');
+include_once(ROOT_PATH . 'includes/cls_image.php');
 $image = new cls_image($_CFG['bgcolor']);
 
 $exc = new exchange($ecs->table("brand"), $db, 'brand_id', 'brand_name');
@@ -31,6 +31,7 @@ if ($_REQUEST['act'] == 'list')
     $smarty->assign('full_page',    1);
 
     $brand_list = get_brandlist();
+
     $smarty->assign('brand_list',   $brand_list['brand']);
     $smarty->assign('filter',       $brand_list['filter']);
     $smarty->assign('record_count', $brand_list['record_count']);
@@ -77,20 +78,20 @@ elseif ($_REQUEST['act'] == 'insert')
     }
 
      /*处理图片*/
-    //$img_name = basename($image->upload_image($_FILES['brand_logo'],'brandlogo'));
+    $img_name = basename($image->upload_image($_FILES['brand_logo'],'brandlogo'));
+	
+	 /*处理图片*/
+    $brand_img = basename($image->upload_image($_FILES['brand_img'],'brandimg'));
 
      /*处理URL*/
     $site_url = sanitize_url( $_POST['site_url'] );
-    
-     /*处理图片品牌banner  by ecmoban S*/
-    $banner_name = basename($image->upload_image($_FILES['brand_banner'],'brandlogo'));
-    
+
     /*插入数据*/
 
-    $sql = "INSERT INTO ".$ecs->table('brand')."(brand_name, site_url, brand_desc, is_show, sort_order , brand_banner) ".
-           "VALUES ('$_POST[brand_name]', '$site_url', '$_POST[brand_desc]', '$is_show', '$_POST[sort_order]' , '$_POST[banner_name]]')";
+    $sql = "INSERT INTO ".$ecs->table('brand')."(brand_name, site_url, wap_brand_desc, brand_logo, brand_img,is_show, sort_order) ".
+           "VALUES ('$_POST[brand_name]', '$site_url', '$_POST[brand_desc]', '$img_name','$brand_img', '$is_show', '$_POST[sort_order]')";
     $db->query($sql);
-     /**by ecmoban E*/
+
     admin_log($_POST['brand_name'],'add','brand');
 
     /* 清除缓存 */
@@ -112,7 +113,7 @@ elseif ($_REQUEST['act'] == 'edit')
 {
     /* 权限判断 */
     admin_priv('brand_manage');
-    $sql = "SELECT brand_id, brand_name, site_url, brand_logo, brand_desc, brand_logo, is_show, sort_order , brand_banner ".
+    $sql = "SELECT brand_id, brand_name, site_url, brand_logo, wap_brand_desc, brand_logo, brand_img,is_show, sort_order ".
             "FROM " .$ecs->table('brand'). " WHERE brand_id='$_REQUEST[id]'";
     $brand = $db->GetRow($sql);
 
@@ -120,6 +121,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $smarty->assign('action_link', array('text' => $_LANG['06_goods_brand_list'], 'href' => 'brand.php?act=list&' . list_link_postfix()));
     $smarty->assign('brand',       $brand);
     $smarty->assign('form_action', 'updata');
+
     assign_query_info();
     $smarty->display('brand_info.htm');
 }
@@ -148,23 +150,26 @@ elseif ($_REQUEST['act'] == 'updata')
     $site_url = sanitize_url( $_POST['site_url'] );
 
     /* 处理图片 */
-    //$img_name = basename($image->upload_image($_FILES['brand_logo'],'brandlogo'));
-
-    $banner_name = basename($image->upload_image($_FILES['brand_banner'],'brandlogo')); //by ecmoban
     
-    $param = "brand_name = '$_POST[brand_name]',  site_url='$site_url', brand_desc='$_POST[brand_desc]', is_show='$is_show', sort_order='$_POST[sort_order]' ";
-    //if (!empty($img_name))
-    //{
-        //有图片上传
-       // $param .= " ,brand_logo = '$img_name' ";
-    //}
-    /**by ecmoban */
-    if (!empty($banner_name))
+    // duli_brand_logo change_start
+    
+    $img_name = basename($image->upload_image($_FILES['brand_logo'],'brandlogo','',true));
+    
+    // duli_brand_logo change_end
+	
+	 $brand_img = basename($image->upload_image($_FILES['brand_img'],'brandimg','',true));
+    
+    $param = "brand_name = '$_POST[brand_name]',  site_url='$site_url', wap_brand_desc='$_POST[brand_desc]', is_show='$is_show', sort_order='$_POST[sort_order]' ";
+    if (!empty($img_name))
     {
         //有图片上传
-        $param .= " ,brand_banner = '$banner_name' ";
+        $param .= " ,brand_logo = '$img_name' ";
     }
-    /**by ecmoban */
+	if(!empty($brand_img))
+	{
+		$param .= " ,brand_img = '$brand_img'"; 
+	}
+
     if ($exc->edit($param,  $_POST['id']))
     {
         /* 清除缓存 */
@@ -315,12 +320,47 @@ elseif ($_REQUEST['act'] == 'drop_logo')
 
     if (!empty($logo_name))
     {
-        @unlink(ROOT_PATH . DATA_DIR . '/brandlogo/' .$logo_name);
+    
+    // duli_brand_logo change_start
+    
+        @unlink(ROOT_PATH . '../' . DATA_DIR . '/brandlogo/' .$logo_name);
+    
+    // duli_brand_logo change_end
+    
         $sql = "UPDATE " .$ecs->table('brand'). " SET brand_logo = '' WHERE brand_id = '$brand_id'";
         $db->query($sql);
     }
     $link= array(array('text' => $_LANG['brand_edit_lnk'], 'href' => 'brand.php?act=edit&id=' . $brand_id), array('text' => $_LANG['brand_list_lnk'], 'href' => 'brand.php?act=list'));
     sys_msg($_LANG['drop_brand_logo_success'], 0, $link);
+}
+
+/*------------------------------------------------------ */
+//-- 删除品牌图片
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'drop_img')
+{
+    /* 权限判断 */
+    admin_priv('brand_manage');
+    $brand_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+    /* 取得logo名称 */
+    $sql = "SELECT brand_img FROM " .$ecs->table('brand'). " WHERE brand_id = '$brand_id'";
+    $logo_name = $db->getOne($sql);
+
+    if (!empty($logo_name))
+    {
+    
+    // duli_brand_logo change_start
+    
+        @unlink(ROOT_PATH . '../' . DATA_DIR . '/brandimg/' .$logo_name);
+    
+    // duli_brand_logo change_end
+    
+        $sql = "UPDATE " .$ecs->table('brand'). " SET brand_img = '' WHERE brand_id = '$brand_id'";
+        $db->query($sql);
+    }
+    $link= array(array('text' => $_LANG['brand_edit_lnk'], 'href' => 'brand.php?act=edit&id=' . $brand_id), array('text' => $_LANG['brand_list_lnk'], 'href' => 'brand.php?act=list'));
+    sys_msg($_LANG['drop_brand_img_success'], 0, $link);
 }
 
 /*------------------------------------------------------ */
@@ -397,7 +437,7 @@ function get_brandlist()
     while ($rows = $GLOBALS['db']->fetchRow($res))
     {
         $brand_logo = empty($rows['brand_logo']) ? '' :
-            '<a href="../' . DATA_DIR . '/brandlogo/'.$rows['brand_logo'].'" target="_brank"><img src="images/picflag.gif" width="16" height="16" border="0" alt='.$GLOBALS['_LANG']['brand_logo'].' /></a>';
+            '<a href="../../' . DATA_DIR . '/brandlogo/'.$rows['brand_logo'].'" target="_brank"><img src="images/picflag.gif" width="16" height="16" border="0" alt='.$GLOBALS['_LANG']['brand_logo'].' /></a>';
         $site_url   = empty($rows['site_url']) ? 'N/A' : '<a href="'.$rows['site_url'].'" target="_brank">'.$rows['site_url'].'</a>';
 
         $rows['brand_logo'] = $brand_logo;

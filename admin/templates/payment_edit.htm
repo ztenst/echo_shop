@@ -56,6 +56,12 @@
     <td class="label">{$lang.payment_is_cod}</td>
     <td>{if $pay.is_cod == "1"}{$lang.yes}{else}{$lang.no}{/if}</td>
   </tr>
+   <!-- 代码增加_start   By bbs.hongyuvip.com -->
+  <tr>
+    <td class="label">{$lang.payment_is_pickup}</td>
+    <td>{if $pay.is_pickup == "1"}{$lang.yes}{else}{$lang.no}{/if}</td>
+  </tr>
+  <!-- 代码增加_end  By bbs.hongyuvip.com -->
   <tr>
     <td class="label">{$lang.payment_is_online}</td>
     <td>{if $pay.is_online == "1"}{$lang.yes}{else}{$lang.no}{/if}</td>
@@ -65,6 +71,9 @@
       <input type="hidden"  name="pay_id"       value="{$pay.pay_id}" />
       <input type="hidden"  name="pay_code"     value="{$pay.pay_code}" />
       <input type="hidden"  name="is_cod"       value="{$pay.is_cod}" />
+       <!-- 代码修改_start   By bbs.hongyuvip.com -->
+      <input type="hidden"  name="is_pickup"    value="{$pay.is_pickup}" />
+      <!-- 代码修改_end   By bbs.hongyuvip.com -->
       <input type="hidden"  name="is_online"    value="{$pay.is_online}" />
       <input type="submit" class="button" name="Submit"       value="{$lang.button_submit}" />
       <input type="reset" class="button"  name="Reset"        value="{$lang.button_reset}" />

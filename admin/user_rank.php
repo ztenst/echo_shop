@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 会员等级管理程序
+ * 鸿宇多用户商城 会员等级管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: user_rank.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: user_rank.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -89,6 +89,7 @@ elseif ($_REQUEST['act'] == 'insert')
     $special_rank =  isset($_POST['special_rank']) ? intval($_POST['special_rank']) : 0;
     $_POST['min_points'] = empty($_POST['min_points']) ? 0 : intval($_POST['min_points']);
     $_POST['max_points'] = empty($_POST['max_points']) ? 0 : intval($_POST['max_points']);
+	$recomm=isset($_POST['recomm']) ? intval($_POST['recomm']) : 0;
 
     /* 检查是否存在重名的会员等级 */
     if (!$exc->is_only('rank_name', trim($_POST['rank_name'])))
@@ -122,11 +123,11 @@ elseif ($_REQUEST['act'] == 'insert')
         }
     }
 
-    $sql = "INSERT INTO " .$ecs->table('user_rank') ."( ".
-                "rank_name, min_points, max_points, discount, special_rank, show_price".
+	$sql = "INSERT INTO " .$ecs->table('user_rank') ."( ".
+                "rank_name, min_points, max_points, discount, special_rank,is_recomm, show_price".
             ") VALUES (".
                 "'$_POST[rank_name]', '" .intval($_POST['min_points']). "', '" .intval($_POST['max_points']). "', ".
-                "'$_POST[discount]', '$special_rank', '" .intval($_POST['show_price']). "')";
+                "'$_POST[discount]', '$special_rank', $recomm,'" .intval($_POST['show_price']). "')";
     $db->query($sql);
 
     /* 管理员日志 */
@@ -329,4 +330,28 @@ elseif ($_REQUEST['act'] == 'toggle_showprice')
     }
 }
 
+//代码增加——cb--68ecshop
+/*------------------------------------------------------ */
+//-- 切换是否显示会员分成
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'toggle_is_recomm')
+{
+    check_authz_json('user_rank');
+
+    $rank_id       = intval($_POST['id']);
+    $is_show    = intval($_POST['val']);
+
+    if ($exc->edit("is_recomm = '$is_show'", $rank_id))
+    {
+        $rank_name = $exc->get_name($rank_id);
+        admin_log(addslashes($rank_name), 'edit', 'user_rank');
+        clear_cache_files();
+        make_json_result($is_show);
+    }
+    else
+    {
+        make_json_error($db->error());
+    }
+}
+//代码增加——cb--68ecshop
 ?>

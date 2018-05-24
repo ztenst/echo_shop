@@ -1,30 +1,23 @@
 <?php
 
 /**
- * ECSHOP 商品比较程序
+ * 鸿宇多用户商城 商品比较程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: compare.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: compare.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-
 if (!empty($_REQUEST['goods']) && is_array($_REQUEST['goods']) && count($_REQUEST['goods']) > 1)
 {
-
-    foreach ($_REQUEST['goods'] as $key=>$val)
-    {
-        $_REQUEST['goods'][$key]=intval($val);
-    }
-
     $where = db_create_in($_REQUEST['goods'], 'id_value');
     $sql = "SELECT id_value , AVG(comment_rank) AS cmt_rank, COUNT(*) AS cmt_count" .
            " FROM " .$ecs->table('comment') .
@@ -64,11 +57,12 @@ if (!empty($_REQUEST['goods']) && is_array($_REQUEST['goods']) && count($_REQUES
         $arr[$goods_id]['shop_price']   = price_format($row['shop_price']);
         $arr[$goods_id]['rank_price']   = price_format($row['rank_price']);
         $arr[$goods_id]['goods_weight'] = (intval($row['goods_weight']) > 0) ?
-                                           ceil($row['goods_weight']) . $_LANG['kilogram'] : ceil($row['goods_weight'] * 1000) . $_LANG['gram'];
+        ceil($row['goods_weight']) . $_LANG['kilogram'] : ceil($row['goods_weight'] * 1000) . $_LANG['gram'];
         $arr[$goods_id]['goods_thumb']  = get_image_path($row['goods_id'], $row['goods_thumb'], true);
         $arr[$goods_id]['goods_brief']  = $row['goods_brief'];
         $arr[$goods_id]['brand_name']   = $row['brand_name'];
-
+        $properties = get_goods_properties($goods_id);
+        $arr[$goods_id]['spe'] = $properties['spe']; 
         $arr[$goods_id]['properties'][$row['attr_id']]['name']  = $row['attr_name'];
         if (!empty($arr[$goods_id]['properties'][$row['attr_id']]['value']))
         {
@@ -95,19 +89,43 @@ if (!empty($_REQUEST['goods']) && is_array($_REQUEST['goods']) && count($_REQUES
         }
 
         $arr[$goods_id]['ids'] = !empty($tmp) ? "goods[]=" . implode('&amp;goods[]=', $tmp) : '';
+       
     }
-
-    $sql = "SELECT attr_id,attr_name FROM " . $ecs->table('attribute') . " WHERE cat_id='$type_id' ORDER BY attr_id";
-
+	
+	/* 代码修改_start  By bbs.hongyuvip.com */
+	$smarty->assign('back_url',   empty($_GET['back_url']) ? $_SERVER['HTTP_REFERER'] : $_GET['back_url']);
+    $sql = "SELECT attr_id,attr_name,attr_group FROM " . $ecs->table('attribute') . " WHERE cat_id='$type_id' ORDER BY attr_id";
+	
     $attribute = array();
 
-    $query = $db->query($sql);
-    while ($rt = $db->fetch_array($query))
-    {
-        $attribute[$rt['attr_id']] = $rt['attr_name'];
-    }
-
-    $smarty->assign('attribute', $attribute);
+    $attribute = $db->getAll($sql);
+	$sql = 'select attr_group from ' . $ecs->table('goods_type') . ' where cat_id=' . $type_id;
+	$attr_group = $db->getOne($sql);
+	$group_list = explode("\n", str_replace("\r", '', $attr_group));
+	
+	$attr_list = array();
+	foreach($group_list as $key => $group)
+	{
+		$attr_list[$key]['group']      = $key;
+		$attr_list[$key]['group_name'] = $group;
+	}
+	foreach($attribute as $attr)
+	{
+		if(isset($attr_list[$attr['attr_group']]))
+			$attr_list[$attr['attr_group']]['attribute'][] = $attr;
+	}
+	foreach($arr as $key => $goods)
+	{
+		foreach($attribute as $attr)
+		{
+			if(!isset($goods['properties'][$attr['attr_id']]))
+				$arr[$key]['properties'][$attr['attr_id']] = array('value' => '-');
+		}
+	}
+	for($i = count($arr); $i<4; $i++) 
+		$arr[] = array();
+    $smarty->assign('attr_list', $attr_list);
+	/* 代码修改_end  By bbs.hongyuvip.com */
     $smarty->assign('goods_list', $arr);
 }
 else
@@ -123,6 +141,9 @@ $smarty->assign('ur_here',    $position['ur_here']);  // 当前位置
 
 $smarty->assign('categories', get_categories_tree()); // 分类树
 $smarty->assign('helps',      get_shop_help());       // 网店帮助
+
+$url = $_SERVER['REQUEST_URI'];
+$smarty->assign('url',      $url);
 
 assign_dynamic('compare');
 

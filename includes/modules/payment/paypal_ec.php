@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP paypal快速结帐
+ * 鸿宇多用户商城 paypal快速结帐
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * $Author: liuhui $
  * $Id: paypal_ec.php 16489 2009-08-03 10:14:03Z liuhui $
@@ -54,7 +54,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['is_online']  = '1';
 
     /* 作者 */
-    $modules[$i]['author']  = 'OEOB TEAM';
+    $modules[$i]['author']  = 'ECSHOP TEAM';
 
     /* 网址 */
     $modules[$i]['website'] = 'http://www.paypal.com';
@@ -88,15 +88,19 @@ class paypal_ec
      *
      * @return void
      */
-    function paypal_ec()
-    {
-
-    }
-
+   
+	/* 代码修改_start  By  bbs.hongyuvip.com */
     function __construct()
     {
         $this->paypal_ec();
     }
+
+	 function paypal_ec()
+    {
+
+    }
+
+	/* 代码修改_end  By  bbs.hongyuvip.com */
 
 
 

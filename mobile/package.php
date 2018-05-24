@@ -1,28 +1,28 @@
 <?php
 
 /**
- * ECSHOP 超值礼包列表
+ * 鸿宇多用户商城 超值礼包列表
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: activity.php 16056 2009-05-21 05:44:14Z liubo $
+ * $Author: derek $
+ * $Id: activity.php 16056 2009-05-21 05:44:14Z derek $
  */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
-require_once(ROOT_PATH . 'include/lib_order.php');
-include_once(ROOT_PATH . 'include/lib_transaction.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'includes/lib_order.php');
+include_once(ROOT_PATH . 'includes/lib_transaction.php');
 
 /* 载入语言文件 */
-require_once(ROOT_PATH . 'lang/' .$_CFG['lang']. '/shopping_flow.php');
-require_once(ROOT_PATH . 'lang/' .$_CFG['lang']. '/user.php');
-require_once(ROOT_PATH . 'lang/' .$_CFG['lang']. '/admin/package.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/shopping_flow.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/user.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/package.php');
 
 /*------------------------------------------------------ */
 //-- PROCESSOR

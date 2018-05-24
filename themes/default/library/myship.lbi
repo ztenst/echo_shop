@@ -1,5 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-{insert_scripts files='utils.js,transport_jquery.js'}
+{insert_scripts files='utils.js,transport.js'}
 <table width="100%" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
   <tr>
     <td bgcolor="#ffffff">

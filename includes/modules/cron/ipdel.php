@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 定期删除
+ * 鸿宇多用户商城 定期删除
  * ===========================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ==========================================================
- * $Author: liubo $
- * $Id: ipdel.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: ipdel.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 if (!defined('IN_ECS'))
@@ -37,10 +37,10 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['desc']    = 'ipdel_desc';
 
     /* 作者 */
-    $modules[$i]['author']  = 'OEOB TEAM';
+    $modules[$i]['author']  = 'ECSHOP TEAM';
 
     /* 网址 */
-    $modules[$i]['website'] = 'http://www.ecshop.com';
+    $modules[$i]['website'] = 'http://bbs.hongyuvip.com';
 
     /* 版本号 */
     $modules[$i]['version'] = '1.0.0';

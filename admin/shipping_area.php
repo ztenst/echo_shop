@@ -1,22 +1,25 @@
 <?php
 
 /**
- * ECSHOP 配送区域管理程序
+ * 鸿宇多用户商城 配送区域管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: shipping_area.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: shipping_area.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/lib_shipping.php');
 $exc = new exchange($ecs->table('shipping_area'), $db, 'shipping_area_id', 'shipping_area_name');
+
+$not_set_default = array('pups','tc_express');//设置不用设置默认配送方式的二个方式
 
 /*------------------------------------------------------ */
 //-- 配送区域列表
@@ -24,6 +27,10 @@ $exc = new exchange($ecs->table('shipping_area'), $db, 'shipping_area_id', 'ship
 if ($_REQUEST['act'] == 'list')
 {
     $shipping_id = intval($_REQUEST['shipping']);
+
+	if(!is_set_area($shipping_id)){
+		sys_msg("只有设置成默认配送方式，才可以编辑此功能", 1);
+	}
 
     $list = get_shipping_area_list($shipping_id);
     $smarty->assign('areas',    $list);
@@ -151,6 +158,10 @@ elseif ($_REQUEST['act'] == 'insert')
                 $db->query($sql);
             }
         }
+
+		if(!in_array($shipping_code,$not_set_default)){
+			set_default_show($_POST['shipping'],0);//重新同步所有的非默认配送地址信息
+		}
 
         admin_log($_POST['shipping_area_name'], 'add', 'shipping_area');
 
@@ -345,6 +356,9 @@ elseif ($_REQUEST['act'] == 'update')
             $sql = "INSERT INTO ".$ecs->table('area_region')." (shipping_area_id, region_id) VALUES ('$_POST[id]', '$val')";
             $db->query($sql);
         }
+		if(!in_array($shipping_code,$not_set_default)){
+			set_default_show($_POST['shipping'],0);//重新同步所有的非默认配送地址信息
+		}
 
         $lnk[] = array('text' => $_LANG['back_list'], 'href'=>'shipping_area.php?act=list&shipping='.$_POST['shipping']);
 
@@ -359,6 +373,15 @@ elseif ($_REQUEST['act'] == 'multi_remove')
 {
     admin_priv('shiparea_manage');
 
+	$shipping_code = $db->getOne("SELECT shipping_code FROM " .$ecs->table('shipping').
+                                    " WHERE shipping_id='$_REQUEST[shipping]'");
+	$plugin        = '../includes/modules/shipping/'. $shipping_code. ".php";
+
+	if (!file_exists($plugin))
+	{
+		sys_msg($_LANG['not_find_plugin'], 1);
+	}
+
     if (isset($_POST['areas']) && count($_POST['areas']) > 0)
     {
         $i = 0;
@@ -371,6 +394,9 @@ elseif ($_REQUEST['act'] == 'multi_remove')
         /* 记录管理员操作 */
         admin_log('', 'batch_remove', 'shipping_area');
     }
+	if(!in_array($shipping_code,$not_set_default)){
+		set_default_show($_REQUEST['shipping'],0);//重新同步所有的非默认配送地址信息
+	}
     /* 返回 */
     $links[0] = array('href'=>'shipping_area.php?act=list&shipping=' . intval($_REQUEST['shipping']), 'text' => $_LANG['go_back']);
     sys_msg($_LANG['remove_success'], 0, $links);
@@ -459,6 +485,12 @@ function get_shipping_area_list($shipping_id)
     }
 
     return $list;
+}
+//是否是默认设置的配送方式
+function is_set_area($shipping_id){
+	global $db,$ecs;
+
+	return $db->getOne("select is_default_show from ".$ecs->table('shipping')." where shipping_id=".$shipping_id);
 }
 
 ?>

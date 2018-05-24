@@ -1,5 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-{insert_scripts files='transport_jquery.js,utils.js'}
+{insert_scripts files='transport.js,utils.js'}
 <div id="ECS_ORDERTOTAL">
 <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
   <!-- {if $smarty.session.user_id > 0 and ($config.use_integral or $config.use_bonus)} -->

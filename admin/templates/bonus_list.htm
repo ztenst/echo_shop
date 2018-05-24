@@ -32,9 +32,9 @@
       <td>{$bonus.bonus_sn}</td>
       {/if}
       <td>{$bonus.type_name}</td>
-      <td>{$bonus.order_sn}</td>
-      <td>{if $bonus.email}<a href="mailto:{$bonus.email}">{$bonus.user_name}</a>{else}{$bonus.user_name}{/if}</td>
-      <td align="right">{$bonus.used_time}</td>
+      <td align="center">{$bonus.order_sn}</td>
+      <td align="center">{if $bonus.email}<a href="mailto:{$bonus.email}">{$bonus.user_name}</a>{else}{$bonus.user_name}{/if}</td>
+      <td align="center">{$bonus.used_time}</td>
       {if $show_mail}
       <td align="center">{$bonus.emailed}</td>
       {/if}

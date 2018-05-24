@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 前台公用文件
+ * 鸿宇多用户商城 前台公用文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所�&#65533; 2005-2010 鸿宇多用户商城科技有限公司，并保留所有权利�&#65533;
+ * 网站地址: http://bbs.hongyuvip.com�&#65533;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改�&#65533;
+ * 使用；不允许对程序代码以任何形式任何目的的再发布�&#65533;
  * ============================================================================
- * $Author: liubo $
- * $Id: init.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: liuhui $
+ * $Id: init.php 17153 2010-05-05 09:39:12Z liuhui $
 */
 
 if (!defined('IN_ECS'))
@@ -25,8 +25,9 @@ if (__FILE__ == '')
     die('Fatal error code: 0');
 }
 
-/* 取得当前ecshop所在的根目录 */
+/* 取得当前ecshop所在的根目�&#65533; */
 define('ROOT_PATH', str_replace('includes/init.php', '', str_replace('\\', '/', __FILE__)));
+define('TOKEN', "qphp");
 
 if (!file_exists(ROOT_PATH . 'data/install.lock') && !file_exists(ROOT_PATH . 'includes/install.lock')
     && !defined('NO_CHECK_INSTALL'))
@@ -36,13 +37,13 @@ if (!file_exists(ROOT_PATH . 'data/install.lock') && !file_exists(ROOT_PATH . 'i
     exit;
 }
 
-/* 初始化设置 */
+/* 初始化设�&#65533; */
 @ini_set('memory_limit',          '64M');
 @ini_set('session.cache_expire',  180);
 @ini_set('session.use_trans_sid', 0);
 @ini_set('session.use_cookies',   1);
 @ini_set('session.auto_start',    0);
-@ini_set('display_errors',        1);
+@ini_set('display_errors',        0);
 
 if (DIRECTORY_SEPARATOR == '\\')
 {
@@ -82,8 +83,10 @@ require(ROOT_PATH . 'includes/lib_main.php');
 require(ROOT_PATH . 'includes/lib_insert.php');
 require(ROOT_PATH . 'includes/lib_goods.php');
 require(ROOT_PATH . 'includes/lib_article.php');
+require(ROOT_PATH . 'themes/68ecshopcom_360buy/php/init.php');
 
-/* 对用户传入的变量进行转义操作。*/
+
+/* 对用户传入的变量进行转义操作�&#65533;*/
 if (!get_magic_quotes_gpc())
 {
     if (!empty($_GET))
@@ -104,8 +107,10 @@ $ecs = new ECS($db_name, $prefix);
 define('DATA_DIR', $ecs->data_dir());
 define('IMAGE_DIR', $ecs->image_dir());
 
-/* 初始化数据库类 */
+
+/* 初始化数据库�&#65533; */
 require(ROOT_PATH . 'includes/cls_mysql.php');
+require(ROOT_PATH . 'includes/lib_soap.php');
 $db = new cls_mysql($db_host, $db_user, $db_pass, $db_name);
 $db->set_disable_cache_tables(array($ecs->table('sessions'), $ecs->table('sessions_data'), $ecs->table('cart')));
 $db_host = $db_user = $db_pass = $db_name = NULL;
@@ -121,7 +126,7 @@ require(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/common.php');
 
 if ($_CFG['shop_closed'] == 1)
 {
-    /* 商店关闭了，输出关闭的消息 */
+    /* 商店关闭了，输出关闭的消�&#65533; */
     header('Content-type: text/html; charset='.EC_CHARSET);
 
     die('<div style="margin: 150px; text-align: center; font-size: 14px"><p>' . $_LANG['shop_closed'] . '</p><p>' . $_CFG['close_comment'] . '</p></div>');
@@ -165,7 +170,7 @@ if (!defined('INIT_NO_SMARTY'))
     header('Cache-control: private');
     header('Content-type: text/html; charset='.EC_CHARSET);
 
-    /* 创建 Smarty 对象。*/
+    /* 创建 Smarty 对象�&#65533;*/
     require(ROOT_PATH . 'includes/cls_template.php');
     $smarty = new cls_template;
 
@@ -205,8 +210,8 @@ if (!defined('INIT_NO_USERS'))
 
     if (!isset($_SESSION['user_id']))
     {
-        /* 获取投放站点的名称 */
-        $site_name = isset($_GET['from'])   ? htmlspecialchars($_GET['from']) : addslashes($_LANG['self_site']);
+        /* 获取投放站点的名�&#65533; */
+        $site_name = isset($_GET['from'])   ? $_GET['from'] : addslashes($_LANG['self_site']);
         $from_ad   = !empty($_GET['ad_id']) ? intval($_GET['ad_id']) : 0;
 
         $_SESSION['from_ad'] = $from_ad; // 用户点击的广告ID
@@ -280,7 +285,6 @@ if (!defined('INIT_NO_USERS'))
         $smarty->assign('ecs_session', $_SESSION);
     }
 }
-
 if ((DEBUG_MODE & 1) == 1)
 {
     error_reporting(E_ALL);
@@ -303,5 +307,4 @@ else
 {
     ob_start();
 }
-
 ?>

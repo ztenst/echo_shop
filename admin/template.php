@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理中心模版管理程序
+ * 鸿宇多用户商城 管理中心模版管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * @author:     Weber Liu <weberliu@hotmail.com>
  * @version:    v2.1
  * ---------------------------------------------
- * $Author: liubo $
- * $Id: template.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: template.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -184,12 +184,10 @@ if ($_REQUEST['act'] == 'setup')
             /* 分类下的商品 */
             if (isset($db_dyna_libs[$val['region']][$val['library']]) && ($row = array_shift($db_dyna_libs[$val['region']][$val['library']])))
             {
-				$val['sort_order']++;
-                $cate_goods[] = array('region' => $val['region'], 'sort_order' => $val['sort_order'], 'number' => $row['number'], 'cats'=>cat_list(0, $row['id']));
+                $cate_goods[] = array('region' => $val['region'], 'sort_order' => $val['sort_order'], 'number' => $row['number'], 'cat_id' => $row['id'], 'cats'=>cat_list(0, $row['id']));
             }
             else
             {
-				$val['sort_order']++;
                 $cate_goods[] = array('region' => $val['region'], 'sort_order' => $val['sort_order'], 'number'=>0, 'cats'=>cat_list(0));
             }
         }
@@ -576,10 +574,9 @@ if ($_REQUEST['act'] == 'install')
 
 if ($_REQUEST['act'] == 'backup')
 {
-    check_authz_json('backup_setting');
     include_once('includes/cls_phpzip.php');
-    $tpl= $_CFG['template'];
-    //$tpl = trim($_REQUEST['tpl_name']);
+
+    $tpl = trim($_REQUEST['tpl_name']);
 
     $filename = '../temp/backup/' . $tpl . '_' . date('Ymd') . '.zip';
 
@@ -639,7 +636,6 @@ if ($_REQUEST['act'] == 'update_library')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'restore_library')
 {
-    admin_priv('backup_setting');
     $lib_name   = trim($_GET['lib']);
     $lib_file   = '../themes/' . $_CFG['template'] . '/library/' . $lib_name . '.lbi';
     $lib_file   = str_replace("0xa", '', $lib_file); // 过滤 0xa 非法字符

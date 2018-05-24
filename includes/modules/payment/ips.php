@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP ips支付系统插件
+ * 鸿宇多用户商城 ips支付系统插件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * @author:     xuan yan <xuanyan1983@gmail.com>
  * @version:    v1.0
@@ -45,7 +45,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['is_online']  = '1';
 
     /* 作者 */
-    $modules[$i]['author']  = 'OEOB TEAM';
+    $modules[$i]['author']  = 'ECSHOP TEAM';
 
     /* 网址 */
     $modules[$i]['website'] = 'http://www.ips.com.cn';
@@ -74,15 +74,17 @@ class ips
     *
     * @return void
     */
-    function ips()
-    {
-
-    }
-
+    
+    /* 代码修改_start  By  bbs.hongyuvip.com */
     function __construct()
     {
         $this->ips();
     }
+	function ips()
+    {
+
+    }
+	/* 代码修改_end  By  bbs.hongyuvip.com */
 
     /**
     * 生成支付代码

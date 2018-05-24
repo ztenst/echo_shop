@@ -123,7 +123,7 @@
           </tr>
         </table>
        <!-- {if $smarty.session.user_id gt 0} -->
-       {insert_scripts files='transport_jquery.js'}
+       {insert_scripts files='transport.js'}
        <script type="text/javascript" charset="utf-8">
         function collect_to_flow(goodsId)
         {
@@ -135,7 +135,7 @@
           goods.goods_id = goodsId;
           goods.number   = number;
           goods.parent   = 0;
-          Ajax.call('flow.php?step=add_to_cart', 'goods=' + $.toJSON(goods), collect_to_flow_response, 'POST', 'JSON');
+          Ajax.call('flow.php?step=add_to_cart', 'goods=' + goods.toJSONString(), collect_to_flow_response, 'POST', 'JSON');
         }
         function collect_to_flow_response(result)
         {
@@ -185,7 +185,7 @@
   <!-- {/if} -->
 
   <!-- {if $fittings_list} 商品配件 -->
-  {insert_scripts files='transport_jquery.js'}
+  {insert_scripts files='transport.js'}
   <script type="text/javascript" charset="utf-8">
   function fittings_to_flow(goodsId,parentId)
   {
@@ -196,7 +196,7 @@
     goods.goods_id = goodsId;
     goods.number   = number;
     goods.parent   = parentId;
-    Ajax.call('flow.php?step=add_to_cart', 'goods=' + $.toJSON(goods), fittings_to_flow_response, 'POST', 'JSON');
+    Ajax.call('flow.php?step=add_to_cart', 'goods=' + goods.toJSONString(), fittings_to_flow_response, 'POST', 'JSON');
   }
   function fittings_to_flow_response(result)
   {

@@ -42,13 +42,13 @@
     <tr>
       <td  class="label">{$lang.start_date}</td>
       <td>
-        <input name="start_time" type="text" id="start_time" size="22" value='{$ads.start_time}' readonly /><input name="selbtn1" type="button" id="selbtn1" onclick="return showCalendar('start_time', '%Y-%m-%d', false, false, 'selbtn1');" value="{$lang.btn_select}" class="button"/>
+        <input name="start_time" type="text" id="start_time" size="22" value='{$ads.start_time}' readonly="readonly" /><input name="selbtn1" type="button" id="selbtn1" onclick="return showCalendar('start_time', '%Y-%m-%d', false, false, 'selbtn1');" value="{$lang.btn_select}" class="button"/>
       </td>
     </tr>
     <tr>
       <td class="label">{$lang.end_date}</td>
       <td>
-        <input name="end_time" type="text" id="end_time" size="22" value='{$ads.end_time}' readonly /><input name="selbtn2" type="button" id="selbtn2" onclick="return showCalendar('end_time', '%Y-%m-%d', false, false, 'selbtn2');" value="{$lang.btn_select}" class="button"/>
+        <input name="end_time" type="text" id="end_time" size="22" value='{$ads.end_time}' readonly="readonly" /><input name="selbtn2" type="button" id="selbtn2" onclick="return showCalendar('end_time', '%Y-%m-%d', false, false, 'selbtn2');" value="{$lang.btn_select}" class="button"/>
       </td>
     </tr>
   {if $ads.media_type eq 0 OR $action eq "add"}

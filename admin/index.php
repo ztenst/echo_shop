@@ -1,15 +1,15 @@
 <?php
 /**
- * ECSHOP 控制台首页
+ * 鸿宇多用户商城 控制台首页
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 HongYu科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: index.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -31,7 +31,6 @@ if ($_REQUEST['act'] == '')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'top')
 {
-
     // 获得管理员设置的菜单
     $lst = array();
     $nav = $db->GetOne('SELECT nav_list FROM ' . $ecs->table('admin_user') . " WHERE user_id = '" . $_SESSION['admin_id'] . "'");
@@ -46,32 +45,28 @@ elseif ($_REQUEST['act'] == 'top')
             $lst[$tmp[1]] = $tmp[0];
         }
     }
-
+    // 代码修改   By  bbs.hongyuvip.com Start
     // 获得管理员设置的菜单
+    
+//     $datainfo['order']     = $db->GetOne('SELECT COUNT(order_id) FROM ' . $ecs->table('order_info'));
+    // 修改内容：订单列表只统计自营商品，增加了自营查询条件
+    $datainfo['order']     = $db->GetOne('SELECT COUNT(order_id) FROM '.$ecs->table('order_info'). " WHERE supplier_id = 0 AND extension_code <> 'virtual_good'");
 
+    // 修改内容：商品列表计数只统计自营商品，条件增加了以下查询条件：1.未被删除 2.单独销售 3.实物 4.自营。
+//     $datainfo['goods']     = $db->GetOne('SELECT COUNT(goods_id) FROM ' . $ecs->table('goods'));
+    $datainfo['goods']     = $db->getOne(' SELECT COUNT(*) FROM '.$ecs->table('goods').' WHERE supplier_id = 0 AND is_real = 1 AND is_delete = 0 AND is_alone_sale = 1');
+
+//     $datainfo['comment']     = $db->GetOne('SELECT COUNT(comment_id) FROM ' . $ecs->table('comment'));
+    // 修改内容：用户评论增加了普通评论的查询条件
+    $datainfo['comment']     = $db->GetOne('SELECT COUNT(comment_id) FROM ' . $ecs->table('comment') . ' WHERE parent_id = 0');
+    // 代码修改   By  bbs.hongyuvip.com End
     // 获得管理员ID
     $smarty->assign('send_mail_on',$_CFG['send_mail_on']);
     $smarty->assign('nav_list', $lst);
     $smarty->assign('admin_id', $_SESSION['admin_id']);
     $smarty->assign('certi', $_CFG['certi']);
-	
-	$sql = 'SELECT count(goods_id) FROM '.$GLOBALS['ecs']->table('goods').' WHERE is_delete = 0';
-	$goods_sum = $GLOBALS['db']->getOne($sql);
-	$smarty->assign('goods_sum', $goods_sum);
-	
-	$sql = 'SELECT count(order_id) FROM '.$GLOBALS['ecs']->table('order_info');
-	$order_sum = $GLOBALS['db']->getOne($sql);
-	$smarty->assign('order_sum', $order_sum);
-	
-	$sql = 'SELECT count(comment_id) FROM '.$GLOBALS['ecs']->table('comment');
-	$comment_sum = $GLOBALS['db']->getOne($sql);
-	$smarty->assign('comment_sum', $comment_sum);
-	
-	$sql = 'SELECT count(ad_id) FROM '.$GLOBALS['ecs']->table('ad');
-	$ad_sum = $GLOBALS['db']->getOne($sql);
-	$smarty->assign('ad_sum', $ad_sum);
-	
-	
+    $smarty->assign('datainfo', $datainfo);
+
     $smarty->display('top.htm');
 }
 
@@ -167,11 +162,30 @@ elseif ($_REQUEST['act'] == 'menu')
 elseif ($_REQUEST['act'] == 'clear_cache')
 {
     clear_all_files();
+    clearhtml_all();  //代码增加   By  bbs.hongyuvip.com
+    sys_msg($_LANG['caches_cleared']);
+}
+//bbs.hongyuvip.com手机缓存修改start
+elseif ($_REQUEST['act'] == 'clear_cache_mobile')
+{
+    clear_all_files_mobile();
 
     sys_msg($_LANG['caches_cleared']);
 }
+//bbs.hongyuvip.com手机缓存修改end
+/* 代码增加_start  By  bbs.hongyuvip.com */
+elseif ($_REQUEST['act'] == 'clear_html')
+{
+	clearhtml_all();  
+    sys_msg('全部纯静态文件更新完成！');
+}
 
-
+elseif ($_REQUEST['act'] == 'clear_index')
+{
+	clearhtml_file('index', '0', '0');  
+    sys_msg('首页纯静态文件更新完成！');
+}
+/* 代码增加_end  By  bbs.hongyuvip.com */
 /*------------------------------------------------------ */
 //-- 主窗口，起始页
 /*------------------------------------------------------ */
@@ -315,7 +329,7 @@ elseif ($_REQUEST['act'] == 'main')
     clearstatcache();
 
     $smarty->assign('warning_arr', $warning);
-
+    
 
     /* 管理员留言信息 */
     $sql = 'SELECT message_id, sender_id, receiver_id, sent_time, readed, deleted, title, message, user_name ' .
@@ -328,76 +342,123 @@ elseif ($_REQUEST['act'] == 'main')
 
     /* 取得支持货到付款和不支持货到付款的支付方式 */
     $ids = get_pay_ids();
+    
+    /*后台管理起始页_修改_START_bbs.hongyuvip.com*/
+    $today_start=mktime(0,0,0,date('m'),date('d'),date('Y'));
+    $today_end=mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;
+    $month_start=mktime(0,0,0,date('m'),1,date('Y'));
+    $month_end=mktime(23,59,59,date('m'),date('t'),date('Y'));
+    //今日数据
+    $today = array();
+    //今日销售总额
+	$sql = 'SELECT  SUM(money_paid) AS sales FROM ' .$ecs->table('order_info'). ' WHERE `confirm_time` BETWEEN '.$today_start.' AND '.$today_end.'  AND supplier_id=0  '.order_query_sql('finished');
+    $today['money'] = $db->GetOne($sql);
+    $today['formatted_money'] = price_format($today['money']);
+    //今日订单数
+    /* 代码修改_hongyuvip.com_20150729_STAR */
+    $today['order'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('order_info'). ' WHERE `confirm_time` BETWEEN '.$today_start.' AND '.$today_end.' AND supplier_id=0');
+   /* 代码修改_hongyuvip.com_20150729_END */
+//今日注册会员
+    $today['user'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('users'). ' WHERE `reg_time` BETWEEN '.$today_start.' AND '.$today_end);
+    //今日入驻店铺数
+    $today['shop'] = $db->getOne('SELECT COUNT(*) FROM ' .$ecs->table('supplier'). ' WHERE status=1 AND add_time BETWEEN '.$today_start.' AND '.$today_end);
+    //店铺总数
+    $today['shop_total'] = $db->getOne('SELECT COUNT(*) FROM ' .$ecs->table('supplier'). ' WHERE status=1');
+    $smarty->assign('today',$today);
+    
+    //待处理事务
+    $task = array();
+    //待处理佣金
+    $task['commission'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('supplier_rebate').' WHERE is_pay_ok=0');
+    //待审核商品
+    // 代码修改   By  bbs.hongyuvip.com Start
+//     $task['goods'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('goods').' WHERE supplier_status=0 AND is_delete=0 AND is_real=1 AND supplier_id=0');
+    $task['goods'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('goods').' WHERE supplier_status=0 AND is_delete=0 AND is_real=1 AND supplier_id<>0');
+    // 代码修改   By  bbs.hongyuvip.com End
+    //待处理会员充值
+    $task['deposit'] = $db->GetOne('SELECT COUNT(*) FROM '.$ecs->table('user_account'). ' WHERE `process_type`=0 AND `is_paid`=0');
+    //待处理会员提现
+    $task['withdraw'] = $db->GetOne('SELECT COUNT(*) FROM '.$ecs->table('user_account'). ' WHERE `process_type`=1 AND `is_paid`=0');
+    //待回复会员留言
+	    //待审核店铺
+    // 代码修改   By  bbs.hongyuvip.com Start
+//    $task['shop'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('supplier').' WHERE status=0');
+    $task['shop'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('supplier')." WHERE applynum = 3 AND status in ('0', '-1')");
+    // 代码修改   By  bbs.hongyuvip.com End
 
-    /* 已完成的订单 */
-    $order['finished']     = $db->GetOne('SELECT COUNT(*) FROM ' . $ecs->table('order_info').
-    " WHERE 1 " . order_query_sql('finished'));
-    $status['finished']    = CS_FINISHED;
-
-    /* 待发货的订单： */
-    $order['await_ship']   = $db->GetOne('SELECT COUNT(*)'.
-    ' FROM ' .$ecs->table('order_info') .
-    " WHERE 1 " . order_query_sql('await_ship'));
-    $status['await_ship']  = CS_AWAIT_SHIP;
-
-    /* 待付款的订单： */
-    $order['await_pay']    = $db->GetOne('SELECT COUNT(*)'.
-    ' FROM ' .$ecs->table('order_info') .
-    " WHERE 1 " . order_query_sql('await_pay'));
-    $status['await_pay']   = CS_AWAIT_PAY;
-
-    /* “未确认”的订单 */
-    $order['unconfirmed']  = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('order_info').
-    " WHERE 1 " . order_query_sql('unconfirmed'));
-    $status['unconfirmed'] = OS_UNCONFIRMED;
-
-    /* “部分发货”的订单 */
-    $order['shipped_part']  = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('order_info').
-    " WHERE  shipping_status=" .SS_SHIPPED_PART);
-    $status['shipped_part'] = OS_SHIPPED_PART;
-
-//    $today_start = mktime(0,0,0,date('m'),date('d'),date('Y'));
-    $order['stats']        = $db->getRow('SELECT COUNT(*) AS oCount, IFNULL(SUM(order_amount), 0) AS oAmount' .
-    ' FROM ' .$ecs->table('order_info'));
-
-    $smarty->assign('order', $order);
-    $smarty->assign('status', $status);
-
-    /* 商品信息 */
+    $sql = "SELECT\n".
+            "	COUNT(count)\n".
+            "FROM\n".
+            "	(\n".
+            "		SELECT\n".
+            "			COUNT(f.msg_id) AS count\n".
+            "		FROM\n".
+            "			".$ecs->table('feedback')." AS f\n".
+            "		LEFT JOIN ".$ecs->table('feedback')." AS r ON r.parent_id = f.msg_id\n".
+            "		WHERE\n".
+            "			f.parent_id = 0\n".
+            "		AND f.msg_status = 0\n".
+            "		GROUP BY\n".
+            "			f.msg_id\n".
+            "		HAVING\n".
+            "			COUNT(r.msg_id) = 0\n".
+            "	) AS a";
+    $task['message'] = $db->getOne($sql);
+    $task['message'] = empty($task['message'])?0:$task['message'];
+    //待回复商品评论
+    // 代码修改   By  bbs.hongyuvip.com Start
+//    $sql = "SELECT\n".
+//            "	COUNT(count)\n".
+//            "FROM\n".
+//            "	(\n".
+//            "		SELECT\n".
+//            "			COUNT(pc.comment_id) AS count\n".
+//            "		FROM\n".
+//            "			".$ecs->table('comment')." AS pc\n".
+//            "		LEFT JOIN ".$ecs->table('comment')." AS cc ON cc.parent_id = pc.comment_id\n".
+//            "		WHERE\n".
+//            "			pc.parent_id = 0\n".
+//            "		AND pc.status = 1\n".
+//            "		GROUP BY\n".
+//            "			pc.comment_id\n".
+//            "		HAVING\n".
+//            "			COUNT(cc.comment_id) = 0\n".
+//            "	) AS a";
+    $sql = "SELECT count(*) FROM " .$GLOBALS['ecs']->table('comment'). " WHERE parent_id = 0";
+    // 代码修改   By  bbs.hongyuvip.com End
+    $task['comment'] = $db->getOne($sql);
+    $task['comment'] = empty($task['comment'])?0:$task['comment'];
+    //待处理用户晒单
+    // 代码修改   By  bbs.hongyuvip.com Start
+    $sql = 'SELECT COUNT(*) FROM ' .$GLOBALS['ecs']->table('shaidan'). ' AS a '.
+        'LEFT JOIN ' .$GLOBALS['ecs']->table('users'). ' AS u ON u.user_id = a.user_id '.
+        'LEFT JOIN ' .$GLOBALS['ecs']->table('order_goods'). ' AS og ON og.rec_id = a.rec_id ';
+//    $task['shared'] = $db->GetOne('SELECT COUNT(*) FROM '.$ecs->table('shaidan'). ' WHERE `status`=0;');
+    $task['shared'] = $db->GetOne($sql);
+    // 代码修改   By  bbs.hongyuvip.com End
+    //待处理标签审核
+    $task['tag'] = $db->GetOne('SELECT COUNT(*) FROM '.$ecs->table('goods_tag'). ' WHERE `state`=0;');
+    //待处理总数
+    $task['total'] = $task['commission']+$task['goods']+$task['deposit']+$task['withdraw']+
+        $task['message']+$task['comment']+$task['shared']+$task['tag'];
+    $smarty->assign('task',$task);
+    
+    //商品相关
+    //商品总数
     $goods['total']   = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
     ' WHERE is_delete = 0 AND is_alone_sale = 1 AND is_real = 1');
     $virtual_card['total'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
     ' WHERE is_delete = 0 AND is_alone_sale = 1 AND is_real=0 AND extension_code=\'virtual_card\'');
-
-    $goods['new']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND is_new = 1 AND is_real = 1');
-    $virtual_card['new']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND is_new = 1 AND is_real=0 AND extension_code=\'virtual_card\'');
-
-    $goods['best']    = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND is_best = 1 AND is_real = 1');
-    $virtual_card['best']    = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND is_best = 1 AND is_real=0 AND extension_code=\'virtual_card\'');
-
-    $goods['hot']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND is_hot = 1 AND is_real = 1');
-    $virtual_card['hot']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND is_hot = 1 AND is_real=0 AND extension_code=\'virtual_card\'');
-
-    $time             = gmtime();
-    $goods['promote'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND promote_price>0' .
-    " AND promote_start_date <= '$time' AND promote_end_date >= '$time' AND is_real = 1");
-    $virtual_card['promote'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
-    ' WHERE is_delete = 0 AND promote_price>0' .
-    " AND promote_start_date <= '$time' AND promote_end_date >= '$time' AND is_real=0 AND extension_code='virtual_card'");
-
-    /* 缺货商品 */
+    //自营商品总数
+    $goods['self'] = $db->getOne(' SELECT COUNT(*) FROM '.$ecs->table('goods').' WHERE supplier_id = 0 AND is_real=1 AND is_delete=0 AND is_alone_sale = 1');
+    //入驻商品总数
+    $goods['supplier'] = $db->getOne(' SELECT COUNT(*) FROM '.$ecs->table('goods').' WHERE supplier_id != 0 AND is_real=1 AND is_delete=0 AND is_alone_sale = 1');
+    //库存警告商品总数
     if ($_CFG['use_storage'])
     {
-        $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('goods'). ' WHERE is_delete = 0 AND goods_number <= warn_number AND is_real = 1';
+        $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('goods'). ' WHERE goods_number <= warn_number  AND is_delete=0 AND is_real=1 AND supplier_id=0';
         $goods['warn'] = $db->GetOne($sql);
-        $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('goods'). ' WHERE is_delete = 0 AND goods_number <= warn_number AND is_real=0 AND extension_code=\'virtual_card\'';
+        $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('goods'). ' WHERE goods_number <= warn_number AND is_delete=0 AND is_real=1 AND supplier_id=0 AND extension_code=\'virtual_card\'';
         $virtual_card['warn'] = $db->GetOne($sql);
     }
     else
@@ -405,28 +466,36 @@ elseif ($_REQUEST['act'] == 'main')
         $goods['warn'] = 0;
         $virtual_card['warn'] = 0;
     }
+    //新品总数
+    $goods['new']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_new = 1 AND is_real = 1 AND supplier_id=0');
+    $virtual_card['new']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_new = 1 AND is_real=0 AND supplier_id=0 AND extension_code=\'virtual_card\'');
+    //精品总数
+    $goods['best']    = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_best = 1 AND is_real = 1 AND supplier_id=0');
+    $virtual_card['best']    = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_best = 1 AND is_real=0 AND supplier_id=0 AND extension_code=\'virtual_card\'');
+    //热销商品总数
+    $goods['hot']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_hot = 1 AND is_real = 1 AND supplier_id=0');
+    $virtual_card['hot']     = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_hot = 1 AND is_real=0 AND supplier_id=0 AND extension_code=\'virtual_card\'');
+    //促销商品总数
+    $time             = gmtime();
+    $goods['promote'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND promote_price>0' .
+    " AND promote_start_date <= '$time' AND promote_end_date >= '$time' AND is_real = 1 AND supplier_id=0");
+    $virtual_card['promote'] = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND promote_price>0' .
+    " AND promote_start_date <= '$time' AND promote_end_date >= '$time' AND is_real=0 AND supplier_id=0 AND extension_code='virtual_card'");
+    //下架商品总数
+    $goods['deleted'] = $db->getOne(' SELECT COUNT(*) FROM '.$ecs->table('goods').' WHERE is_on_sale = 0 AND is_real=1 AND is_delete=0 AND is_alone_sale = 1 AND supplier_id=0');
     $smarty->assign('goods', $goods);
     $smarty->assign('virtual_card', $virtual_card);
-
-    /* 访问统计信息 */
-    $today  = local_getdate();
-    $sql    = 'SELECT COUNT(*) FROM ' .$ecs->table('stats').
-    ' WHERE access_time > ' . (mktime(0, 0, 0, $today['mon'], $today['mday'], $today['year']) - date('Z'));
-
-    $today_visit = $db->GetOne($sql);
-    $smarty->assign('today_visit', $today_visit);
-
-    $online_users = $sess->get_users_count();
-    $smarty->assign('online_users', $online_users);
-
-    /* 最近反馈 */
-    $sql = "SELECT COUNT(f.msg_id) ".
-    "FROM " . $ecs->table('feedback') . " AS f ".
-    "LEFT JOIN " . $ecs->table('feedback') . " AS r ON r.parent_id=f.msg_id " .
-    'WHERE f.parent_id=0 AND ISNULL(r.msg_id) ' ;
-    $smarty->assign('feedback_number', $db->GetOne($sql));
-
-    /* 未审核评论 */
+    
+	
+	  /* 未审核评论 */
     $smarty->assign('comment_number', $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('comment') .
     ' WHERE status = 0 AND parent_id = 0'));
 
@@ -487,33 +556,256 @@ elseif ($_REQUEST['act'] == 'main')
     $sys_info['max_filesize'] = ini_get('upload_max_filesize');
 
     $smarty->assign('sys_info', $sys_info);
-
-    /* 缺货登记 */
-    $smarty->assign('booking_goods', $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('booking_goods') . ' WHERE is_dispose = 0'));
-
-    /* 退款申请 */
-    $smarty->assign('new_repay', $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('user_account') . ' WHERE process_type = ' . SURPLUS_RETURN . ' AND is_paid = 0 '));
-
-
+	
+	
+    //订单相关
+    //订单总数
+    $order['total'] = $db->GetOne('SELECT COUNT(*) FROM '.$ecs->table('order_info'). ' WHERE supplier_id=0');
+    //待发货订单
+    $order['await_ship']   = $db->GetOne('SELECT COUNT(*)'.
+    ' FROM ' .$ecs->table('order_info') .
+        // 代码修改   By  bbs.hongyuvip.com Start
+//    " WHERE supplier_id=0  " . order_query_sql('await_ship'));
+    " WHERE supplier_id=0 AND extension_code != 'virtual_good' " . order_query_sql('await_ship'));
+    // 代码修改   By  bbs.hongyuvip.com End
+    $status['await_ship']  = CS_AWAIT_SHIP;
+    //待支付订单
+    $order['await_pay']    = $db->GetOne('SELECT COUNT(*)'.
+    ' FROM ' .$ecs->table('order_info') .
+    // 代码修改   By  bbs.hongyuvip.com Start
+//    " WHERE supplier_id=0  " . order_query_sql('await_pay'));
+    " WHERE supplier_id=0 AND extension_code != 'virtual_good' " . order_query_sql('await_pay'));
+    // 代码修改   By  bbs.hongyuvip.com End
+    // 代码修改   By  bbs.hongyuvip.com End
+    $status['await_pay']   = CS_AWAIT_PAY;
+    //待确认订单
+    $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('order_info').
+    " WHERE supplier_id=0 " . order_query_sql('unconfirmed');
+    $order['unconfirmed']  = $db->getOne($sql);
+    $status['unconfirmed'] = OS_UNCONFIRMED;
+    //部分发货的订单
+    $order['shipped_part']  = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('order_info').
+    " WHERE supplier_id=0 AND shipping_status=" .SS_SHIPPED_PART);
+    $status['shipped_part'] = OS_SHIPPED_PART;
+    //退款申请
+    // 代码修改   By  bbs.hongyuvip.com Start
+    $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('user_account'). " AS ua, ".
+        $GLOBALS['ecs']->table('users') . " AS u WHERE  ua.process_type = '1'  AND ua.is_paid = '0' ";
+    //    $order['new_repay'] = $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('back_order') . ' WHERE status_back=5 AND back_type=4 AND supplier_id=0');
+    $order['new_repay'] = $db->getOne($sql);
+    // 代码修改   By  bbs.hongyuvip.com End
+    //退货申请
+    // 代码修改   By  bbs.hongyuvip.com Start
+//    $order['returns'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('back_order').' WHERE status_back=5 AND back_type=1 AND supplier_id=0');
+    $order['returns'] = $db->getOne('SELECT COUNT(*) FROM '.$ecs->table('back_order').'');
+    // 代码修改   By  bbs.hongyuvip.com End
+    //缺货登记
+    // 代码修改   By  bbs.hongyuvip.com Start
+    $sql = 'SELECT COUNT(*) FROM ' .$GLOBALS['ecs']->table('booking_goods'). ' AS bg, '.
+    $GLOBALS['ecs']->table('goods'). ' AS g '.
+    "WHERE bg.goods_id = g.goods_id";
+//    $order['booking_goods'] = $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('booking_goods') . ' AS bg LEFT JOIN '.$ecs->table('goods').' AS g ON bg.goods_id=g.goods_id WHERE g.supplier_id=0 AND is_dispose=0');
+    $order['booking_goods'] = $db->getOne($sql);
+    // 代码修改   By  bbs.hongyuvip.com End
+    //成交订单数
+    $sql = 'SELECT COUNT(*) FROM ' . $ecs->table('order_info').
+    // 代码修改   By  bbs.hongyuvip.com Start
+//    " WHERE supplier_id=0 " . order_query_sql('finished');
+    " WHERE supplier_id=0 AND extension_code != 'virtual_good'" . order_query_sql('finished');
+    // 代码修改   By  bbs.hongyuvip.com End
+    $order['finished']     = $db->GetOne($sql);
+    $status['finished']    = CS_FINISHED;
+    
+    $smarty->assign('order', $order);
+    $smarty->assign('status', $status);
+    
+    //每月数据统计
+	//当月订单来源统计
+    $froms_tooltip = array(
+                        'trigger'=>'item',
+                        'formatter'=>'{a} <br/>{b} : {c} ({d}%)');
+    $froms_legend = array(
+                        'orient'=>'vertical',
+                        'x'=>'left',
+                        'y'=>'20',
+                        'data'=>array());
+    $froms_toolbox = array(
+        'show'=>true,
+        'feature'=>array(
+            'magicType'=>array(
+                'show'=>true,
+                'type'=>array('pie','funnel')
+            ),
+            'restore'=>array('show'=>true),
+            'saveAsImage'=>array('show'=>true)
+        )
+    );
+    
+    $froms_calculable = true;
+    $froms_series = array(
+        array(
+            'type'=>'pie',
+            'radius'=>'55%',
+            'center'=>array('50%','60%')));
+    $froms_data = array();
+    $froms_options = array();
+    
+    $sql = 'SELECT `froms`, count(*) AS `count` FROM '.$ecs->table('order_info').' WHERE `confirm_time` BETWEEN '.$month_start.' AND '.$month_end. ' AND supplier_id=0 GROUP BY `froms` ORDER BY `count` DESC';
+    $result = $db->query($sql);
+    while($row = mysql_fetch_assoc($result))
+    {
+        $froms_data[] = array('value'=>$row['count'],'name'=>$row['froms']);
+        $froms_legend_data[]=$row['froms'];
+    }
+    $froms_legend['data'] = $froms_legend_data;
+    $froms_series[0]['data'] = $froms_data;
+    $froms_options['tooltip'] = $froms_tooltip;
+    $froms_options['legend'] = $froms_legend;
+    $froms_options['toolbox'] = $froms_toolbox;
+    $froms_options['calculabe'] = $froms_calculable;
+    $froms_options['series'] = $froms_series;
+    $smarty->assign('froms_option',json_encode($froms_options));
+    //当月每日订单数统计
+    $orders_tooltip = array('trigger'=>'axis');
+    $orders_legend = array('data'=>array());
+    $orders_toolbox = array(
+                        'show'=>true,
+                        'x'=>'right',
+                        'feature'=>array(
+                                    'magicType'=>array(
+                                                    'show'=>true,
+                                                    'type'=>array('line','bar')),
+                                    'restore'=>array(
+                                                    'show'=>true),
+                                    'saveAsImage'=>array(
+                                                    'show'=>true)
+                                    ));
+    $orders_calculable = true;
+    $orders_xAxis = array(
+                        'type'=>'category',
+                        'boundryGap'=>false,
+                        'data'=>array());
+    $orders_yAxis = array(
+                        'type'=>'value',
+                        'axisLabel'=>array(
+                                        'formatter'=>'{value}个'));
+    $orders_series = array(
+                        array(
+                            'name'=>'订单个数',
+                            'type'=>'line',
+                            'data'=>array(),
+                            'markPoint'=>array(
+                                            'data'=>array(
+                                                        array(
+                                                            'type'=>'max',
+                                                            'name'=>'最大值'),
+                                                        array(
+                                                            'type'=>'min',
+                                                            'name'=>'最小值'))),
+                            'markLine'=>array(
+                                            'data'=>array(
+                                                        array(
+                                                            'type'=>'average',
+                                                            'name'=>'平均值')))));
+    $sql = 'SELECT DATE_FORMAT(FROM_UNIXTIME(`confirm_time`),"%d") AS day,COUNT(*) AS count,SUM(money_paid) AS money FROM '.$ecs->table('order_info').' WHERE `confirm_time` BETWEEN '.$month_start.' AND '.$month_end. ' AND supplier_id=0 GROUP BY day ORDER BY day ASC ';
+    $result = $db->query($sql);
+    
+    while($row = mysql_fetch_assoc($result))
+    {
+        $orders_series_data[intval($row['day'])] = intval($row['count']);
+        $sales_series_data[intval($row['day'])] = floatval($row['money']);
+    }
+    for($i = 1;$i<=date('d');$i++)
+    {
+        if(empty($orders_series_data[$i]))
+        {
+            $orders_series_data[$i] = 0;
+            $sales_series_data[$i] = 0;
+        }
+        $orders_xAxis_data[] = $i;
+        $sales_xAxis_data[] = $i;
+    }
+    $orders_xAxis['data'] = $orders_xAxis_data;
+    ksort($orders_series_data);
+    
+    $orders_series[0]['data'] = array_values($orders_series_data);
+    $orders_option['tooltip'] = $orders_tooltip;
+    $orders_option['legend'] = $orders_legend;
+    $orders_option['toolbox'] = $orders_toolbox;
+    $orders_option['calculable'] = $orders_calculable;
+    $orders_option['xAxis'] = $orders_xAxis;
+    $orders_option['yAxis'] = $orders_yAxis;
+    $orders_option['series'] = $orders_series;
+    $smarty->assign('orders_option',json_encode($orders_option));
+    
+    //当月每日销售额统计
+    $sales_tooltip = array('trigger'=>'axis');
+    $sales_legend = array('data'=>array());
+    $sales_toolbox = array(
+                        'show'=>true,
+                        'x'=>'right',
+                        'feature'=>array(
+                                    'magicType'=>array(
+                                                    'show'=>true,
+                                                    'type'=>array('line','bar')),
+                                    'restore'=>array(
+                                                    'show'=>true),
+                                    'saveAsImage'=>array(
+                                                    'show'=>true)
+                                    ));
+    $sales_calculable = true;
+    $sales_xAxis = array(
+                        'type'=>'category',
+                        'boundryGap'=>false,
+                        'data'=>array());
+    $sales_yAxis = array(
+                        'type'=>'value',
+                        'axisLabel'=>array(
+                                        'formatter'=>'{value}元'));
+    $sales_series = array(
+                        array(
+                            'name'=>'销售额',
+                            'type'=>'line',
+                            'data'=>array(),
+                            'markPoint'=>array(
+                                            'data'=>array(
+                                                        array(
+                                                            'type'=>'max',
+                                                            'name'=>'最大值'),
+                                                        array(
+                                                            'type'=>'min',
+                                                            'name'=>'最小值'))),
+                            'markLine'=>array(
+                                            'data'=>array(
+                                                        array(
+                                                            'type'=>'average',
+                                                            'name'=>'平均值')))));
+    $sales_xAxis['data'] = $sales_xAxis_data;
+    ksort($sales_series_data);
+    $sales_series[0]['data'] = array_values($sales_series_data);
+    $sales_option['tooltip'] = $sales_tooltip;
+    $sales_option['toolbox'] = $sales_toolbox;
+    $sales_option['calculable'] = $sales_calculable;
+    $sales_option['xAxis'] = $sales_xAxis;
+    $sales_option['yAxis'] = $sales_yAxis;
+    $sales_option['series'] = $sales_series;
+    $smarty->assign('sales_option',json_encode($sales_option));
+    /*后台管理起始页_修改_END_bbs.hongyuvip.com*/
 
     assign_query_info();
-    $smarty->assign('ecs_version',  VERSION);
-    $smarty->assign('ecs_release',  RELEASE);
     $smarty->assign('ecs_lang',     $_CFG['lang']);
-    $smarty->assign('ecs_charset',  strtoupper(EC_CHARSET));
-    $smarty->assign('install_date', local_date($_CFG['date_format'], $_CFG['install_date']));
     $smarty->display('start.htm');
 }
 elseif ($_REQUEST['act'] == 'main_api')
 {
-
     require_once(ROOT_PATH . '/includes/lib_base.php');
-    $data = read_static_cache('api_str');
+    $data = read_static_cache('api_str_68');
 
     if($data === false || API_TIME < date('Y-m-d H:i:s',time()-43200))
     {
         include_once(ROOT_PATH . 'includes/cls_transport.php');
         $ecs_version = VERSION;
+		$ecs_product = PRODUCTNAME;
         $ecs_lang = $_CFG['lang'];
         $ecs_release = RELEASE;
         $php_ver = PHP_VERSION;
@@ -535,20 +827,17 @@ elseif ($_REQUEST['act'] == 'main_api')
         }
         $ecs_style = $style;
         $shop_url = urlencode($ecs->url());
+        $ip  = real_ip();
+        $type = 1;
 
         $patch_file = file_get_contents(ROOT_PATH.ADMIN_PATH."/patch_num");
 
-        $apiget = "ver= $ecs_version &lang= $ecs_lang &release= $ecs_release &php_ver= $php_ver &mysql_ver= $mysql_ver &ocount= $ocount &oamount= $oamount &gcount= $gcount &charset= $ecs_charset &usecount= $ecs_user &template= $ecs_template &style= $ecs_style &url= $shop_url &patch= $patch_file ";
-/*
-        $t = new transport;
-        $api_comment = $t->request('http://ecshop.ecmoban.com/checkver.php', $apiget);
-        $api_str = $api_comment["body"];
-        echo $api_str;*/
-        
+        $apiget = "ver= $ecs_version &name= $ecs_product &lang= $ecs_lang &release= $ecs_release &php_ver= $php_ver &mysql_ver= $mysql_ver &ocount= $ocount &oamount= $oamount &gcount= $gcount &charset= $ecs_charset &usecount= $ecs_user &template= $ecs_template &style= $ecs_style &url= $shop_url &ip= $ip &type= $type &patch= $patch_file ";
+
         $f=ROOT_PATH . 'data/config.php'; 
         file_put_contents($f,str_replace("'API_TIME', '".API_TIME."'","'API_TIME', '".date('Y-m-d H:i:s',time())."'",file_get_contents($f)));
         
-        write_static_cache('api_str', $api_str);
+        write_static_cache('api_str_68', $api_str);
     }
     else 
     {
@@ -1097,14 +1386,15 @@ elseif ($_REQUEST['act'] == 'check_order')
         make_json_result('', '', array('new_orders' => 0, 'new_paid' => 0));
     }
 
+	$where_suppId = " AND supplier_id = '" . $_SESSION['suppliers_id'] . "'";
     /* 新订单 */
     $sql = 'SELECT COUNT(*) FROM ' . $ecs->table('order_info').
-    " WHERE add_time >= '$_SESSION[last_check]'";
+    " WHERE add_time >= '$_SESSION[last_check]'" . $where_suppId;
     $arr['new_orders'] = $db->getOne($sql);
 
     /* 新付款的订单 */
     $sql = 'SELECT COUNT(*) FROM '.$ecs->table('order_info').
-    ' WHERE pay_time >= ' . $_SESSION['last_check'];
+    ' WHERE pay_time >= ' . $_SESSION['last_check'] . $where_suppId;
     $arr['new_paid'] = $db->getOne($sql);
 
     $_SESSION['last_check'] = gmtime();
@@ -1241,7 +1531,6 @@ elseif ($_REQUEST['act'] == 'license')
         include_once(ROOT_PATH . 'includes/lib_license.php');
 
         $license = license_check();
-
         switch ($license['flag'])
         {
             case 'login_succ':

@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 广告位置管理程序
+ * 鸿宇多用户商城 广告位置管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: ad_position.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: ad_position.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . 'lang/' .$_CFG['lang']. '/admin/ads.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/ads.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -29,7 +29,7 @@ else
 }
 
 $smarty->assign('lang', $_LANG);
-$exc = new exchange($ecs->table("touch_ad_position"), $db, 'position_id', 'position_name');
+$exc = new exchange($ecs->table("ecsmart_ad_position"), $db, 'position_id', 'position_name');
 
 /*------------------------------------------------------ */
 //-- 广告位置列表
@@ -63,7 +63,7 @@ elseif ($_REQUEST['act'] == 'add')
     $smarty->assign('form_act',    'insert');
 
     $smarty->assign('action_link', array('href' => 'ad_position.php?act=list', 'text' => $_LANG['ad_position']));
-    $smarty->assign('posit_arr',   array('position_style' => '<table cellpadding="0" cellspacing="0">' ."\n". '{foreach from=$ads item=ad}' ."\n". '<tr><td>{$ad}</td></tr>' ."\n". '{/foreach}' ."\n". '</table>'));
+    $smarty->assign('posit_arr',   array('position_style' =>'{foreach from=$ads item=ad}' ."\n". '{$ad}' ."\n". '{/foreach}'));
 
     assign_query_info();
     $smarty->display('ad_position_info.htm');
@@ -82,7 +82,7 @@ elseif ($_REQUEST['act'] == 'insert')
     if ($exc->num("position_name", $position_name) == 0)
     {
         /* 将广告位置的信息插入数据表 */
-        $sql = 'INSERT INTO '.$ecs->table('touch_ad_position').' (position_name, ad_width, ad_height, position_desc, position_style) '.
+        $sql = 'INSERT INTO '.$ecs->table('ecsmart_ad_position').' (position_name, ad_width, ad_height, position_desc, position_style) '.
                "VALUES ('$position_name', '$ad_width', '$ad_height', '$position_desc', '$_POST[position_style]')";
 
         $db->query($sql);
@@ -118,7 +118,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $id = !empty($_GET['id']) ? intval($_GET['id']) : 0;
 
     /* 获取广告位数据 */
-    $sql = 'SELECT * FROM ' .$ecs->table('touch_ad_position'). " WHERE position_id='$id'";
+    $sql = 'SELECT * FROM ' .$ecs->table('ecsmart_ad_position'). " WHERE position_id='$id'";
     $posit_arr = $db->getRow($sql);
 
     $smarty->assign('ur_here',     $_LANG['position_edit']);
@@ -140,11 +140,11 @@ elseif ($_REQUEST['act'] == 'update')
     $ad_height     = !empty($_POST['ad_height'])     ? intval($_POST['ad_height']) : 0;
     $position_id   = !empty($_POST['id'])            ? intval($_POST['id'])        : 0;
     /* 查看广告位是否与其它有重复 */
-    $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('touch_ad_position').
+    $sql = 'SELECT COUNT(*) FROM ' .$ecs->table('ecsmart_ad_position').
            " WHERE position_name = '$position_name' AND position_id <> '$position_id'";
     if ($db->getOne($sql) == 0)
     {
-        $sql = "UPDATE " .$ecs->table('touch_ad_position'). " SET ".
+        $sql = "UPDATE " .$ecs->table('ecsmart_ad_position'). " SET ".
                "position_name    = '$position_name', ".
                "ad_width         = '$ad_width', ".
                "ad_height        = '$ad_height', ".
@@ -294,7 +294,7 @@ elseif ($_REQUEST['act'] == 'remove')
     $id = intval($_GET['id']);
 
     /* 查询广告位下是否有广告存在 */
-    $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('touch_ad'). " WHERE position_id = '$id'";
+    $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('ecsmart_ad'). " WHERE position_id = '$id'";
 
     if ($db->getOne($sql) > 0)
     {
@@ -318,14 +318,14 @@ function ad_position_list()
     $filter = array();
 
     /* 记录总数以及页数 */
-    $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS['ecs']->table('touch_ad_position');
+    $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS['ecs']->table('ecsmart_ad_position');
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
     $filter = page_and_size($filter);
 
     /* 查询数据 */
     $arr = array();
-    $sql = 'SELECT * FROM ' .$GLOBALS['ecs']->table('touch_ad_position'). ' ORDER BY position_id DESC';
+    $sql = 'SELECT * FROM ' .$GLOBALS['ecs']->table('ecsmart_ad_position'). ' ORDER BY position_id DESC';
     $res = $GLOBALS['db']->selectLimit($sql, $filter['page_size'], $filter['start']);
     while ($rows = $GLOBALS['db']->fetchRow($res))
     {

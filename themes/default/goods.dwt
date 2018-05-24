@@ -54,7 +54,7 @@ function reg(str){
     <!-- TemplateBeginEditable name="左边区域" -->
 <!-- #BeginLibraryItem "/library/cart.lbi" -->
 
-{insert_scripts files='transport_jquery.js'}
+{insert_scripts files='transport.js'}
 <div class="cart" id="ECS_CARTINFO">
  {insert name='cart_info'}
 </div>
@@ -303,7 +303,7 @@ function reg(str){
       <!--{if $volume_price_list } -->
       <li class="padd">
        <font class="f1">{$lang.volume_price}：</font><br />
-       <table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#ccc">
+       <table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#aad6ff">
         <tr>
           <td align="center" bgcolor="#FFFFFF"><strong>{$lang.number_to}</strong></td>
           <td align="center" bgcolor="#FFFFFF"><strong>{$lang.preferences_price}</strong></td>
@@ -317,6 +317,11 @@ function reg(str){
        </table>
       </li>
       <!--{/if}-->
+      <!-- 代码修改_start  By  bbs.hongyuvip.com -->
+      <li class="clearfix">
+           <a class="compare-btn" data-goods="{$goods.goods_id}" data-type="{$goods.goods_type}" onclick="Compare.add({$goods.goods_id},'{$goods.goods_name|escape:"html"}','{$goods.goods_type}', '{$goods.goods_thumb}', '{$goods.shop_price}')"></a>
+      </li>
+      <!-- 代码修改_end  By  bbs.hongyuvip.com -->
 
       <!--{if $goods.is_promote and $goods.gmt_end_time } 促销-->
       {insert_scripts files='lefttime.js'}
@@ -371,7 +376,7 @@ function reg(str){
                         <!-- {/foreach} -->
                         <input type="hidden" name="spec_list" value="{$key}" />
                         <!-- {else} -->
-                        <select name="spec_{$spec_key}" onchange="changePrice()" style="display:">
+                        <select name="spec_{$spec_key}" onchange="changePrice()">
                           <!-- {foreach from=$spec.values item=value key=key} -->
                           <option label="{$value.label}" value="{$value.id}">{$value.label} {if $value.price gt 0}{$lang.plus}{elseif $value.price lt 0}{$lang.minus}{/if}{if $value.price neq 0}{$value.format_price}{/if}</option>
                           <!-- {/foreach} -->
@@ -572,13 +577,13 @@ function reg(str){
  <!-- #EndLibraryItem -->
 <!-- #BeginLibraryItem "/library/bought_note_guide.lbi" -->
 
-{insert_scripts files='transport_jquery.js,utils.js'}
-<div id="ECS_BOUGHT">{* ECSHOP 提醒您：动态载入bought_notes.lbi，显示当前商品的购买记录 *}{insert name='bought_notes' id=$id}</div>
+{insert_scripts files='transport.js,utils.js'}
+<div id="ECS_BOUGHT">{* 鸿宇多用户商城 提醒您：动态载入bought_notes.lbi，显示当前商品的购买记录 *}{insert name='bought_notes' id=$id}</div>
  <!-- #EndLibraryItem -->
 <!-- #BeginLibraryItem "/library/comments.lbi" -->
 
-{insert_scripts files='transport_jquery.js,utils.js'}
-<div id="ECS_COMMENT"> {* ECSHOP 提醒您：动态载入comments_list.lbi，显示评论列表和评论表单 *}{insert name='comments' type=$type id=$id}</div>
+{insert_scripts files='transport.js,utils.js'}
+<div id="ECS_COMMENT"> {* 鸿宇多用户商城 提醒您：动态载入comments_list.lbi，显示评论列表和评论表单 *}{insert name='comments' type=$type id=$id}</div>
 
  <!-- #EndLibraryItem -->
 <!-- TemplateEndEditable -->
@@ -665,4 +670,119 @@ function changePriceResponse(res)
 }
 <!-- {/literal} -->
 </script>
+<!-- 代码增加_end  By  bbs.hongyuvip.com -->
+<script type="text/javascript" src="{$option.static_path}js/compare.js"></script>
+<script type="text/javascript" src="{$option.static_path}js/json2.js"></script>
+<script type="text/javascript" src="{$option.static_path}js/jquery.js"></script>
+<script>
+$(document).ready(function(e) {
+	Compare.init();
+    $('#compareBox .menu li').click(function(e) {
+		$('#compareBox .menu li').each(function(index, element) {
+			$(this).removeClass('current');
+        });
+		if($(this).attr('data-value') == 'compare')
+		{
+			$('#historyList').css('display', 'none');
+			$('#compareList').css('display', 'block');
+		}
+		else
+		{
+			$('#historyList').css('display', 'block');
+			$('#compareList').css('display', 'none');
+		}
+        $(this).addClass('current');
+    });
+	if($('#historyList li').length > 4)
+	{
+		$('#historyList ul').css('width', (226*$('#historyList li').length)+'px');
+		$('#historyList #sc-prev').addClass('disable');
+		var count = 0;
+		$('#historyList #sc-next').click(function(e) {
+			if(($('#historyList li').length-4) > count)
+			{
+				count++;
+				$('#historyList #sc-prev').removeClass('disable');
+				if(($('#historyList li').length-4) >= count)
+					$('#historyList ul').animate({marginLeft:(-226*count)+'px'});
+				if(($('#historyList li').length-4) == count)
+					$('#historyList #sc-next').addClass('disable');
+			}
+        });
+		$('#historyList #sc-prev').click(function(e) {
+			if(count > 0)
+			{
+				count--;
+				$('#historyList #sc-next').removeClass('disable');
+				if(count >= 0)
+					$('#historyList ul').animate({marginLeft:(-226*count)+'px'});
+				if(count == 0)
+					$('#historyList #sc-prev').addClass('disable');
+			}
+        });
+	}
+	else
+	{
+		$('#historyList #sc-prev').css('display', 'none');
+		$('#historyList #sc-next').css('display', 'none');
+	}
+	var compareData = new Object();
+	var compareCookie = document.getCookie('compareItems');
+	var count = 0;
+	if(compareCookie != null)
+	{
+		compareData = JSON.parse(compareCookie);
+        for(var k in compareData)
+        {
+            if(typeof(compareData[k])=="function")
+            	continue;
+            $('.compare-btn').each(function(index, element) {
+            	if(k == $(this).attr('data-goods'))
+					$(this).css('background-position', '0 -24px');
+        	});
+			count ++;
+        }
+	}
+	if(count>0)
+	{
+		$('#compareBox').css('display', 'block');
+		$('.compareHolder').css('display', 'none');
+	}
+	
+});
+function toggle_compare_box()
+{
+	if($('#compareBox').css('display') == 'none')
+	{
+		$('#compareBox').css('display', 'block');
+		$('.compareHolder').css('display', 'none');
+	}
+	else
+	{
+		$('#compareBox').css('display', 'none');
+		$('.compareHolder').css('display', 'block');
+	}
+}
+</script>
+<div align="center" id="compareBox" style="display:none">
+	<div class="menu">
+    	<ul>
+        	<li class="current" data-value='compare'>对比栏</li><li data-value='history'>最近浏览</li>
+        </ul>
+        <a style="color:#005AA0;float: right; line-height: 32px; margin-right: 20px;" href="javascript:void(0)" onClick="toggle_compare_box()">隐藏</a>
+        <div style="clear:both"></div>
+    </div>
+	<div id="compareList">
+		
+    </div>
+    <div id="historyList" style="display:none;">
+        <span id="sc-prev" class="sc-prev scroll-btn"></span>
+        <span id="sc-next" class="sc-next scroll-btn"></span>
+    	<div class="scroll_wrap">
+	    	{insert name='history_list'}
+        </div>
+    </div>
+</div>
+<a class="compareHolder" href="javascript:void(0)" onClick="toggle_compare_box()">对比栏</a>
+<!-- 代码增加_end  By  bbs.hongyuvip.com -->
 </html>

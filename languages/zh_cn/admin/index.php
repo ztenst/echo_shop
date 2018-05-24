@@ -1,29 +1,29 @@
 <?php
 
 /**
- * ECSHOP 管理中心起始页语言文件
+ * 鸿宇多用户商城 管理中心起始页语言文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: index.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 $_LANG['shop_guide'] = '开店向导';
 $_LANG['set_navigator'] = '设置导航栏';
-$_LANG['about'] = '关于 ECSHOP';
+$_LANG['about'] = '关于我们';
 $_LANG['preview'] = '查看网店';
-$_LANG['menu'] = '菜单';
+$_LANG['menu'] = '导航菜单';
 $_LANG['help'] = '帮助';
 $_LANG['signout'] = '退出';
 $_LANG['profile'] = '个人设置';
-$_LANG['view_message'] = '管理员留言';
+$_LANG['view_message'] = '管理留言';
 $_LANG['send_msg'] = '发送留言';
-$_LANG['toggle_calculator'] = '计算器';
+$_LANG['toggle_calculator'] = '应用工具';
 $_LANG['expand_all'] = '展开';
 $_LANG['collapse_all'] = '闭合';
 $_LANG['no_help'] = '暂时还没有该部分内容';
@@ -61,22 +61,22 @@ $_LANG['pm_username'] = '留言者';
 $_LANG['pm_time'] = '留言时间';
 
 $_LANG['order_stat'] = '订单统计信息';
-$_LANG['unconfirmed'] = '未确认订单:';
-$_LANG['await_ship'] = '待发货订单:';
-$_LANG['await_pay'] = '待支付订单:';
-$_LANG['finished'] = '已成交订单数:';
-$_LANG['new_booking'] = '新缺货登记:';
-$_LANG['new_reimburse'] = '退款申请:';
-$_LANG['shipped_part'] = '部分发货订单:';
+$_LANG['unconfirmed'] = '未确认订单';
+$_LANG['await_ship'] = '待发货订单';
+$_LANG['await_pay'] = '待支付订单';
+$_LANG['finished'] = '已成交订单数';
+$_LANG['new_booking'] = '新缺货登记';
+$_LANG['new_reimburse'] = '退款申请';
+$_LANG['shipped_part'] = '部分发货订单';
 
 $_LANG['goods_stat'] = '实体商品统计信息';
 $_LANG['virtual_card_stat'] = '虚拟卡商品统计';
-$_LANG['goods_count'] = '商品总数:';
-$_LANG['sales_count'] = '促销商品数:';
-$_LANG['new_goods'] = '新品推荐数:';
-$_LANG['recommed_goods'] = '精品推荐数:';
-$_LANG['hot_goods'] = '热销商品数:';
-$_LANG['warn_goods'] = '库存警告商品数:';
+$_LANG['goods_count'] = '商品总数';
+$_LANG['sales_count'] = '促销商品数';
+$_LANG['new_goods'] = '新品推荐数';
+$_LANG['recommed_goods'] = '精品推荐数';
+$_LANG['hot_goods'] = '热销商品数';
+$_LANG['warn_goods'] = '库存警告商品数';
 $_LANG['clear_cache'] = '清除缓存';
 $_LANG['ebao_commend'] = '易宝推荐';
 
@@ -130,8 +130,8 @@ $_LANG['caches_cleared'] = '页面缓存已经清除成功。';
 /*------------------------------------------------------ */
 //-- 关于我们
 /*------------------------------------------------------ */
-$_LANG['team_member'] = 'ECSHOP 团队成员';
-$_LANG['before_team_member'] = 'ECSHOP 贡献者';
+$_LANG['team_member'] = '鸿宇多用户商城 团队成员';
+$_LANG['before_team_member'] = '鸿宇多用户商城 贡献者';
 
 $_LANG['director'] = '项目策划';
 $_LANG['programmer'] = '程序开发';

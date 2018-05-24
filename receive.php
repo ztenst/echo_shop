@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 处理收回确认的页面
+ * 鸿宇多用户商城 处理收回确认的页面
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: receive.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: receive.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
@@ -44,14 +44,33 @@ elseif ($order['consignee'] != $consignee)
 }
 else
 {
-    /* 修改订单发货状态为“确认收货” */
-    $sql = "UPDATE " . $ecs->table('order_info') . " SET shipping_status = '" . SS_RECEIVED . "' WHERE order_id = '$order_id'";
-    $db->query($sql);
+    /* 鸿宇科技修复 hongyuvip.com QQ交流群:90664526 by:Shadow & 鸿宇 start */
 
-    /* 记录日志 */
-    order_action($order['order_sn'], $order['order_status'], SS_RECEIVED, $order['pay_status'], '', $_LANG['buyer']);
+    $act = !empty($_REQUEST['act']) ? rawurldecode($_REQUEST['con']) : 'confirm'; // 验证码
+    if ($act == 'confirm')
+    {
+        $msg = $order['order_sn']."确认收货？<button onclick=\"location.href='receive.php?act=receive&id=".$order_id."&con=".rawurlencode($consignee)."';\">确定</a>";
+    }
+    else
+    {
+        /* 修改订单发货状态为“确认收货” */
+        $sql = "UPDATE " . $ecs->table('order_info') . " SET shipping_status = '" . SS_RECEIVED . "' WHERE order_id = '$order_id'";
+        $db->query($sql);
+        /* 记录日志 */
+        order_action($order['order_sn'], $order['order_status'], SS_RECEIVED, $order['pay_status'], '', $_LANG['buyer']);
+        $msg = $_LANG['act_ok'];
+    }
 
-    $msg = $_LANG['act_ok'];
+    /* 鸿宇科技修复 hongyuvip.com QQ交流群:90664526 by:Shadow & 鸿宇 end */
+
+//    /* 修改订单发货状态为“确认收货” */
+//    $sql = "UPDATE " . $ecs->table('order_info') . " SET shipping_status = '" . SS_RECEIVED . "' WHERE order_id = '$order_id'";
+//    $db->query($sql);
+//
+//    /* 记录日志 */
+//    order_action($order['order_sn'], $order['order_status'], SS_RECEIVED, $order['pay_status'], '', $_LANG['buyer']);
+//
+//    $msg = $_LANG['act_ok'];
 }
 
 /* 显示模板 */

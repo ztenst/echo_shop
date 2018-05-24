@@ -1,12 +1,14 @@
 <!-- $Id: bonus_by_goods.htm 14216 2008-03-10 02:27:21Z testyang $ -->
 {include file="pageheader.htm"}
-{insert_scripts files="../js/utils.js,selectzone.js"}
+<link href="styles/zTree/zTreeStyle.css" rel="stylesheet" type="text/css" />
+{insert_scripts files="../js/utils.js,selectzone.js,jquery.ztree.all-3.5.min.js,category_selecter.js"}
 <!-- 商品搜索 -->
 <div class="form-div">
   <form action="javascript:searchGoods()" name="searchForm">
     <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
     <!-- 分类 -->
-    <select name="cat_id"><option value="0">{$lang.all_category}</caption>{$cat_list}</select>
+    <input type="text" id="cat_name" name="cat_name" nowvalue="{$goods_cat_name}" value="{$goods_cat_name}">
+	<input type="hidden" id="cat_id" name="cat_id" value="{$goods_cat_id}">
     <!-- 品牌 -->
     <select name="brand_id"><option value="0">{$lang.all_brand}</caption>{html_options options=$brand_list}</select>
     <!-- 关键字 -->
@@ -14,6 +16,15 @@
     <input type="submit" value="{$lang.button_search}" class="button" />
   </form>
 </div>
+
+<script type="text/javascript">
+$().ready(function(){
+	// $("#cat_name")为获取分类名称的jQuery对象，可根据实际情况修改
+	// $("#cat_id")为获取分类ID的jQuery对象，可根据实际情况修改
+	// "{$goods_cat_id}"为被选中的商品分类编号，无则设置为null或者不写此参数或者为空字符串
+	$.ajaxCategorySelecter($("#cat_name"), $("#cat_id"), "{$goods_cat_id}");
+});
+ </script>
 
 <!-- 商品列表 -->
 <div class="list-div">
@@ -49,12 +60,12 @@
 </table>
 </form>
 </div>
-<script language="JavaScript">
+<script type="text/JavaScript">
   var bounsTypeId = '{$bonus_type.type_id}';
   var elements    = document.forms['theForm'].elements;
   var sz          = new SelectZone(1, elements['source_select'], elements['target_select'], '');
 
-  {literal}
+{literal}
   onload = function()
   {
     startCheckOrder();

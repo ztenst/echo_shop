@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 文章分类
+ * 鸿宇多用户商城 文章分类
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: article_cat.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: article_cat.php 17217 2016-01-19 06:29:08Z derek $
 */
 
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
-require(dirname(__FILE__) . '/include/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -69,7 +69,7 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     $smarty->assign('article_categories',   article_categories_tree($cat_id)); //文章分类树
     $smarty->assign('helps',                get_shop_help());        // 网店帮助
     $smarty->assign('top_goods',            get_top10());            // 销售排行
-    
+
     $smarty->assign('best_goods',           get_recommend_goods('best'));
     $smarty->assign('new_goods',            get_recommend_goods('new'));
     $smarty->assign('hot_goods',            get_recommend_goods('hot'));
@@ -77,7 +77,7 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     $smarty->assign('promotion_info', get_promotion_info());
 
     /* Meta */
-    $meta = $db->getRow("SELECT keywords, cat_desc FROM " . $ecs->table('article_cat') . " WHERE cat_id = '$cat_id'");
+    $meta = $db->getRow("SELECT keywords, cat_desc FROM " . $ecs->table('ecsmart_article_cat') . " WHERE cat_id = '$cat_id'");
 
     if ($meta === false || empty($meta))
     {

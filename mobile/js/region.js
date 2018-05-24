@@ -68,7 +68,7 @@ region.response = function(result, text_result)
 
   sel.length = 1;
   sel.selectedIndex = 0;
-  sel.style.display = (result.regions.length == 0 && ! region.isAdmin && result.type + 0 == 3) ? "none" : '';
+  sel.style.display = (result.regions.length == 0 && ! region.isAdmin && result.type + 0 == 4) ? "none" : '';//morestock_morecity
 
   if (document.all)
   {

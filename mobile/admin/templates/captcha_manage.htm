@@ -16,9 +16,13 @@
   <td>
   <input type="checkbox" name="captcha_register" value="1" {$captcha.register} />{$lang.captcha_register}<br />
   <input type="checkbox" name="captcha_login" value="2" {$captcha.login} />{$lang.captcha_login}<br />
+<!--后台-验证码管理-发表评论
   <input type="checkbox" name="captcha_comment" value="4"  {$captcha.comment} />{$lang.captcha_comment}<br />
+-->
   <input type="checkbox" name="captcha_admin" value="8" {$captcha.admin} />{$lang.captcha_admin}<br />
+<!--后台-验证码管理-留言板留言
   <input type="checkbox" name="captcha_message" value="32" {$captcha.message} />{$lang.captcha_message}<br />
+-->
   </td>
 </tr>
 <tr>
@@ -48,7 +52,7 @@
 </table>
 </form>
 </div>
-{insert_scripts files="../data/static/js/utils.js"}
+{insert_scripts files="../js/utils.js"}
 {literal}
 <script type="text/javascript" language="JavaScript">
 <!--

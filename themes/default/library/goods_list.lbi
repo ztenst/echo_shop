@@ -34,7 +34,9 @@
     <ul class="clearfix bgcolor"<!--{if $smarty.foreach.goods_list.index mod 2 eq 0}-->id=""<!--{else}-->id="bgcolor"<!--{/if}-->>
     <li>
     <br>
-    <a href="javascript:;" id="compareLink" onClick="Compare.add({$goods.goods_id},'{$goods.goods_name|escape:"html"}','{$goods.type}')" class="f6">比较</a>
+    <!-- 代码修改_start  By  bbs.hongyuvip.com -->
+    <a href="javascript:;" id="compareLink" onClick="Compare.add({$goods.goods_id},'{$goods.name|escape:"html"}','{$goods.type}', '{$goods.goods_thumb}', '{$goods.shop_price}')" class="f6">比较</a>
+    <!-- 代码修改_end  By  bbs.hongyuvip.com -->
     </li>
     <li class="thumb"><a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name}" /></a></li>
     <li class="goodsName">
@@ -84,7 +86,9 @@
             <!--{/if}-->
            <a href="javascript:collect({$goods.goods_id});" class="f6">{$lang.btn_collect}</a> |
            <a href="javascript:addToCart({$goods.goods_id})" class="f6">{$lang.btn_buy}</a> |
-           <a href="javascript:;" id="compareLink" onClick="Compare.add({$goods.goods_id},'{$goods.goods_name|escape:"html"}','{$goods.type}')" class="f6">{$lang.compare}</a>
+           <!-- 代码修改_start  By  bbs.hongyuvip.com -->
+           <a class="compare-btn" data-goods="{$goods.goods_id}" data-type="{$goods.type}" onclick="Compare.add({$goods.goods_id},'{$goods.name|escape:"html"}','{$goods.type}', '{$goods.goods_thumb}', '{$goods.shop_price}')"></a>
+           <!-- 代码修改_end  By  bbs.hongyuvip.com -->
         </div>
     <!--{/if}-->
     <!--{/foreach}-->
@@ -95,7 +99,9 @@
     <!--{foreach from=$goods_list item=goods}-->
      <ul class="clearfix bgcolor"<!--{if $smarty.foreach.goods_list.index mod 2 eq 0}-->id=""<!--{else}-->id="bgcolor"<!--{/if}-->>
     <li style="margin-right:15px;">
-    <a href="javascript:;" id="compareLink" onClick="Compare.add({$goods.goods_id},'{$goods.goods_name|escape:"html"}','{$goods.type}')" class="f6">{$lang.compare}</a>
+    <!-- 代码修改_start  By  bbs.hongyuvip.com -->
+    <a href="javascript:;" id="compareLink" onClick="Compare.add({$goods.goods_id},'{$goods.name|escape:"html"}','{$goods.type}', '{$goods.goods_thumb}', '{$goods.shop_price}')" class="f6">{$lang.compare}</a>
+    <!-- 代码修改_end  By  bbs.hongyuvip.com -->
     </li>
     <li class="goodsName">
     <a href="{$goods.url}" class="f6 f5">
@@ -162,3 +168,116 @@ var btn_buy = "{$lang.btn_buy}";
 var is_cancel = "{$lang.is_cancel}";
 var select_spe = "{$lang.select_spe}";
 </script>
+<!-- 代码增加_end  By  bbs.hongyuvip.com -->
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script>
+$(document).ready(function(e) {
+    $('#compareBox .menu li').click(function(e) {
+		$('#compareBox .menu li').each(function(index, element) {
+			$(this).removeClass('current');
+        });
+		if($(this).attr('data-value') == 'compare')
+		{
+			$('#historyList').css('display', 'none');
+			$('#compareList').css('display', 'block');
+		}
+		else
+		{
+			$('#historyList').css('display', 'block');
+			$('#compareList').css('display', 'none');
+		}
+        $(this).addClass('current');
+    });
+	if($('#historyList li').length > 4)
+	{
+		$('#historyList ul').css('width', (226*$('#historyList li').length)+'px');
+		$('#historyList #sc-prev').addClass('disable');
+		var count = 0;
+		$('#historyList #sc-next').click(function(e) {
+			if(($('#historyList li').length-4) > count)
+			{
+				count++;
+				$('#historyList #sc-prev').removeClass('disable');
+				if(($('#historyList li').length-4) >= count)
+					$('#historyList ul').animate({marginLeft:(-226*count)+'px'});
+				if(($('#historyList li').length-4) == count)
+					$('#historyList #sc-next').addClass('disable');
+			}
+        });
+		$('#historyList #sc-prev').click(function(e) {
+			if(count > 0)
+			{
+				count--;
+				$('#historyList #sc-next').removeClass('disable');
+				if(count >= 0)
+					$('#historyList ul').animate({marginLeft:(-226*count)+'px'});
+				if(count == 0)
+					$('#historyList #sc-prev').addClass('disable');
+			}
+        });
+	}
+	else
+	{
+		$('#historyList #sc-prev').css('display', 'none');
+		$('#historyList #sc-next').css('display', 'none');
+	}
+	var compareData = new Object();
+	var compareCookie = document.getCookie('compareItems');
+	var count = 0;
+	if(compareCookie != null)
+	{
+		compareData = JSON.parse(compareCookie);
+        for(var k in compareData)
+        {
+            if(typeof(compareData[k])=="function")
+            	continue;
+            $('.compare-btn').each(function(index, element) {
+            	if(k == $(this).attr('data-goods'))
+					$(this).css('background-position', '0 -24px');
+        	});
+			count ++;
+        }
+	}
+	if(count>0)
+	{
+		$('#compareBox').css('display', 'block');
+		$('.compareHolder').css('display', 'none');
+	}
+	
+});
+function toggle_compare_box()
+{
+	if($('#compareBox').css('display') == 'none')
+	{
+		$('#compareBox').css('display', 'block');
+		$('.compareHolder').css('display', 'none');
+	}
+	else
+	{
+		$('#compareBox').css('display', 'none');
+		$('.compareHolder').css('display', 'block');
+	}
+}
+</script>
+<div align="center" id="compareBox" style="display:none">
+	<div class="menu">
+    	<ul>
+        	<li class="current" data-value='compare'>对比栏</li><li data-value='history'>最近浏览</li>
+        </ul>
+        <a style="color:#005AA0;float: right; line-height: 32px; margin-right: 20px;" href="javascript:void(0)" onClick="toggle_compare_box()">隐藏</a>
+        <div style="clear:both"></div>
+    </div>
+	<div id="compareList">
+		
+    </div>
+    <div id="historyList" style="display:none;">
+        <span id="sc-prev" class="sc-prev scroll-btn"></span>
+        <span id="sc-next" class="sc-next scroll-btn"></span>
+    	<div class="scroll_wrap">
+	    	{insert name='history_list'}
+        </div>
+    </div>
+</div>
+<a class="compareHolder" href="javascript:void(0)" onClick="toggle_compare_box()">对比栏</a>
+<!-- 代码增加_end  By  bbs.hongyuvip.com -->

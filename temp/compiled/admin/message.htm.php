@@ -1,7 +1,7 @@
 <?php echo $this->fetch('pageheader.htm'); ?>
 <div class="list-div">
-  <div style="background:#FFF; padding: 20px 50px; margin: 2px;">
-    <table align="center" width="400">
+  <div style="background:#ffffff; padding: 20px 50px; margin: 2px;">
+    <table align="center" width="400" border="0" style="background:#FFF;">
       <tr>
         <td width="50" valign="top">
           <?php if ($this->_var['msg_type'] == 0): ?>
@@ -66,8 +66,8 @@ function redirection()
 
   if (seconds == 0)
   {
-    window.clearInterval();
     location.href = defaultUrl;
+	window.clearInterval();
   }
 }
 //-->

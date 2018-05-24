@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 数据库导出类
+ * 鸿宇多用户商城 数据库导出类
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: cls_sql_dump.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: cls_sql_dump.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -28,7 +28,10 @@ if (!defined('IN_ECS'))
  */
 function dump_escape_string($str)
 {
-    return cls_mysql::escape_string($str);
+	/* 代码修改_start  By  bbs.hongyuvip.com */
+    //return cls_mysql::escape_string($str);
+	return $GLOBALS['db']->escape_string($str);
+	/* 代码修改_star  By  bbs.hongyuvip.com */
 }
 
 /**
@@ -61,7 +64,22 @@ class cls_sql_dump
 
     var $db;
 
+    
+	/* 代码修改_start   By  bbs.hongyuvip.com */
     /**
+     *  类的构造函数
+     *
+     * @access  public
+     * @param
+     *
+     * @return void
+     */
+    function __construct(&$db, $max_size =0)
+    {
+        $this->cls_sql_dump($db, $max_size);
+    }
+
+	/**
      *  类的构造函数
      *
      * @access  public
@@ -79,18 +97,7 @@ class cls_sql_dump
 
     }
 
-    /**
-     *  类的构造函数
-     *
-     * @access  public
-     * @param
-     *
-     * @return void
-     */
-    function __construct(&$db, $max_size =0)
-    {
-        $this->cls_sql_dump($db, $max_size);
-    }
+	/* 代码修改_end   By  bbs.hongyuvip.com */
 
     /**
      *  获取指定表的定义
@@ -350,7 +357,7 @@ class cls_sql_dump
      *
      * @return  array       $arr        信息数组
      */
-    function get_head($path)
+    public static function get_head($path)  //代码修改   By    bbs.hongyuvip.com   增加 public static
     {
         /* 获取sql文件头部信息 */
         $sql_info = array('date'=>'', 'mysql_ver'=> '', 'php_ver'=>0, 'ecs_ver'=>'', 'vol'=>0);
@@ -475,7 +482,7 @@ class cls_sql_dump
      *
      * @return      string      $str    随机名称
      */
-    function get_random_name()
+    public static function get_random_name()  //代码修改   By    bbs.hongyuvip.com
     {
         $str = date('Ymd');
 

@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 属性规格管理
+ * 鸿宇多用户商城 属性规格管理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: attribute.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: attribute.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -98,7 +98,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
             'attr_values' => '',
             'attr_type' => 0,
             'is_linked' => 0,
-			'is_show_img' => 0 // EC模板修改 start by zhouH
+			 'attr_txm' => 0,
         );
     }
     else
@@ -150,9 +150,10 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
         'attr_index'      => $_POST['attr_index'],
         'attr_input_type' => $_POST['attr_input_type'],
         'is_linked'       => $_POST['is_linked'],
-		'is_show_img'       => $_POST['is_show_img'],//EC模板堂修改 by zhouH 
+		'attr_txm'		  => $_POST['attr_txm'],
         'attr_values'     => isset($_POST['attr_values']) ? $_POST['attr_values'] : '',
         'attr_type'       => empty($_POST['attr_type']) ? '0' : intval($_POST['attr_type']),
+		
         'attr_group'      => isset($_POST['attr_group']) ? intval($_POST['attr_group']) : 0
     );
 
@@ -165,7 +166,8 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
             array('text' => $_LANG['add_next'], 'href' => '?act=add&goods_type=' . $_POST['cat_id']),
             array('text' => $_LANG['back_list'], 'href' => '?act=list'),
         );
-        sys_msg(sprintf($_LANG['add_ok'], $attr['attr_name']), 0, $links);
+        //将下面代码注释掉  By bbs.hongyuvip.com
+        //sys_msg(sprintf($_LANG['add_ok'], $attr['attr_name']), 0, $links);
     }
     else
     {
@@ -174,8 +176,23 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
         $links = array(
             array('text' => $_LANG['back_list'], 'href' => '?act=list&amp;goods_type='.$_POST['cat_id'].''),
         );
-        sys_msg(sprintf($_LANG['edit_ok'], $attr['attr_name']), 0, $links);
+        //将下面代码注释掉  By bbs.hongyuvip.com
+        //sys_msg(sprintf($_LANG['edit_ok'], $attr['attr_name']), 0, $links);
     }
+
+	/* 增加代码_start By bbs.hongyuvip.com */
+	$attr_id_www_ecshop68_com = $is_insert ? $db->insert_id() : $_POST['attr_id'];
+	$msg_attr_www_ecshop68_com = $is_insert ?   $_LANG['add_ok']  : $_LANG['edit_ok'];
+	if($_POST['is_attr_gallery'] == '1')
+	{
+		$sql_www_ecshop68_com="update " .$ecs->table("attribute"). " set  is_attr_gallery=0 where cat_id='".$_POST['cat_id']."' ";
+		$db->query($sql_www_ecshop68_com);
+	}
+	$sql_www_ecshop68_com="update " .$ecs->table("attribute"). " set  is_attr_gallery='$_POST[is_attr_gallery]' where attr_id='$attr_id_www_ecshop68_com' ";
+	$db->query($sql_www_ecshop68_com);
+	sys_msg(sprintf($msg_attr_www_ecshop68_com, $attr['attr_name']), 0, $links);
+	/* 增加代码_end By bbs.hongyuvip.com */
+
 }
 
 /*------------------------------------------------------ */
@@ -316,6 +333,64 @@ elseif ($_REQUEST['act'] == 'get_attr_groups')
 
     make_json_result($groups);
 }
+
+/* 代码增加_start   By  bbs.hongyuvip.com */
+/*------------------------------------------------------ */
+//-- 设置颜色
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'savecolor')
+{
+	$sql = "delete from ". $ecs->table('attribute_color') ." where attr_id= '$_REQUEST[attr_id]' ";
+	$db->query($sql);
+	foreach ($_REQUEST['color_name'] AS $color_key=> $color_name)
+	{
+		if ($_REQUEST['color_code'][$color_key])
+		{
+			$sql="insert into ". $ecs->table('attribute_color') ."(attr_id, color_name, color_code) values('$_REQUEST[attr_id]', '$color_name', '". $_REQUEST['color_code'][$color_key] ."' )";
+			$db->query($sql);
+		}
+	}
+	$link[] = array('text' => '返回设置页面', 'href' => 'attribute.php?act=setcolor&attr_id='.$_REQUEST['attr_id']);
+    sys_msg('恭喜，您已成功设置了颜色代码！', 0, $link);
+}
+elseif ($_REQUEST['act'] == 'setcolor')
+{
+    /* 检查权限 */
+    admin_priv('attr_manage');
+	
+	$sql = "SELECT * FROM " . $ecs->table('attribute') . " WHERE attr_id = '$_REQUEST[attr_id]'";
+    $attr = $db->getRow($sql); 
+    $smarty->assign('attr', $attr);
+	
+	$colors_code=array();
+	$sql="select * from ". $ecs->table('attribute_color') . " where attr_id = '$_REQUEST[attr_id]'";
+	$res_color = $db->query($sql);
+	while ($row_color = $db->fetchRow($res_color))
+	{
+		$colors_code[$row_color['color_name']] = $row_color['color_code'];
+	}
+	
+	if($attr['attr_values'])
+	{
+		$color_list= str_replace("\r\n", "\n", $attr['attr_values']);
+		$color_array = explode("\n", $color_list);
+		$color_list=array();
+		foreach ($color_array as $ckey=>$cval)
+		{
+			$color_list[$ckey]['color_name'] = $cval;
+			$color_list[$ckey]['color_code'] = $colors_code[$cval] ? $colors_code[$cval] : '';
+		}
+	}
+	
+    $smarty->assign('color_list', $color_list);
+	$smarty->assign('ur_here', '设置颜色');
+    $smarty->assign('action_link', array('href' => 'attribute.php?act=list&goods_type='.$attr['cat_id'], 'text' => $_LANG['09_attribute_list']));
+	 /* 显示模板 */
+    assign_query_info();
+    $smarty->display('attribute_setcolor.htm');
+
+}
+/* 代码增加_end  By   bbs.hongyuvip.com */
 
 /*------------------------------------------------------ */
 //-- PRIVATE FUNCTIONS

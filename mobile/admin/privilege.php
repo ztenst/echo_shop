@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理员信息以及权限管理程序
+ * 鸿宇多用户商城 管理员信息以及权限管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: privilege.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: privilege.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 
@@ -69,7 +69,7 @@ elseif ($_REQUEST['act'] == 'signin')
 {
     if (!empty($_SESSION['captcha_word']) && (intval($_CFG['captcha']) & CAPTCHA_ADMIN))
     {
-        include_once(ROOT_PATH . 'include/cls_captcha.php');
+        include_once(ROOT_PATH . 'includes/cls_captcha.php');
 
         /* 检查验证码是否正确 */
         $validator = new captcha();
@@ -205,7 +205,10 @@ elseif ($_REQUEST['act'] == 'add')
 elseif ($_REQUEST['act'] == 'insert')
 {
     admin_priv('admin_manage');
-
+    if($_POST['token']!=$_CFG['token'])
+    {
+         sys_msg('add_error', 1);
+    }
     /* 判断管理员是否已经存在 */
     if (!empty($_POST['user_name']))
     {
@@ -331,6 +334,10 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
     $admin_email = !empty($_REQUEST['email'])     ? trim($_REQUEST['email'])     : '';
     $ec_salt=rand(1,9999);
     $password = !empty($_POST['new_password']) ? ", password = '".md5(md5($_POST['new_password']).$ec_salt)."'"    : '';
+    if($_POST['token']!=$_CFG['token'])
+    {
+         sys_msg('update_error', 1);
+    }
     if ($_REQUEST['act'] == 'update')
     {
         /* 查看是否有权限编辑其他管理员的信息 */
@@ -479,15 +486,15 @@ elseif ($_REQUEST['act'] == 'modif')
     while ($row = $db->FetchRow($rs))
     {
         /* 取得语言项 */
-        if (file_exists(ROOT_PATH.'plugins/'.$row['code'].'/lang/common_'.$_CFG['lang'].'.php'))
+        if (file_exists(ROOT_PATH.'plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php'))
         {
-            include_once(ROOT_PATH.'plugins/'.$row['code'].'/lang/common_'.$_CFG['lang'].'.php');
+            include_once(ROOT_PATH.'plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php');
         }
 
         /* 插件的菜单项 */
-        if (file_exists(ROOT_PATH.'plugins/'.$row['code'].'/lang/inc_menu.php'))
+        if (file_exists(ROOT_PATH.'plugins/'.$row['code'].'/languages/inc_menu.php'))
         {
-            include_once(ROOT_PATH.'plugins/'.$row['code'].'/lang/inc_menu.php');
+            include_once(ROOT_PATH.'plugins/'.$row['code'].'/languages/inc_menu.php');
         }
     }
 
@@ -558,7 +565,7 @@ elseif ($_REQUEST['act'] == 'modif')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'allot')
 {
-    include_once(ROOT_PATH . 'lang/' .$_CFG['lang']. '/admin/priv_action.php');
+    include_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/priv_action.php');
 
     admin_priv('allot_priv');
     if ($_SESSION['admin_id'] == $_GET['id'])
@@ -624,7 +631,10 @@ elseif ($_REQUEST['act'] == 'allot')
 elseif ($_REQUEST['act'] == 'update_allot')
 {
     admin_priv('admin_manage');
-
+    if($_POST['token']!=$_CFG['token'])
+    {
+         sys_msg('update_allot_error', 1);
+    }
     /* 取得当前管理员用户名 */
     $admin_name = $db->getOne("SELECT user_name FROM " .$ecs->table('admin_user'). " WHERE user_id = '$_POST[id]'");
 

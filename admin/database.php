@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 数据库管理
+ * 鸿宇多用户商城 数据库管理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: database.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: database.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 define('IN_ECS', true);
@@ -136,11 +136,6 @@ if ($_REQUEST['act'] == 'restore')
 if ($_REQUEST['act'] == 'dumpsql')
 {
     /* 权限判断 */
-    $token=trim($_REQUEST['token']);
-    if($token!=$_CFG['token'])
-    {
-        sys_msg($_LANG['backup_failure'], 1);
-    }
     admin_priv('db_backup');
 
     /* 检查目录权限 */
@@ -309,7 +304,7 @@ if ($_REQUEST['act'] == 'dumpsql')
             sys_msg(sprintf($_LANG['fail_write_file'], $sql_file_name . '_' . $vol . '.sql'), 1, array(array('text'=>$_LANG['02_db_manage'], 'href'=>'database.php?act=backup')), false);
         }
 
-        $lnk = 'database.php?act=dumpsql&token='.$_CFG['token'].'&sql_file_name=' . $sql_file_name . '&vol_size=' . $max_size . '&vol=' . ($vol+1);
+        $lnk = 'database.php?act=dumpsql&sql_file_name=' . $sql_file_name . '&vol_size=' . $max_size . '&vol=' . ($vol+1);
         $smarty->assign('title',         sprintf($_LANG['backup_title'], '#' . $vol));
         $smarty->assign('auto_redirect', 1);
         $smarty->assign('auto_link',     $lnk);

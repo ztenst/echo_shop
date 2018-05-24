@@ -1,6 +1,6 @@
 <!-- $Id: payment_edit.htm 14401 2008-04-15 02:41:32Z zhuwenyuan $ -->
 {include file="pageheader.htm"}
-{insert_scripts files="../data/static/js/utils.js,./js/validator.js"}
+{insert_scripts files="../js/utils.js,validator.js"}
 <form action="payment.php" method="post">
 <div class="main-div">
 <table cellspacing="1" cellpadding="3" width="100%">
@@ -23,10 +23,6 @@
     <td>
       <!-- {if $config.type == "text"} -->
       <input name="cfg_value[]" type="{$config.type}" value="{$config.value}" size="40" />
-      {if $config.name eq "alipay_partner"}
-      <a href="javascript:void(0)" style="font-weight:bold; color:#F00;"  onclick="show();return false;"> &nbsp; {$lang.getPid}</a>
-
-      {/if}
       <!-- {elseif $config.type == "textarea"} -->
       <textarea name="cfg_value[]" cols="80" rows="5">{$config.value}</textarea>
       <!-- {elseif $config.type == "select"} -->
@@ -77,32 +73,6 @@
 </table>
 </div>
 </form>
-<script type="text/javascript">
-<!--
-{literal}
-function show()
-{
-    document.getElementById('alipay_get_pidkey_box').style.display='block';
-}
-function close_t()
-{
-    document.getElementById('alipay_get_pidkey_box').style.display='none';
-}
-{/literal}
-//-->
-</script>
-{if $smarty.get.code eq "alipay"}
-<div id="alipay_get_pidkey_box" class="alipay_get_pidkey_box" style="display:none; left: 663.5px; top: 330px;">
-    <h2>{$lang.alipay_pay_method}</h2>
-    <a href="javascript:void(0);" class="close_acp_info" onclick="close_t();return false;"><img alt="close" src="images/close.gif" border="0"></a>
-    <table width="" cellspacing="0" cellpadding="0">
-        <tbody>
-        <tr><td align="left" height="26"><a target="_blank" href="https://b.alipay.com/order/pidKey.htm?pid=2088101540396621&product=dualpay"><b class="cWhite">{$lang.dualpay}</b></a></td></tr>
-        <tr><td align="left" height="26"><a target="_blank" href="https://b.alipay.com/order/pidKey.htm?pid=2088101540396621&product=fastpay"><b class="cWhite">{$lang.fastpay}</b></a></td></tr>
-        <tr><td align="left" height="26"><a target="_blank" href="https://b.alipay.com/order/pidKey.htm?pid=2088101540396621&product=escrow"><b class="cWhite">{$lang.escrow}</b></a></td></tr>
-  </tbody></table>
-</div>
-{/if}
 <script type="Text/Javascript" language="JavaScript">
 <!--
 {literal}

@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 文章分类
+ * 鸿宇多用户商城 文章分类
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: article_cat.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: article_cat.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 
@@ -31,14 +31,19 @@ clear_cache_files();
 /*------------------------------------------------------ */
 
 /* 获得指定的分类ID */
-if (!empty($_GET['id']))
+
+// safety_20150629 change_start
+
+if (!empty($_GET['id']) && preg_match('/^-?[1-9]\d*$/', $_REQUEST['id']))
 {
     $cat_id = intval($_GET['id']);
 }
-elseif (!empty($_GET['category']))
+elseif (!empty($_GET['category']) && preg_match('/^-?[1-9]\d*$/', $_REQUEST['category']))
 {
     $cat_id = intval($_GET['category']);
 }
+
+// safety_20150629 change_end
 else
 {
     ecs_header("Location: ./\n");
@@ -64,12 +69,10 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     $position = assign_ur_here($cat_id);
     $smarty->assign('page_title',           $position['title']);     // 页面标题
     $smarty->assign('ur_here',              $position['ur_here']);   // 当前位置
-  	
+
     $smarty->assign('categories',           get_categories_tree(0)); // 分类树
-    $smarty->assign('article_categories',   article_categories_tree()); //文章分类树
+    $smarty->assign('article_categories',   article_categories_tree($cat_id)); //文章分类树
     $smarty->assign('helps',                get_shop_help());        // 网店帮助
-
-
     $smarty->assign('top_goods',            get_top10());            // 销售排行
 
     $smarty->assign('best_goods',           get_recommend_goods('best'));
@@ -77,7 +80,6 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     $smarty->assign('hot_goods',            get_recommend_goods('hot'));
     $smarty->assign('promotion_goods',      get_promote_goods());
     $smarty->assign('promotion_info', get_promotion_info());
-	$smarty->assign('script_name' ,'article_cat');
 
     /* Meta */
     $meta = $db->getRow("SELECT keywords, cat_desc FROM " . $ecs->table('article_cat') . " WHERE cat_id = '$cat_id'");
@@ -123,8 +125,15 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
 
         $goon_keywords = urlencode($_REQUEST['keywords']);
     }
-    $smarty->assign('artciles_list',    get_cat_articles($cat_id, $page, $size ,$keywords));
+	
+	
+	/* 代码增加_start  By  bbs.hongyuvip.com */
+	$search_url = "article_cat.php?id=$cat_id";
+	$smarty->assign('search_url',       $search_url);
+	/* 代码增加_end  By  bbs.hongyuvip.com */
 
+	
+    $smarty->assign('artciles_list',    get_cat_articles($cat_id, $page, $size ,$keywords));
     $smarty->assign('cat_id',    $cat_id);
     /* 分页 */
     assign_pager('article_cat', $cat_id, $count, $size, '', '', $page, $goon_keywords);
@@ -135,4 +144,7 @@ $smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typearticle_
 
 $smarty->display('article_cat.dwt', $cache_id);
 
+/* 代码增加_start  By  bbs.hongyuvip.com */
+make_html();
+/* 代码增加_end   By  bbs.hongyuvip.com */
 ?>

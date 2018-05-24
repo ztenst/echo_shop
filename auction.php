@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 拍卖前台文件
+ * 鸿宇多用户商城 拍卖前台文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: auction.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: auction.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 define('IN_ECS', true);
@@ -62,7 +62,9 @@ if ($_REQUEST['act'] == 'list')
         {
             /* 取得当前页的拍卖活动 */
             $auction_list = auction_list($size, $page);
-            $smarty->assign('auction_list',  $auction_list);
+            $auction_list_hot = auction_list($size, $page, "act_count");
+            $smarty->assign('auction_list',      $auction_list);
+            $smarty->assign('auction_list_hot',  $auction_list_hot);
 
             /* 设置分页链接 */
             $pager = get_pager('auction.php', array('act' => 'list'), $count, $page, $size);
@@ -165,6 +167,7 @@ elseif ($_REQUEST['act'] == 'view')
         $smarty->assign('auction_log', auction_log($id));
 
         //模板赋值
+		$smarty->assign('auction_log_count', auction_log_count($id));
         $smarty->assign('cfg', $_CFG);
         assign_template();
 
@@ -303,6 +306,8 @@ elseif ($_REQUEST['act'] == 'bid')
         'bid_time'  => gmtime()
     );
     $db->autoExecute($ecs->table('auction_log'), $auction_log, 'INSERT');
+	$act_count = $_POST['act_count'] + 1;
+	$db->query("UPDATE " . $ecs->table('goods_activity') . " SET act_count = " . $act_count . " WHERE act_id = " . $id);
 
     /* 出价是否等于一口价 */
     if ($bid_price == $auction['end_price'])
@@ -404,13 +409,15 @@ elseif ($_REQUEST['act'] == 'buy')
     clear_cart(CART_AUCTION_GOODS);
 
     /* 加入购物车 */
-    $cart = array(
+     $cart = array(
         'user_id'        => $user_id,
         'session_id'     => SESS_ID,
         'goods_id'       => $auction['goods_id'],
         'goods_sn'       => addslashes($goods['goods_sn']),
         'goods_name'     => addslashes($goods['goods_name']),
         'market_price'   => $goods['market_price'],
+    	'cost_price'     => $goods['cost_price'],
+    	'promote_price'  => $goods['promote_price'],
         'goods_price'    => $auction['last_bid']['bid_price'],
         'goods_number'   => 1,
         'goods_attr'     => $goods_attr,
@@ -422,14 +429,15 @@ elseif ($_REQUEST['act'] == 'buy')
         'is_gift'        => 0
     );
     $db->autoExecute($ecs->table('cart'), $cart, 'INSERT');
-
+    
+    $_SESSION['sel_cartgoods'] = $db->insert_id();
     /* 记录购物流程类型：团购 */
     $_SESSION['flow_type'] = CART_AUCTION_GOODS;
     $_SESSION['extension_code'] = 'auction';
     $_SESSION['extension_id'] = $id;
 
     /* 进入收货人页面 */
-    ecs_header("Location: ./flow.php?step=consignee\n");
+    ecs_header("Location: ./flow.php?step=checkout\n");
     exit;
 }
 
@@ -460,7 +468,7 @@ function auction_list($size, $page)
     $auction_list['finished'] = $auction_list['finished'] = array();
 
     $now = gmtime();
-    $sql = "SELECT a.*, IFNULL(g.goods_thumb, '') AS goods_thumb " .
+    $sql = "SELECT a.*,g.original_img, IFNULL(g.goods_thumb, '') AS goods_thumb " .
             "FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS a " .
                 "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS g ON a.goods_id = g.goods_id " .
             "WHERE a.act_type = '" . GAT_AUCTION . "' " .
@@ -477,7 +485,19 @@ function auction_list($size, $page)
         $auction['formated_start_price'] = price_format($auction['start_price']);
         $auction['formated_end_price'] = price_format($auction['end_price']);
         $auction['formated_deposit'] = price_format($auction['deposit']);
+		
+		$sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('auction_log') .
+				" WHERE act_id = " . $auction['act_id'];
+		$auction['bid_user_count'] = $GLOBALS['db']->getOne($sql);
+		if ($auction['bid_user_count'] > 0)
+		{
+			$auction['formated_bid_price'] = $GLOBALS['db']->getOne("select bid_price from " . $GLOBALS['ecs']->table('auction_log') . " where act_id = '" . $auction['act_id'] . "' order by bid_price desc limit 0,1");
+		}
+		$auction['current_price'] = isset($auction['formated_bid_price']) ? $auction['formated_bid_price'] : $auction['start_price'];
+		$auction['formated_current_price'] = price_format($auction['current_price'], false);
+		
         $auction['goods_thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+		$auction['original_img']= get_image_path($row['goods_id'], $row['original_img']);
         $auction['url'] = build_uri('auction', array('auid'=>$auction['act_id']));
 
         if($auction['status_no'] < 2)

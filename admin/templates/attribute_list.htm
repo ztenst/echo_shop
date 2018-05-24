@@ -38,7 +38,10 @@
       <td align="right" nowrap="true" valign="top"><span onclick="listTable.edit(this, 'edit_sort_order', {$attr.attr_id})">{$attr.sort_order}</span></td>
       <td align="center" nowrap="true" valign="top">
         <a href="?act=edit&amp;attr_id={$attr.attr_id}" title="{$lang.edit}"><img src="images/icon_edit.gif" border="0" height="16" width="16"></a>
-        <a href="javascript:;" onclick="removeRow({$attr.attr_id})" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16"></a>
+        <a href="javascript:;" onclick="removeRow({$attr.attr_id})" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16"></a>		
+		{* 代码增加_start  By  bbs.hongyuvip.com *}
+		{if $attr.attr_name eq '颜色'}<a href="?act=setcolor&amp;attr_id={$attr.attr_id}">设置颜色</a>{/if}
+		{* 代码增加_end  By  bbs.hongyuvip.com *}
       </td>
     </tr>
     {foreachelse}

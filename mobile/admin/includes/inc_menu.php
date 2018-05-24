@@ -1,19 +1,19 @@
 <?php
 
 /**
- * ECSHOP 管理中心菜单数组
+ * 鸿宇多用户商城 管理中心菜单数组
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: inc_menu.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: inc_menu.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-if (!defined('IN_ECTOUCH'))
+if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
@@ -115,6 +115,7 @@ $modules['11_system']['navigator']                  = 'navigator.php?act=list';
 $modules['11_system']['file_check']                 = 'filecheck.php';
 //$modules['11_system']['fckfile_manage']             = 'fckfile_manage.php?act=list';
 $modules['11_system']['021_reg_fields']             = 'reg_fields.php?act=list';
+$modules['11_system']['franchisee_list']		= 'franchisee.php?act=list';
 
 
 $modules['12_template']['02_template_select']       = 'template.php?act=list';
@@ -128,15 +129,14 @@ $modules['12_template']['mail_template_manage']     = 'mail_template.php?act=lis
 $modules['13_backup']['02_db_manage']               = 'database.php?act=backup';
 $modules['13_backup']['03_db_optimize']             = 'database.php?act=optimize';
 $modules['13_backup']['04_sql_query']               = 'sql.php?act=main';
-//$modules['13_backup']['05_synchronous']             = 'integrate.php?act=sync';
 $modules['13_backup']['convert']                    = 'convert.php?act=main';
 
-
-//$modules['14_sms']['02_sms_my_info']                = 'sms.php?act=display_my_info';
+$modules['14_school']['01_school']       = 'http://bbs.hongyuvip.com/';
 $modules['14_sms']['03_sms_send']                   = 'sms.php?act=display_send_ui';
-//$modules['14_sms']['04_sms_charge']                 = 'sms.php?act=display_charge_ui';
-//$modules['14_sms']['05_sms_send_history']           = 'sms.php?act=display_send_history_ui';
-//$modules['14_sms']['06_sms_charge_history']         = 'sms.php?act=display_charge_history_ui';
+$modules['14_sms']['04_sms_sign']                   = 'sms.php?act=sms_sign';
+$modules['14_school']['02_school_a']     = 'http://bbs.hongyuvip.com/';
+$modules['14_school']['03_school_b']      = 'http://bbs.hongyuvip.com/';
+$modules['14_school']['04_school_c']      = 'http://bbs.hongyuvip.com/';
 
 $modules['15_rec']['affiliate']                     = 'affiliate.php?act=list';
 $modules['15_rec']['affiliate_ck']                  = 'affiliate_ck.php?act=list';
@@ -145,4 +145,12 @@ $modules['16_email_manage']['email_list']           = 'email_list.php?act=list';
 $modules['16_email_manage']['magazine_list']        = 'magazine_list.php?act=list';
 $modules['16_email_manage']['attention_list']       = 'attention_list.php?act=list';
 $modules['16_email_manage']['view_sendlist']        = 'view_sendlist.php?act=list';
+
+$modules['17_app_manage']['00_basic_setting']        = 'app_manage.php?act=basic_setting';
+$modules['17_app_manage']['01_push_setting']        = 'app_push.php?act=setting';
+$modules['17_app_manage']['02_push_message']        = 'app_push.php?act=push_message';
+$modules['17_app_manage']['03_guide_picture']        = 'app_manage.php?act=guide_picture';
+$modules['17_app_manage']['04_menu_setting']        = 'app_manage.php?act=menu_setting';
+$modules['17_app_manage']['05_template_setting']        = 'app_manage.php?act=template_setting';
+
 ?>

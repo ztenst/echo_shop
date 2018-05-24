@@ -2,23 +2,21 @@
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
 {insert_scripts files="validator.js"}
-<div class="form-div">
-<form method="post" action="affiliate.php">
-<input type="radio" name="on" value="1" {if $config.on eq 1} checked="true" {/if} onClick="javascript:actDiv('separate','');actDiv('btnon','none');">{$lang.on}
-<input type="radio" name="on" value="0" {if !$config.on || $config.on eq 0} checked="true" {/if} onClick="javascript:actDiv('separate','none');actDiv('btnon','');">{$lang.off}
-<br><br>
+<div class="affiliate-div">
+<form method="post" action="affiliate.php" style="height:30px;line-height:30px; ">
+<input type="radio" name="on" value="1" {if $config.on eq 1} checked="true" {/if} onClick="javascript:actDiv('separate','');actDiv('btnon','none');" >{$lang.on}
+<input type="radio" name="on" value="0" {if !$config.on || $config.on eq 0} checked="true" {/if} onClick="javascript:actDiv('separate','none');actDiv('btnon','');" style="vertical-align:none">{$lang.off}
 <input type="hidden" name="act" value="on" />
 <input type="submit" value="{$lang.button_submit}" class="button" id="btnon"/>
 </form>
 </div>
 <div id="separate">
-<div class="form-div">
+<div class="affiliate-div">
 <form method="post" action="affiliate.php">
             <table width="100%" border="0" cellspacing="0" cellpadding="4">
                 <tr>
                     <td colspan="2" style="border-bottom:1px dashed #dadada;"><input type="radio" name="separate_by" value="0" {if !$config.config.separate_by || $config.config.separate_by eq 0} checked="true" {/if} onClick="actDiv('listDiv','');">
-                    {$lang.separate_by.0}<input type="radio" name="separate_by" value="1" {if $config.config.separate_by eq 1} checked="true" {/if} onClick="actDiv('listDiv','none');">
-                        {$lang.separate_by.1}</td>
+                    {$lang.separate_by.0}</td>
                 </tr>
                 <tr>
                     <td width="20%" align="right" class="label"><a href="javascript:showNotice('notice1');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}" /></a>{$lang.expire} </td>

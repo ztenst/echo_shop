@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP LICENSE 相关函数库
+ * 鸿宇多用户商城 LICENSE 相关函数库
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_article.php 16336 2009-06-24 07:09:13Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: lib_article.php 16336 2009-06-24 07:09:13Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -269,7 +269,6 @@ function license_reg($certi_added = '')
 
         $return_array['flag'] = 'reg_succ';
         $return_array['request'] = $request_arr;
-        clear_cache_files();
     }
     elseif (is_array($request_arr) && $request_arr['res'] == $certi_back['fail'])
     {

@@ -6,13 +6,8 @@
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
 <link href="styles/main.css" rel="stylesheet" type="text/css" />
 {literal}
-<style type="text/css">
-body {
-  color: white;
-}
-</style>
 {/literal}
-{insert_scripts files="../data/static/js/utils.js,./js/validator.js"}
+{insert_scripts files="../js/utils.js,validator.js"}
 <script language="JavaScript">
 <!--
 // 这里把JS用到的所有语言都赋值到这里
@@ -28,35 +23,36 @@ if (window.parent != window)
 //-->
 </script>
 </head>
-<body style="background: #278296">
+<body style="background:url(images/login_bg.png) repeat-x;padding:0px;">
+<div style="width:1210px;height:768px;margin:0 auto;background:url(images/login_dl.jpg) no-repeat; " >
 <form method="post" action="privilege.php" name='theForm' onsubmit="return validate()">
-  <table cellspacing="0" cellpadding="0" style="margin-top: 100px" align="center">
+  <table cellspacing="0" cellpadding="0" style=" padding-top:295px; " align="center" class="login_dl">
   <tr>
-    <td><img src="images/login.png" width="178" height="256" border="0" alt="ECSHOP" /></td>
-    <td style="padding-left: 50px">
-      <table>
+<td class="dl">
+      <table cellspacing="0" cellpadding="0" width="100%">
       <tr>
-        <td>{$lang.label_username}</td>
-        <td><input type="text" name="username" /></td>
+        <td class="dl_1" width="22%">{$lang.label_username}</td>
+        <td><input type="text" name="username" class="text_input1"/></td>
       </tr>
       <tr>
-        <td>{$lang.label_password}</td>
-        <td><input type="password" name="password" /></td>
+        <td class="dl_2">{$lang.label_password}</td>
+        <td><input type="password" name="password"  class="text_input1"/></td>
       </tr>
       {if $gd_version > 0}
       <tr>
-        <td>{$lang.label_captcha}</td>
-        <td><input type="text" name="captcha" class="capital" /></td>
+        <td class="dl_1">{$lang.label_captcha}</td>
+        <td><input type="text" name="captcha" class="capital text_input1" style="width:70px; margin-right:5px; float:left; "/><img src="index.php?act=captcha&{$random}" width="126" height="36" alt="CAPTCHA" border="0" onclick= this.src="index.php?act=captcha&"+Math.random() style="cursor: pointer; float:left " title="{$lang.click_for_another}" /></td>
       </tr>
-      <tr>
-      <td colspan="2" align="right"><img src="index.php?act=captcha&{$random}" width="145" height="20" alt="CAPTCHA" border="1" onclick= this.src="index.php?act=captcha&"+Math.random() style="cursor: pointer;" title="{$lang.click_for_another}" />
-      </td>
-      </tr>
+      
       {/if}
-      <tr><td colspan="2"><input type="checkbox" value="1" name="remember" id="remember" /><label for="remember">{$lang.remember}</label></td></tr>
-      <tr><td>&nbsp;</td><td><input type="submit" value="{$lang.signin_now}" class="button" /></td></tr>
+     <tr class="low_height">
+        <td>&nbsp;</td>
+        <td><input type="checkbox" value="1" name="remember" id="remember" /><label for="remember" >{$lang.remember}</label></td></tr>
       <tr>
-        <td colspan="2" align="right">&raquo; <a href="../" style="color:white">{$lang.back_home}</a> &raquo; <a href="get_password.php?act=forget_pwd" style="color:white">{$lang.forget_pwd}</a></td>
+      	<td colspan="2" align="center"><input type="submit" value="登&nbsp;录" class="button2" /></td>
+      </tr>
+      <tr class="low_height1">
+        <td colspan="2" align="right">&raquo; <a href="../" >{$lang.back_home}</a> &raquo; <a href="get_password.php?act=forget_pwd">{$lang.forget_pwd}</a></td>
       </tr>
       </table>
     </td>
@@ -64,6 +60,7 @@ if (window.parent != window)
   </table>
   <input type="hidden" name="act" value="signin" />
 </form>
+</div>
 <script language="JavaScript">
 <!--
   document.forms['theForm'].elements['username'].focus();

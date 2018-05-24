@@ -2,7 +2,7 @@
 {$query_info}{$gzip_enabled}{$memory_info}<br />
 {$lang.copyright}
 </div>
-{insert_scripts files="../data/static/js/utils.js"}
+{insert_scripts files="../js/utils.js"}
 <!-- 新订单提示信息 -->
 <div id="popMsg">
   <table cellspacing="0" cellpadding="0" width="100%" bgcolor="#cfdef4" border="0">
@@ -16,7 +16,7 @@
     <div id="popMsgContent">
       <p>{$lang.new_order_1}<strong style="color:#ff0000" id="spanNewOrder">1</strong>{$lang.new_order_2}
       <strong style="color:#ff0000" id="spanNewPaid">0</strong>{$lang.new_order_3}</p>
-      <p align="center" style="word-break:break-all"><a href="order.php?act=list"><span style="color:#ff0000">{$lang.new_order_link}</span></a></p>
+      <p align="center" style="word-break:break-all"><span style="color:#ff0000">{$lang.new_order_link}</span></p>
     </div>
     </td>
   </tr>
@@ -62,7 +62,7 @@ function showTodoList(adminid)
 {
   if(!MyTodolist)
   {
-    var global = $import("../data/static/js/global.js","js");
+    var global = $import("../js/global.js","js");
     global.onload = global.onreadystatechange= function()
     {
       if(this.readyState && this.readyState=="loading")return;

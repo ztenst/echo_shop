@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 常量
+ * 鸿宇多用户商城 常量
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: inc_constant.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: inc_constant.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -47,6 +47,10 @@ define('ERR_INVALID_PASSWORD',      5); // 密码错误
 define('ERR_INVALID_EMAIL',         6); // email错误
 define('ERR_USERNAME_NOT_ALLOW',    7); // 用户名不允许注册
 define('ERR_EMAIL_NOT_ALLOW',       8); // EMAIL不允许注册
+define('ERR_MOBILE_PHONE_EXISTS',	9); // 手机号码已经存在
+define('ERR_INVALID_MOBILE_PHONE',	10); // 手机号码错误
+define('ERR_MOBILE_PHONE_NOT_ALLOW',11); // 手机号码不允许注册
+define('ERR_INVALID_REGISTER_TYPE',	12); // 无效的注册类型
 
 /* 加入购物车失败的错误代码 */
 define('ERR_NOT_EXISTS',            1); // 商品不存在
@@ -62,6 +66,9 @@ define('CART_GROUP_BUY_GOODS',      1); // 团购商品
 define('CART_AUCTION_GOODS',        2); // 拍卖商品
 define('CART_SNATCH_GOODS',         3); // 夺宝奇兵
 define('CART_EXCHANGE_GOODS',       4); // 积分商城
+define('CART_PRE_SALE_GOODS',	    6); // 预售商品
+define('CART_VIRTUAL_GROUP_GOODS',  7); // 虚拟团购
+
 
 /* 订单状态 */
 define('OS_UNCONFIRMED',            0); // 未确认
@@ -114,7 +121,9 @@ define('SEND_BY_USER',              0); // 按用户发放
 define('SEND_BY_GOODS',             1); // 按商品发放
 define('SEND_BY_ORDER',             2); // 按订单发放
 define('SEND_BY_PRINT',             3); // 线下发放
-
+define('SEND_BY_REGISTER',    5); // 按注册用户发放      代码增加  BY  bbs.hongyuvip.com
+define('SEND_BY_ONLINE',             4); // 线上发放
+ 
 /* 广告的类型 */
 define('IMG_AD',                    0); // 图片广告
 define('FALSH_AD',                  1); // flash广告
@@ -135,11 +144,21 @@ define('M_BUSINESS',                5); // 商家
 define('M_COMMENT',                 6); // 评论
 
 /* 团购活动状态 */
+define('GROUP_BUY_CODE',			'group_by'); // 团购的代码标识
 define('GBS_PRE_START',             0); // 未开始
 define('GBS_UNDER_WAY',             1); // 进行中
 define('GBS_FINISHED',              2); // 已结束
 define('GBS_SUCCEED',               3); // 团购成功（可以发货了）
 define('GBS_FAIL',                  4); // 团购失败
+
+/* 预售活动状态 */
+define('PRE_SALE_CODE',				'pre_sale'); // 预售的代码标识
+define('VIRTUAL_SALE_CODE',    'virtual_good'); //虚拟团购标识
+define('PSS_PRE_START',             0); // 未开始
+define('PSS_UNDER_WAY',             1); // 进行中
+define('PSS_FINISHED',              2); // 已结束
+define('PSS_SUCCEED',               3); // 预售成功（可以发货了）
+define('PSS_FAIL',                  4); // 预售失败
 
 /* 红包是否发送邮件 */
 define('BONUS_NOT_MAIL',            0);
@@ -152,6 +171,7 @@ define('GAT_GROUP_BUY',             1);
 define('GAT_AUCTION',               2);
 define('GAT_POINT_BUY',             3);
 define('GAT_PACKAGE',               4); // 超值礼包
+define('GAT_PRE_SALE',              5); // 预售活动
 
 /* 帐号变动类型 */
 define('ACT_SAVING',                0);     // 帐户冲值
@@ -232,10 +252,53 @@ define('SEND_LIST', 0);
 define('SEND_USER', 1);
 define('SEND_RANK', 2);
 
+/*访问来源*/
+define('WEB_FROM', 'pc');
+
+/*佣金日志中的事件*/
+define('REBATE_LOG_ORDER', 1);//佣金涉及到的订单
+define('REBATE_LOG_LIST', 2);//佣金表状态
+
+/* 生成静态页面的配置 */
+define('PREFIX_CATEGORY', 'shangpin');   //保存 商品页、商品列表页的子目录前缀，不需要写 -
+define('PREFIX_ARTICLECAT', 'wenzhang'); //保存 文章页、文章列表页的子目录前缀，不需要写 -
+define('PREFIX_TOPIC', 'zhuanti');
+
 /* license接口 */
 define('LICENSE_VERSION', '1.0');
 
 /* 配送方式 */
-define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|presswork|sf_express|sto_express|yto|zto');
+// define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|presswork|sf_express|sto_express|yto|zto');
+// 增加配送方式
+define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|presswork|sf_express|sto_express|yto|zto|yd_express|bestex|ttkd|zjs|qfkd|deppon');
+
+
+/* 在线客服聊天 */
+define('CUSTOMER_SERVICE', 0); //客服
+define('CUSTOMER_PRE', 1); //售前
+define('CUSTOMER_AFTER', 2); //售后
+
+//聊天系统配置
+define('CHAT_OF_TIMEOUT', '10');// 检查聊天服务是否正在运行的超时时间，单位：秒
+define('CHAT_OF_SERVER_IP', '115.29.76.109');// 服务器IP地址
+define('CHAT_OF_SERVER_PORT', '9090');// 服务器端口号
+define('CHAT_OF_HTTP_BIND_PORT', '7070');// 服务器Http-Bind的端口号
+define('CHAT_OF_ADMIN_USERNAME', 'admin');// OpenFire登录管理员用户名
+define('CHAT_OF_ADMIN_PASSWORD', 'openfire@pwd');// OpenFire登录管理员密码，此密码与登录OpenFire管理界面保持一致
+
+//验证记录
+define('ERR_VALIDATE_KEY_NOT_EXIST', 0);// 验证信息不存在
+define('ERR_VALIDATE_EXPIRED_TIME', 1);// 验证码已过期
+define('ERR_VALIDATE_CODE_NOT_MATCH', 2);// 验证码错误
+
+//验证类型
+define('VT_EMAIL_REGISTER', 'email_register');// 邮箱注册
+define('VT_MOBILE_REGISTER', 'mobile_register');// 手机注册
+define('VT_EMAIL_FIND_PWD', 'email_find_password');// 邮箱找回密码
+define('VT_MOBILE_FIND_PWD', 'mobile_find_password');// 手机号找回密码
+define('VT_EMAIL_VALIDATE', 'email_validate');// 邮箱验证
+define('VT_MOBILE_VALIDATE', 'mobile_validate');// 手机验证
+
+
 
 ?>

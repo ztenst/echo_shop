@@ -1,22 +1,22 @@
 <?php
 
 /**
- * ECSHOP 帮助信息管理程序
+ * 鸿宇多用户商城 帮助信息管理程序
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * * 版权所有 2008-2015 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com;
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: shophelp.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: derek $
+ * $Id: shophelp.php 17217 2016-01-19 06:29:08Z derek $
 */
 
-define('IN_ECTOUCH', true);
+define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . 'include/fckeditor/fckeditor.php');
+require_once(ROOT_PATH . "includes/fckeditor/fckeditor.php");
 
 /*初始化数据交换对象 */
 $exc_article = new exchange($ecs->table("article"), $db, 'article_id', 'title');

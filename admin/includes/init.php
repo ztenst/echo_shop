@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 管理中心公用文件
+ * 鸿宇多用户商城 管理中心公用文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: init.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: init.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -33,7 +33,7 @@ if (__FILE__ == '')
 @ini_set('session.use_trans_sid', 0);
 @ini_set('session.use_cookies',   1);
 @ini_set('session.auto_start',    0);
-@ini_set('display_errors',        1);
+@ini_set('display_errors',        0);
 
 if (DIRECTORY_SEPARATOR == '\\')
 {
@@ -227,16 +227,14 @@ if(isset($_GET['ent_id']) && isset($_GET['ent_ac']) &&  isset($_GET['ent_sign'])
     $ent_ac = trim($_GET['ent_ac']);
     $ent_sign = trim($_GET['ent_sign']);
     $ent_email = trim($_GET['ent_email']);
-    $certificate_id = trim($_CFG['certificate_id']);
     $domain_url = $ecs->url();
-    $token=$_GET['token'];
-    if($token==md5(md5($_CFG['token']).$domain_url.ADMIN_PATH))
+    require(ROOT_PATH . 'includes/cls_transport.php');
+    $t = new transport('-1',5);
+    $apiget = "act=ent_sign&ent_id= $ent_id &ent_ac= $ent_ac &ent_sign= $ent_sign &ent_email= $ent_email &domain_url= $domain_url";
+    $api_comment = $t->request('http://cloud.hongyuvip.com/api.php', $apiget);
+    $api_str = $api_comment["body"];
+    if($api_str == $ent_sign)
     {
-        require(ROOT_PATH . 'includes/cls_transport.php');
-        $t = new transport('-1',5);
-        $apiget = "act=ent_sign&ent_id= $ent_id & certificate_id=$certificate_id";
-
-        $t->request('http://cloud.ecshop.com/api.php', $apiget);
         $db->query('UPDATE '.$ecs->table('shop_config') . ' SET value = "'. $ent_id .'" WHERE code = "ent_id"');
         $db->query('UPDATE '.$ecs->table('shop_config') . ' SET value = "'. $ent_ac .'" WHERE code = "ent_ac"');
         $db->query('UPDATE '.$ecs->table('shop_config') . ' SET value = "'. $ent_sign .'" WHERE code = "ent_sign"');
@@ -323,8 +321,6 @@ if ((!isset($_SESSION['admin_id']) || intval($_SESSION['admin_id']) <= 0) &&
     }
 }
 
-$smarty->assign('token', $_CFG['token']);
-
 if ($_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
     $_REQUEST['act'] != 'forget_pwd' && $_REQUEST['act'] != 'reset_pwd' && $_REQUEST['act'] != 'check_order')
 {
@@ -344,15 +340,15 @@ if ($_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
         exit;
     }
 }
-
+// safety_20150626 del_start
 /* 管理员登录后可在任何页面使用 act=phpinfo 显示 phpinfo() 信息 */
-if ($_REQUEST['act'] == 'phpinfo' && function_exists('phpinfo'))
+/*if ($_REQUEST['act'] == 'phpinfo' && function_exists('phpinfo'))
 {
     phpinfo();
 
     exit;
-}
-
+}*/
+// safety_20150626 del_end
 //header('Cache-control: private');
 header('content-type: text/html; charset=' . EC_CHARSET);
 header('Expires: Fri, 14 Mar 1980 20:53:00 GMT');

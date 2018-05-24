@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP MYSQL 公用类库
+ * 鸿宇多用户商城 MYSQL 公用类库
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: cls_mysql.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: cls_mysql.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
 */
 
 if (!defined('IN_ECS'))
@@ -266,10 +266,15 @@ class cls_mysql
 
         if (!($query = mysql_query($sql, $this->link_id)) && $type != 'SILENT')
         {
-            $this->error_message[]['message'] = 'MySQL Query Error';
-            $this->error_message[]['sql'] = $sql;
-            $this->error_message[]['error'] = mysql_error($this->link_id);
-            $this->error_message[]['errno'] = mysql_errno($this->link_id);
+            //$this->error_message[]['message'] = 'MySQL Query Error';
+            //$this->error_message[]['sql'] = $sql;
+            //$this->error_message[]['error'] = mysql_error($this->link_id);
+            //$this->error_message[]['errno'] = mysql_errno($this->link_id);
+            
+            $this->error_message[]['消息'] = 'MySQL Query Error';
+            $this->error_message[]['SQL'] = $sql;
+            $this->error_message[]['错误'] = mysql_error($this->link_id);
+            $this->error_message[]['代码'] = mysql_errno($this->link_id);
 
             $this->ErrorMsg();
 
@@ -387,14 +392,33 @@ class cls_mysql
     {
         if ($message)
         {
+        	
+        	throw new Exception ($message);
+        	
             echo "<b>ECSHOP info</b>: $message\n\n<br /><br />";
             //print('<a href="http://faq.comsenz.com/?type=mysql&dberrno=2003&dberror=Can%27t%20connect%20to%20MySQL%20server%20on" target="_blank">http://faq.comsenz.com/</a>');
+        
         }
         else
         {
-            echo "<b>MySQL server error report:";
-            print_r($this->error_message);
-            //echo "<br /><br /><a href='http://faq.comsenz.com/?type=mysql&dberrno=" . $this->error_message[3]['errno'] . "&dberror=" . urlencode($this->error_message[2]['error']) . "' target='_blank'>http://faq.comsenz.com/</a>";
+        	$message = '<table border="1" style="" align="center">';
+        	
+        	foreach($this->error_message as $error)
+        	{
+        		foreach($error as $key => $value)
+        		{
+        			$message = $message . '<tr><td style="padding: 10px;">' . $key . '</td><td style="padding: 10px;">' . $value . '</td></tr>';
+        		}
+        	}
+        	$message = $message . '</table>';
+        	
+//         	throw new Exception ($message);
+
+        	echo $message;
+        	
+//             echo "<b>MySQL server error report:";
+            
+//             echo "<br /><br /><a href='http://faq.comsenz.com/?type=mysql&dberrno=" . $this->error_message[3]['errno'] . "&dberror=" . urlencode($this->error_message[2]['error']) . "' target='_blank'>http://faq.comsenz.com/</a>";
         }
 
         exit;

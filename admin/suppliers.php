@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP 管理中心供货商管理
+ * 鸿宇多用户商城 管理中心供货商管理
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * $Author: wanglei $
  * $Id: suppliers.php 15013 2009-05-13 09:31:42Z wanglei $
@@ -252,6 +252,11 @@ elseif ($_REQUEST['act'] == 'batch')
                 sys_msg($_LANG['batch_drop_no']);
             }
 
+            $suppliers_names = '';
+            foreach ($suppliers as $value)
+            {
+                $suppliers_names .= $value['suppliers_name'] . '|';
+            }
 
             $sql = "DELETE FROM " . $ecs->table('suppliers') . "
                 WHERE suppliers_id " . db_create_in($ids);
@@ -266,7 +271,6 @@ elseif ($_REQUEST['act'] == 'batch')
             }
 
             /* 记日志 */
-            $suppliers_names = '';
             foreach ($suppliers as $value)
             {
                 $suppliers_names .= $value['suppliers_name'] . '|';

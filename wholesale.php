@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP 批发前台文件
+ * 鸿宇多用户商城 批发前台文件
  * ============================================================================
- * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2005-2010 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
  * @author:     scott ye <scott.yell@gmail.com>
  * @version:    v2.x
@@ -275,12 +275,8 @@ elseif ($_REQUEST['act'] == 'add_to_cart')
         $goods_attr_name = '';
         if (!empty($goods['goods_attr']))
         {
-            foreach ($goods['goods_attr'] as $key=> $attr)
+            foreach ($goods['goods_attr'] as $attr)
             {
-                $attr['attr_name']=htmlspecialchars($attr['attr_name']);
-                $goods['goods_attr'][$key]['attr_name']=$attr['attr_name'];
-                $attr['attr_val'] =htmlspecialchars($attr['attr_val']);
-                $goods['goods_attr'][$key]['attr_name']=$attr['attr_name'];
                 $goods_attr_name .= $attr['attr_name'] . '：' . $attr['attr_val'] . '&nbsp;';
             }
         }

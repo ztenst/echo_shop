@@ -1,26 +1,26 @@
 <?php
 
 /**
- * ECSHOP 支付宝语言文件
+ * 鸿宇多用户商城 支付宝语言文件
  * ============================================================================
- * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 版权所有 2015-2016 鸿宇多用户商城科技有限公司，并保留所有权利。
+ * 网站地址: http://bbs.hongyuvip.com；
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 仅供学习交流使用，如需商用请购买正版版权。鸿宇不承担任何法律责任。
+ * 踏踏实实做事，堂堂正正做人。
  * ============================================================================
- * $Author: liubo $
- * $Id: alipay.php 17217 2011-01-19 06:29:08Z liubo $
+ * $Author: Shadow & 鸿宇
+ * $Id: alipay.php 17217 2016-01-19 06:29:08Z Shadow & 鸿宇
  */
 
 global $_LANG;
 
 $_LANG['alipay'] = '支付宝';
-$_LANG['alipay_desc'] = '支付宝网站(www.alipay.com) 是国内先进的网上支付平台。<br/>支付宝收款接口：在线即可开通，<font color="red"><b>零预付，免年费</b></font>，单笔阶梯费率，无流量限制。<br/><a href="http://cloud.ecshop.com/payment_apply.php?mod=alipay" target="_blank"><font color="red">立即在线申请</font></a>';
+$_LANG['alipay_desc'] = '支付宝网站(www.alipay.com) 是国内先进的网上支付平台。<br/>支付宝收款接口：在线即可开通，<font color="red"><b>零预付，免年费</b></font>，单笔阶梯费率，无流量限制。<br/><font color="red">注意:申请时请选择"即时到帐"业务进行申请</font><br/><a href="http://cloud.hongyuvip.com/payment_apply.php?mod=alipay" target="_blank"><font color="red">立即在线申请</font></a>';
 $_LANG['alipay_account'] = '支付宝帐户';
 $_LANG['alipay_key'] = '交易安全校验码';
 $_LANG['alipay_partner'] = '合作者身份ID';
-$_LANG['pay_button'] = '立即使用支付宝支付';
+$_LANG['pay_button'] = '去支付';
 
 //$_LANG['alipay_pay_method'] = '接口类型';
 //$_LANG['alipay_pay_method_desc'] = '';

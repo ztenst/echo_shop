@@ -1,6 +1,8 @@
-<!-- $Id: picture_batch.htm 15409 2008-12-09 02:36:22Z sunxiaodong $ -->
+<!-- $Id: picture_batch.htm 15409 2008-12-09 02:36:22Z Shadow & 鸿宇 -->
 {insert_scripts files="../js/utils.js"}
 {include file="pageheader.htm"}
+<link href="styles/zTree/zTreeStyle.css" rel="stylesheet" type="text/css" />
+{insert_scripts files='jquery-1.6.2.min.js,jquery.ztree.all-3.5.min.js,category_selecter.js'}
 <div class="main-div">
 <form action="picture_batch.php" method="post" name="theForm" onsubmit="return start()">
   <table cellspacing="1" cellpadding="3" width="100%">
@@ -8,7 +10,10 @@
     <td>{$lang.notes}</td>
   </tr>
   <tr>
-    <td ><select name="cat_id" onchange="goods_list(this);"><option value="0">{$lang.all_category}</caption>{$cat_list}</select>
+    <td >
+    		<!--<select name="cat_id" onchange="goods_list(this);"><option value="0">{$lang.all_category}</caption>{$cat_list}</select>-->
+           <input type="text" id="cat_name" name="cat_name" nowvalue="{$goods_cat_name}" value="{$goods_cat_name}" ><!--代码增加--商品分类--68ecshop-->
+			<input type="hidden" id="cat_id" name="cat_id" value="{$goods_cat_id}"><!--代码增加--商品分类--68ecshop--> 
           <select name="brand_id" onchange="goods_list(this);"><option value="0">{$lang.all_brand}</caption>{html_options options=$brand_list}</select>
           <span id="list"><select name="goods_id"><option value="0">{$lang.all_goods}</option></select></span>
           <input  type="button" value=" + " onclick="add_search_goods();" />
@@ -49,6 +54,16 @@
     </td>
   </tr>
   </table>
+  <script type="text/javascript">
+	$().ready(function(){
+		// $("#cat_name")为获取分类名称的jQuery对象，可根据实际情况修改
+		// $("#cat_id")为获取分类ID的jQuery对象，可根据实际情况修改
+		// "{$goods_cat_id}"为被选中的商品分类编号，无则设置为null或者不写此参数或者为空字符串
+		$.ajaxCategorySelecter($("#cat_name"), $("#cat_id"), "{$goods_cat_id}");
+	});
+</script>
+  
+  
 </form>
 </div>
 
@@ -287,4 +302,5 @@ function start_response(result)
 {/literal}
 //-->
 </script>
+
 {include file="pagefooter.htm"}

@@ -1,6 +1,7 @@
 <!-- $Id: template_setup.htm 16144 2009-06-01 09:21:21Z sxc_shop $ -->
 {include file="pageheader.htm"}
-
+<link href="styles/zTree/zTreeStyle.css" rel="stylesheet" type="text/css" />
+{insert_scripts files='jquery.ztree.all-3.5.min.js,category_selecter.js'}
 <div class="form-div">
   <form method="post" action="template.php">
   {$lang.select_template}
@@ -39,12 +40,16 @@
   <tr>
     <td colspan="6" style="background-color: #F4FBFB; font-weight: bold" align="left"><a href="javascript:;" onclick="addCatGoods(this)">[+]</a> {$lang.template_libs.cat_goods} </td>
   </tr>
-  {foreach from=$cate_goods item=library key=lib_name}
+  {foreach from=$cate_goods item=library key=lib_name name=cat}
   <tr>
     <td class="first-cell" align="right"><a href="javascript:;" onclick="removeRow(this)">[-]</a></td>
     <td><select name="regions[cat_goods][]"><option value="">{$lang.select_plz}</option>{html_options values=$temp_regions output=$temp_regions selected=$library.region}</select></td>
     <td><input type="text" name="sort_order[cat_goods][]" value="{$library.sort_order}" size="4" /></td>
-    <td><select name="categories[cat_goods][]"><option value="">{$lang.select_plz}</option>{$library.cats}</select></td>
+    <td>
+    <!-- <select name="categories[cat_goods][]"><option value="">{$lang.select_plz}</option>{$library.cats}</select> -->
+    <input type="text" id="cat_name_{$smarty.foreach.cat.index}" class="cat_name" nowvalue="{$library.cat_id}" value="" ><!--代码增加--商品分类--68ecshop-->
+	<input type="hidden" id="cat_id_{$smarty.foreach.cat.index}" class="cat_id" name="categories[cat_goods][]" value="{$library.cat_id}"><!--代码增加--商品分类--68ecshop-->
+    </td>
     <td><input type="text" name="number[cat_goods][]" value="{$library.number}" size="4"  /></td>
     <td></td>
   </tr>
@@ -137,6 +142,7 @@ onload = function()
     startCheckOrder();
 }
 
+
 /**
  * 创建区域选择的下拉列表
  */
@@ -177,6 +183,27 @@ function buildBrandSelect(selName)
 
     return sel;
 }
+
+var cat_list = null;
+
+function bindCatSeletor(cat_list){
+	$(".cat_id").each(function(){
+		var catIdObj = $(this);
+		var catNameObj = $(this).parent().find(".cat_name");
+		var selectId = catNameObj.attr("nowvalue");
+		$.showCategorySelecter(catNameObj, catIdObj, cat_list, selectId);
+	});
+}
+
+$().ready(function(){
+	
+	var url = "goods.php?act=ajax_category";
+	$.get(url, {}, function(data){
+		cat_list = $.parseJSON(data);
+		bindCatSeletor(cat_list);
+	}, "text");
+	
+});
 
 /**
  * 创建选择文章分类的下拉列表
@@ -222,6 +249,9 @@ function buildAdPositionsSelect(selName)
     return sel;
 }
 
+var index = 0;
+
+
 /**
  * 增加一个分类的商品
  */
@@ -244,12 +274,18 @@ function addCatGoods(obj)
     cell.innerHTML = '<input type="text" name="sort_order[cat_goods][]" value="0" size="4" />';
 
     cell           = row.insertCell(-1);
-    cell.innerHTML = '<select name="categories[cat_goods][]"><option value="">' + selectPlease + '</option>' + selCategories + '</select>';
-
-    cell           = row.insertCell(-1);
+    //cell.innerHTML = '<select name="categories[cat_goods][]"><option value="">' + selectPlease + '</option>' + selCategories + '</select>';
+	cell.innerHTML = '<input type="text" id="cat_name' + index + '" nowvalue="{$goods_cat_name}" value="{$goods_cat_name}" class="cat_name" >'
+					+'<input type="hidden" id="cat_id' + index + '" name="categories[cat_goods][]" value="{$goods_cat_id}" class="cat_id" >';
+    
+	cell           = row.insertCell(-1);
     cell.innerHTML = '<input type="text" name="number[cat_goods][]" value="5" size="4" />';
 
     cell           = row.insertCell(-1);
+	
+	$.showCategorySelecter($('#cat_name'+index), $('#cat_id'+index), cat_list, '{$goods_cat_id}');
+	
+	index++;
 }
 
 /**
@@ -364,4 +400,5 @@ function removeRow(obj)
 {/literal}
 //-->
 </script>
+
 {include file="pagefooter.htm"}

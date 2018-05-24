@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
 <link href="styles/main.css" rel="stylesheet" type="text/css" />
-<?php echo $this->smarty_insert_scripts(array('files'=>'../js/transport.js,common.js')); ?>
+<?php echo $this->smarty_insert_scripts(array('files'=>'jquery-1.6.2.min.js,jquery.json.js,../js/transport.js,common.js')); ?>
 <script language="JavaScript">
 <!--
 // 这里把JS用到的所有语言都赋值到这里
@@ -20,6 +20,33 @@ var <?php echo $this->_var['key']; ?> = "<?php echo $this->_var['item']; ?>";
 </head>
 <body>
 
+<div id="menu_list" onmouseover="show_popup()" onmouseout="hide_popup()">
+<ul>
+<li><a href="goods.php?act=add" target="main_frame">添加新商品</a></li>
+<li><a href="category.php?act=add" target="main_frame">添加商品分类</a></li>
+<li><a href="order.php?act=add" target="main_frame">添加订单</a></li>
+<li><a href="article.php?act=add" target="main_frame">添加新文章</a></li>
+<li><a href="users.php?act=add" target="main_frame">添加会员</a></li>
+</ul>
+</div>
+<script>
+function show_popup(){
+frmBody = parent.document.getElementById('frame-body');
+if (frmBody.cols == "37, 12, *")
+{
+parent.main_frame.document.getElementById('menu_list').style.left = '195px';
+}
+else
+{
+parent.main_frame.document.getElementById('menu_list').style.left = '40px';
+}
+parent.main_frame.document.getElementById('menu_list').style.display = 'block';
+}
+function hide_popup(){
+
+parent.main_frame.document.getElementById('menu_list').style.display = 'none';
+}
+</script>
 <h1>
 <?php if ($this->_var['action_link']): ?>
 <span class="action-span"><a href="<?php echo $this->_var['action_link']['href']; ?>"><?php echo $this->_var['action_link']['text']; ?></a></span>
